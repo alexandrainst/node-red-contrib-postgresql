@@ -1,8 +1,8 @@
 {
   "name": "postgrestor",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "Yet another Node-RED node to query PostgreSQL",
+  "author": "Hamza Jalouaja",
   "dependencies": {
   },
 	"keywords": [ "node-red" ],
