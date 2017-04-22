@@ -1,0 +1,22 @@
+<script type="text/javascript">
+    RED.nodes.registerType('postgrestor',{
+        category: 'advanced',
+        color: '#336791',
+        inputs:1,
+        outputs:1,
+        label: function() {
+            return this.name||"postgrestor'";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="postgrestor">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="postgrestor">
+    <p>Description</p>
+</script>
