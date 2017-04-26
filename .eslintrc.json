@@ -1,0 +1,19 @@
+{
+  "extends": "google",
+  "installedESLint": true,
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "rules": {
+    "require-jsdoc": ["error", {
+      "require": {
+        "FunctionDeclaration": false,
+        "MethodDefinition": false,
+        "ClassDeclaration": false,
+        "ArrowFunctionExpression": false
+      }
+    }],
+    "comma-dangle": ["error", "never"]
+  }
+}

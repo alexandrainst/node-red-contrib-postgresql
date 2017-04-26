@@ -2,13 +2,31 @@
   "name": "postgrestor",
   "version": "0.0.1",
   "description": "Yet another Node-RED node to query PostgreSQL",
-  "author": "Hamza Jalouaja",
-  "dependencies": {
+  "author": {
+    "name": "Hamza Jalouaja",
+    "email": "hamzajalouaja@gmail.com"
   },
-	"keywords": [ "node-red" ],
-	"node-red": {
-		"nodes": {
-			"postgrestor": "postgrestor.js"
-		}
-	}
+  "dependencies": {
+    "co": "^4.6.0",
+    "pg": "^6.1.5"
+  },
+  "license": "Apache",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "keywords": [
+    "node-red",
+    "postgresql",
+    "postgres"
+  ],
+  "node-red": {
+    "nodes": {
+      "postgrestor": "postgrestor.js"
+    }
+  },
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-google": "^0.7.1"
+  }
 }

@@ -1,0 +1,11 @@
+{
+  "postgrestor": {
+    "label": {
+      "host": "Host",
+      "port": "Port",
+      "database": "Database",
+      "user": "User",
+      "password": "Password"
+    }
+  }
+}
