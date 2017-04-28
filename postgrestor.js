@@ -1,6 +1,7 @@
 module.exports = function(RED) {
   const PgPool = require('pg').Pool;
   const co = require('co');
+  const named = require('node-postgres-named');
 
   function PostgresDBNode(config) {
     RED.nodes.createNode(this, config);
@@ -45,10 +46,11 @@ module.exports = function(RED) {
 
       co(
         function* () {
-          let client = yield PgPool.connect();
-
+          let client = yield pgPool.connect();
+          named.patch(client);
           try {
-            msg.payload = yield client.query(msg.payload, msg.queryParameteres);
+            msg.payload = yield client.query(config.query);
+            node.send(msg);
             client.release();
           } catch (error) {
             node.error(error);
@@ -56,8 +58,6 @@ module.exports = function(RED) {
           }
         }
       );
-
-      node.send(msg);
     });
 
     node.on('close', function() {
