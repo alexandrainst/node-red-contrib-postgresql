@@ -1,8 +1,44 @@
+<!--
+
+Hamza Jalouaja
+
+-->
+
+<script type="text/x-red" data-template-name="postgresDB">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> <span>Name</span></label>
+        <input type="text" id="node-config-input-name" placeholder="name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-host"><i class="fa fa-server"></i> <span>Host</span></label>
+        <input class="input-append-left" type="text" id="node-config-input-host" placeholder="localhost" style="width: 40%;">
+        <label for="node-config-input-port" style="margin-left: 10px; width: 35px; "> <span>Port</span></label>
+        <input type="text" id="node-config-input-port" placeholder="5432" style="width:45px">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-database"><i class="fa fa-database"></i> <span>Database</span></label>
+        <input type="text" id="node-config-input-database" placeholder="postgres">
+    </div>
+    <div class="form-row">
+        <input type="checkbox" id="node-config-input-ssl" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-config-input-ssl" style="width: auto;"> <span>SSL</span></label>
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-user"><i class="fa fa-user"></i> <span>User</span></label>
+        <input type="text" id="node-config-input-user" placeholder="postgres">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-password"><i class="fa fa-lock"></i> <span>Password</span></label>
+        <input type="password" id="node-config-input-password">
+    </div>
+</script>
+
 <script type="text/javascript">
   RED.nodes.registerType('postgresDB', {
-    category: 'config',
-    color: '#336791',
+    category: "config",
+    color: "#336791",
     defaults: {
+      name: {value: ""},
       host: {value: "127.0.0.1", required: true},
       port: {value: 5432, required: true},
       database: {value: "postgres", required: true},
@@ -13,49 +49,44 @@
       password: {type: "password"}
     },
     label: function () {
-      return this.name || this.host + ":" + this.port + "/" + this.database;
+      return this.name || "PostgreSQL - " + this.credentials.user + "@" + this.host + ":" + this.port + "/" + this.database;
+    },
+    labelStyle: function() {
+      return this.name ? "node_label_italic" : "";
     }
   });
 </script>
 
-<script type="text/x-red" data-template-name="postgresDB">
+
+<script type="text/x-red" data-template-name="postgrestor">
     <div class="form-row">
-        <label for="node-config-input-name"><i class="fa fa-tag"></i> <span data-i18n="common.label.name"></span></label>
-        <input type="text" id="node-config-input-name" data-i18n="[placeholder]common.label.name">
+        <label for="node-input-name"><i class="icon-tag"></i> <span>Name</span></label>
+        <input type="text" id="node-input-name" placeholder="name">
     </div>
     <div class="form-row">
-        <label for="node-config-input-host"><i class="fa fa-tag"></i> Host</label>
-        <input type="text" id="node-config-input-host" placeholder="127.0.0.1">
-        <label for="node-config-input-port"> Port</label>
-        <input type="integer" id="node-config-input-port" placeholder="5432">
+        <label for="node-input-postgresDB"><i class="fa fa-server"></i> <span>Server</span></label>
+        <input type="text" id="node-input-postgresDB">
     </div>
     <div class="form-row">
-        <label for="node-config-input-database"><i class="fa fa-tag"></i> Database</label>
-        <input type="text" id="node-config-input-database" placeholder="postgres">
+        <input type="checkbox" id="node-input-output" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-output" style="width: auto;"> <span>Receive output</span></label>
     </div>
-    <div class="form-row">
-        <label for="node-config-input-ssl"><i class="fa fa-tag"></i> SSL</label>
-        <input type="checkbox" id="node-config-input-ssl">
+    <div class="form-row" style="position: relative; margin-bottom: 0px;">
+        <label for="node-input-query"><i class="fa fa-file-code-o"></i> <span>Query</span></label>
+        <input type="hidden" id="node-input-query" autofocus="autofocus">
     </div>
-    <div class="form-row">
-        <label for="node-config-input-user"><i class="fa fa-tag"></i> User</label>
-        <input type="text" id="node-config-input-user">
-        <label for="node-config-input-password"><i class="fa fa-tag"></i> Password</label>
-        <input type="text" id="node-config-input-password">
+    <div class="form-row node-text-editor-row">
+        <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-editor" ></div>
     </div>
-
-
-
-
-
 </script>
-
 
 <script type="text/javascript">
   RED.nodes.registerType("postgrestor", {
-    category: "advanced",
+    category: "storage",
     color: '#336791',
     defaults: {
+      name: {value: ""},
+      query: {value: "SELECT * FROM ;"},
       postgresDB: {type: "postgresDB", required: true},
       output: {value: true},
       outputs: {value: 1}
@@ -65,6 +96,9 @@
     align: "left",
     label: function () {
       return this.name || "postgrestor";
+    },
+    labelStyle: function() {
+      return this.name ? "node_label_italic" : "";
     },
     oneditprepare: function () {
       $("#node-input-output").prop("checked", this.output);
@@ -81,28 +115,6 @@
       delete this.editor;
     }
   });
-</script>
-
-<script type="text/x-red" data-template-name="postgrestor">
-    <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> <span data-i18n="common.label.name"></label>
-        <input type="text" id="node-input-name" data-i18n="[placeholder]common.label.name">
-    </div>
-    <div class="form-row">
-        <label for="node-input-postgresDB"><i class="fa fa-wrench"></i> Server</label>
-        <input type="text" id="node-input-postgresDB">
-    </div>
-    <div class="form-row">
-        <label for="node-input-output"> Receive output</label>
-        <input type="checkbox" id="node-input-output">
-    </div>
-    <div class="form-row" style="position: relative; margin-bottom: 0px;">
-        <label for="node-input-query"><i class="fa fa-file-code-o"></i> Query</label>
-        <input type="hidden" id="node-input-query" autofocus="autofocus">
-    </div>
-    <div class="form-row node-text-editor-row">
-        <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-editor" ></div>
-    </div>
 </script>
 
 <script type="text/x-red" data-help-name="postgrestor">
