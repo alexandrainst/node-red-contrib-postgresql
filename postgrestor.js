@@ -1,7 +1,7 @@
 module.exports = function(RED) {
+  const mustache = require('mustache');
   const PgPool = require('pg').Pool;
   const co = require('co');
-  const named = require('node-postgres-named');
 
   function PostgresDBNode(config) {
     RED.nodes.createNode(this, config);
@@ -44,12 +44,17 @@ module.exports = function(RED) {
         node.error(error);
       });
 
+      const template = {
+        msg: msg
+      };
+
       co(
         function* () {
           let client = yield pgPool.connect();
-          named.patch(client);
+
           try {
-            msg.payload = yield client.query(config.query);
+            msg.payload = yield client.query(
+              mustache.render(config.query, template));
             node.send(msg);
             client.release();
           } catch (error) {
