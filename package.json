@@ -1,6 +1,9 @@
 {
   "name": "postgrestor",
   "version": "0.0.1",
+  "scripts": {
+    "test": "eslint postgrestor.js"
+  },
   "description": "Yet another Node-RED node to query PostgreSQL",
   "author": {
     "name": "Hamza Jalouaja",
@@ -8,6 +11,7 @@
   },
   "dependencies": {
     "co": "^4.6.0",
+    "mustache": "^2.3.0",
     "pg": "^6.1.5"
   },
   "license": "Apache",
