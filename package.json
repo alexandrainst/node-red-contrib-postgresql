@@ -17,7 +17,7 @@
   "license": "Apache",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/HySoaKa/node-red-contrib-postgrestor"
   },
   "keywords": [
     "node-red",
