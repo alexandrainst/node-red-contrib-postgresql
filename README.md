@@ -12,13 +12,34 @@ Postgrestor sets up a console to execute queries against the configured database
 Postgres implements a template engine allowing parameterized queries:
 ```sql
 /* INTEGER id COLUMN */
-SELECT * FROM table where id = {{ msg.id }}
+SELECT * FROM table WHERE id = {{ msg.id }}
 
 /* VARCHAR id COLUMN */
-SELECT * FROM table where id = '{{ msg.id }}'
+SELECT * FROM table WHERE id = '{{ msg.id }}'
 
 ```
+## Installation
 
+#### Using the Node-RED Editor
+From version 0.15 of [**Node-RED**](http://nodered.org/) you can install [**Postgrestor**](https://github.com/HySoaKa/node-red-contrib-postgrestor) directly using the editor. To do this select ```Manage Palette``` from the menu (top right), and then select the ```install``` tab in the palette.
+
+You can now search for [**Postgrestor**](https://github.com/HySoaKa/node-red-contrib-postgrestor) to install.
+
+
+#### Installing npm packaged nodes
+To install [**Postgrestor**](https://github.com/HySoaKa/node-red-contrib-postgrestor) npm-packaged node, you can also, either install it locally within your user data directory (by default, ```$HOME/.node-red```):
+```bash
+cd $HOME/.node-red
+npm i postgrestor
+```
+or globally alongside Node-RED:
+```bash
+npm i -g posgtrestor
+```
+You will need to restart Node-RED for it to pick-up [**Postgrestor**](https://github.com/HySoaKa/node-red-contrib-postgrestor).
+
+
+[![NPM](https://nodei.co/npm/postgrestor.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/postgrestor/)
 
 
 ## Screen shots
