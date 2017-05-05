@@ -43,5 +43,9 @@ You will need to restart Node-RED for it to pick-up [**Postgrestor**](https://gi
 
 
 ## Screen shots
+<p align="center">
 <img src="http://i.imgur.com/D03T3vH.png" width="600">
-<img src="http://i.imgur.com/ilNXol7.png" width="600">
+<img src="http://i.imgur.com/gXPpsxz.png" width="600">
+<img src="http://i.imgur.com/WTpmbT5.png" width="600">
+<img src="http://i.imgur.com/jR0Z08P.png" width="600">
+</p>
