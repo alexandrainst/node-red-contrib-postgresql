@@ -1,19 +1,46 @@
 module.exports = function(RED) {
+  'use strict';
   const mustache = require('mustache');
   const PgPool = require('pg').Pool;
   const co = require('co');
 
-  function PostgresDBNode(config) {
-    RED.nodes.createNode(this, config);
-    this.name = config.name;
-    this.host = config.host;
-    this.port = config.port;
-    this.database = config.database;
-    this.ssl = config.ssl;
-    if (this.credentials) {
-      this.user = this.credentials.user;
-      this.password = this.credentials.password;
+  let pgPool = null;
+
+  function PostgresDBNode(n) {
+    let poolInstance = null;
+    const node = this;
+
+    RED.nodes.createNode(this, n);
+    node.name = n.name;
+    node.host = n.host;
+    node.port = n.port;
+    node.database = n.database;
+    node.ssl = n.ssl;
+    if (node.credentials) {
+      node.user = node.credentials.user;
+      node.password = node.credentials.password;
     }
+
+    class Pool extends PgPool {
+      constructor() {
+        if (!poolInstance) {
+          super({
+            user: node.user,
+            password: node.password,
+            host: node.host,
+            port: node.port,
+            database: node.database,
+            ssl: node.ssl,
+            max: node.max,
+            min: node.min,
+            idleTimeoutMillis: node.idleTimeout
+          });
+          poolInstance = this;
+        }
+        return poolInstance;
+      }
+    }
+    pgPool = new Pool();
   }
 
   RED.nodes.registerType('postgresDB', PostgresDBNode, {
@@ -31,30 +58,20 @@ module.exports = function(RED) {
     node.config = RED.nodes.getNode(config.postgresDB);
 
     node.on('input', function(msg) {
-      const pgPool = new PgPool({
-        user: node.config.user,
-        password: node.config.password,
-        host: node.config.host,
-        port: node.config.port,
-        database: node.config.database,
-        ssl: node.config.ssl
-      });
-
-      pgPool.on('error', function(error) {
-        node.error(error);
-      });
-
       const template = {
         msg: msg
       };
-
       co(
         function* () {
-          let client = yield pgPool.connect();
-
+          let client = yield pgPool
+            .connect()
+            .catch((error) => {
+            node.error(error);
+            });
           try {
             msg.payload = yield client.query(
-              mustache.render(config.query, template));
+              mustache.render(config.query, template)
+            );
             node.send(msg);
             client.release();
           } catch (error) {
