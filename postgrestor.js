@@ -33,7 +33,7 @@ module.exports = function(RED) {
             ssl: node.ssl,
             max: node.max,
             min: node.min,
-            idleTimeoutMillis: node.idleTimeout
+            idleTimeoutMillis: node.idle
           });
           poolInstance = this;
         }
