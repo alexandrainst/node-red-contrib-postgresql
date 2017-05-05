@@ -1,145 +1,214 @@
-<!--
-
-Hamza Jalouaja
-
--->
-
+<!--  Created by Hamza Jalouaja -->
 <script type="text/x-red" data-template-name="postgresDB">
-    <div class="form-row">
-        <label for="node-config-input-name"><i class="fa fa-tag"></i> <span>Name</span></label>
-        <input type="text" id="node-config-input-name" placeholder="name">
-    </div>
-    <div class="form-row">
+  <div class="form-row">
+    <label for="node-config-input-name"><i class="fa fa-tag"></i> <span>Name</span></label>
+    <input type="text" id="node-config-input-name" placeholder="name">
+  </div>
+  <div class="form-row">
+    <ul style="background: #fff; min-width: 600px; margin-bottom: 20px;" id="postgrestor-config-tabs"></ul>
+  </div>
+  <div id="postgrestor-config-tabs-content" style="min-height: 170px;">
+    <div id="postgrestor-config-tab-connection" style="display: none;">
+      <div class="form-row">
         <label for="node-config-input-host"><i class="fa fa-server"></i> <span>Host</span></label>
         <input class="input-append-left" type="text" id="node-config-input-host" placeholder="localhost" style="width: 40%;">
-        <label for="node-config-input-port" style="margin-left: 10px; width: 35px; "> <span>Port</span></label>
+        <label for="node-config-input-port" style="margin-left: 10px; width: 135px; "> <span>Port</span></label>
         <input type="text" id="node-config-input-port" placeholder="5432" style="width:45px">
-    </div>
-    <div class="form-row">
+      </div>
+      <div class="form-row">
         <label for="node-config-input-database"><i class="fa fa-database"></i> <span>Database</span></label>
         <input type="text" id="node-config-input-database" placeholder="postgres">
-    </div>
-    <div class="form-row">
+      </div>
+      <div class="form-row">
         <input type="checkbox" id="node-config-input-ssl" style="display: inline-block; width: auto; vertical-align: top;">
         <label for="node-config-input-ssl" style="width: auto;"> <span>SSL</span></label>
+      </div>
     </div>
-    <div class="form-row">
+    <div id="postgrestor-config-tab-security" style="display: none;">
+      <div class="form-row">
         <label for="node-config-input-user"><i class="fa fa-user"></i> <span>User</span></label>
         <input type="text" id="node-config-input-user" placeholder="postgres">
-    </div>
-    <div class="form-row">
+      </div>
+      <div class="form-row">
         <label for="node-config-input-password"><i class="fa fa-lock"></i> <span>Password</span></label>
         <input type="password" id="node-config-input-password" placeholder="postgres">
+      </div>
     </div>
+    <div id="postgrestor-config-tab-pool" style="display: none;">
+      <div class="form-row">
+        <label title="Maximum number of physical database connections that this connection pool can contain." for="node-config-input-max" style="width: 150px;"><i class="fa fa-thermometer-full"></i> <span>Maximum size</span></label>
+        <input type="text" id="node-config-input-max" placeholder="10">
+      </div>
+      <div class="form-row">
+        <label title="Minimum number of physical database connections that this connection pool can contain." for="node-config-input-min" style="width: 150px;"><i class="fa fa-thermometer-empty"></i> <span>Minimum size</span></label>
+        <input type="text" id="node-config-input-lin" placeholder="1">
+      </div>
+      <div class="form-row">
+        <label for="node-config-input-idle" style="width: 150px;"><i class="fa fa-hourglass-half"></i> <span>Idle Timeout</span></label>
+        <input type="text" id="node-config-input-idle" placeholder="1000 (Milliseconds)">
+      </div>
+    </div>
+  </div>
 </script>
-
 <script type="text/javascript">
-  RED.nodes.registerType('postgresDB', {
-    category: "config",
-    color: "#336791",
-    defaults: {
-      name: {value: ""},
-      host: {value: "127.0.0.1", required: true},
-      port: {value: 5432, required: true},
-      database: {value: "postgres", required: true},
-      ssl: {value: false}
+RED.nodes.registerType('postgresDB', {
+  category: "config",
+  color: "#336791",
+  defaults: {
+    name: {
+      value: ""
     },
-    credentials: {
-      user: {type: "text"},
-      password: {type: "password"}
+    host: {
+      value: "127.0.0.1",
+      required: true
     },
-    label: function () {
-      return this.name || "PostgreSQL - " + this.credentials.user + "@" + this.host + ":" + this.port + "/" + this.database;
+    port: {
+      value: 5432,
+      required: true
     },
-    labelStyle: function() {
-      return this.name ? "node_label_italic" : "";
+    database: {
+      value: "postgres",
+      required: true
+    },
+    ssl: {
+      value: false
+    },
+    max: {
+      value: 10
+    },
+    min: {
+      value: 1
+    },
+    idle: {
+      value: 1000
     }
-  });
+  },
+  credentials: {
+    user: {
+      type: "text"
+    },
+    password: {
+      type: "password"
+    }
+  },
+  label: function() {
+    if(!this.name) {
+      this.name = this.credentials.user + "@" + this.host + ":" + this.port + "/" + this.database;
+    }
+    return this.name;
+  },
+  labelStyle: function() {
+    return this.name ? "node_label_italic" : "";
+  },
+  oneditprepare: function() {
+    const tabs = RED.tabs.create({
+      id: "postgrestor-config-tabs",
+      onchange: function(tab) {
+        $("#postgrestor-config-tabs-content").children().hide();
+        $("#" + tab.id).show();
+      }
+    });
+    tabs.addTab({
+      id: "postgrestor-config-tab-connection",
+      label: "Connection"
+    });
+    tabs.addTab({
+      id: "postgrestor-config-tab-security",
+      label: "Security"
+    });
+    tabs.addTab({
+      id: "postgrestor-config-tab-pool",
+      label: "Pool"
+    });
+  }
+});
 </script>
-
-
 <script type="text/x-red" data-template-name="postgrestor">
-    <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> <span>Name</span></label>
-        <input type="text" id="node-input-name" placeholder="name">
-    </div>
-    <div class="form-row">
-        <label for="node-input-postgresDB"><i class="fa fa-server"></i> <span>Server</span></label>
-        <input type="text" id="node-input-postgresDB">
-    </div>
-    <div class="form-row">
-        <input type="checkbox" id="node-input-output" style="display: inline-block; width: auto; vertical-align: top;">
-        <label for="node-input-output" style="width: auto;"> <span>Receive output</span></label>
-    </div>
-    <div class="form-row" style="position: relative; margin-bottom: 0px;">
-        <label for="node-input-query"><i class="fa fa-file-code-o"></i> <span>Query</span></label>
-        <input type="hidden" id="node-input-query" autofocus="autofocus">
-    </div>
-    <div class="form-row node-text-editor-row">
-        <div style="height: 300px; min-height:150px;" class="node-text-editor" id="node-input-editor"></div>
-    </div>
-
+  <div class="form-row">
+    <label for="node-input-name"><i class="icon-tag"></i> <span>Name</span></label>
+    <input type="text" id="node-input-name" placeholder="name"> </div>
+  <div class="form-row">
+    <label for="node-input-postgresDB"><i class="fa fa-server"></i> <span>Server</span></label>
+    <input type="text" id="node-input-postgresDB">
+  </div>
+  <div class="form-row">
+    <input type="checkbox" id="node-input-output" style="display: inline-block; width: auto; vertical-align: top;">
+    <label for="node-input-output" style="width: auto;"> <span>Receive output</span></label>
+  </div>
+  <div class="form-row" style="position: relative; margin-bottom: 0px;">
+    <label for="node-input-query"><i class="fa fa-file-code-o"></i> <span>Query</span></label>
+    <input type="hidden" id="node-input-query" autofocus="autofocus"> </div>
+  <div class="form-row node-text-editor-row">
+    <div style="height: 300px; min-height: 150px;" class="node-text-editor" id="node-input-editor"></div>
+  </div>
 </script>
-
 <script type="text/javascript">
-  RED.nodes.registerType("postgrestor", {
-    category: "storage",
-    color: '#336791',
-    defaults: {
-      name: {value: ""},
-      query: {value: "SELECT * FROM ;"},
-      postgresDB: {type: "postgresDB", required: true},
-      output: {value: true},
-      outputs: {value: 1}
+RED.nodes.registerType("postgrestor", {
+  category: "storage",
+  color: '#336791',
+  defaults: {
+    name: {
+      value: ""
     },
-    inputs: 1,
-    icon: "postgres.png",
-    align: "left",
-    label: function () {
-      return this.name || "postgrestor";
+    query: {
+      value: "SELECT * FROM ;"
     },
-    labelStyle: function() {
-      return this.name ? "node_label_italic" : "";
+    postgresDB: {
+      type: "postgresDB",
+      required: true
     },
-    oneditprepare: function () {
-      $("#node-input-output").prop("checked", this.output);
-
-      this.editor = RED.editor.createEditor({
-        id: 'node-input-editor',
-        mode: 'ace/mode/sql',
-        value: $("#node-input-query").val()
-      });
-
-      this.editor.focus();
+    output: {
+      value: true
     },
-    oneditsave: function () {
-      $("#node-input-query").val(this.editor.getValue());
-
-      delete this.editor;
+    outputs: {
+      value: 1
     }
-  });
+  },
+  inputs: 1,
+  icon: "postgres.png",
+  align: "left",
+  label: function() {
+    return this.name || "postgrestor";
+  },
+  labelStyle: function() {
+    return this.name ? "node_label_italic" : "";
+  },
+  oneditprepare: function() {
+    $("#node-input-output").prop("checked", this.output);
+    this.editor = RED.editor.createEditor({
+      id: 'node-input-editor',
+      mode: 'ace/mode/sql',
+      value: $("#node-input-query").val()
+    });
+    this.editor.focus();
+  },
+  oneditsave: function() {
+    $("#node-input-query").val(this.editor.getValue());
+    delete this.editor;
+  }
+});
 </script>
-
 <script type="text/x-red" data-help-name="postgrestor">
-    <p>Postgrestor 👾 is a Node-RED node allowing basic access to Postgres 🐘 database.</p>
-    <p>Postgrestor sets up a console to execute queries against the configured database.</p>
-    <p><code>msg.payload</code> will contain the result object of the query. It has the following properties:</p>
-    <ul>
-        <li> <i>command</i>: The sql command that was executed (e.g. "SELECT", "UPDATE", etc.)</li>
-        <li> <i>rowCount</i>: The number of rows affected by the SQL statement</li>
-        <li> <i>oid</i>: The oid returned</li>
-        <li> <i>rows</i>: An array of rows</li>
-    </ul>
-    <p>Postgres implements a template engine allowing parameterized queries:</p>
-    <pre>
-/* INTEGER id COLUMN */
-SELECT *
-FROM table
-WHERE id = {{ msg.id }}
-
-/* VARCHAR id COLUMN */
-SELECT *
-FROM table
-WHERE id = '{{ msg.id }}'
-    </pre>
+  <p>Postgrestor 👾 is a Node-RED node allowing basic access to Postgres 🐘 database.</p>
+  <p>Postgrestor sets up a console to execute queries against the configured database.
+  </p>
+  <p><code>msg.payload</code> will contain the result object of the query. It has the following properties:
+  </p>
+  <ul>
+    <li> <i>command</i>: The sql command that was executed (e.g. "SELECT", "UPDATE", etc.)</li>
+    <li> <i>rowCount</i>: The number of rows affected by the SQL statement</li>
+    <li> <i>oid</i>: The oid returned</li>
+    <li> <i>rows</i>: An array of rows</li>
+  </ul>
+  <p>Postgres implements a template engine allowing parameterized queries:</p>
+  <pre>
+  /* INTEGER id COLUMN */
+  SELECT *
+  FROM table
+  WHERE id = {{ msg.id }}
+  /* VARCHAR id COLUMN*/
+  SELECT *
+  FROM table
+  WHERE id = '{{ msg.id }}'
+  </pre>
 </script>
