@@ -6,21 +6,54 @@ module.exports = function(RED) {
 
   let pgPool = null;
 
+  function getObjectValue(obj, str) {
+    try {
+      return str.split(/\.|\[/g).map(function (crumb) {
+        return crumb.replace(/\]$/, '').trim().replace(/^(["'])((?:(?!\1)[^\\]|\\.)*?)\1$/, (match, quote, str) => str.replace(/\\(\\)?/g, "$1"));
+      }).reduce(function (obj, prop) {
+        return obj ? obj[prop] : undefined;
+      }, obj);
+    } catch (err) {
+      return false;
+    }
+  };
+
   function PostgresDBNode(n) {
     let poolInstance = null;
     const node = this;
-
+    const config = node.context().global.config;
+    const template = '{' +
+      'host: {{host}},' +
+      'port: {{port}},' +
+      'database: {{database}},' +
+      'ssl: {{ssl}},' +
+      'max: {{min}},' +
+      'min: {{max}},' +
+      'idleTimeoutMillis: {{iddle}}' +
+      '}';
+    const query = {
+      host: getObjectValue(config, n.host) || n.host,
+      port: getObjectValue(config, n.port) || n.port,
+      database: getObjectValue(config, n.database) || n.database,
+      ssl: getObjectValue(config, 'postgres.ssl') || n.ssl,
+      max: getObjectValue(config, n.max) || n.max,
+      min: getObjectValue(config, n.min) || n.min,
+      idle: getObjectValue(config, n.idle) || n.idle
+    };
+    const configValues = mustache.render(template, query);
     RED.nodes.createNode(this, n);
-    node.name = n.name;
-    node.host = n.host;
-    node.port = n.port;
-    node.database = n.database;
-    node.ssl = n.ssl;
+    node.name = configValues.name;
+    node.host = configValues.host;
+    node.port = configValues.port;
+    node.database = configValues.database;
+    node.ssl = configValues.ssl;
+    node.max = configValues.max;
+    node.min = configValues.min;
+    node.idle = configValues.idle;
     if (node.credentials) {
-      node.user = node.credentials.user;
-      node.password = node.credentials.password;
+      node.user = getObjectValue(config, node.credentials.user) || node.credentials.user;
+      node.password = getObjectValue(config, node.credentials.password) || node.credentials.password;
     }
-
     class Pool extends PgPool {
       constructor() {
         if (!poolInstance) {
