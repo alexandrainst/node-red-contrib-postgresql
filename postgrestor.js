@@ -22,16 +22,7 @@ module.exports = function(RED) {
     let poolInstance = null;
     const node = this;
     const config = node.context().global.config;
-    const template = '{' +
-      'host: {{host}},' +
-      'port: {{port}},' +
-      'database: {{database}},' +
-      'ssl: {{ssl}},' +
-      'max: {{min}},' +
-      'min: {{max}},' +
-      'idleTimeoutMillis: {{iddle}}' +
-      '}';
-    const query = {
+    const configValues = {
       host: getObjectValue(config, n.host) || n.host,
       port: getObjectValue(config, n.port) || n.port,
       database: getObjectValue(config, n.database) || n.database,
@@ -40,7 +31,6 @@ module.exports = function(RED) {
       min: getObjectValue(config, n.min) || n.min,
       idle: getObjectValue(config, n.idle) || n.idle
     };
-    const configValues = mustache.render(template, query);
     RED.nodes.createNode(this, n);
     node.name = configValues.name;
     node.host = configValues.host;
