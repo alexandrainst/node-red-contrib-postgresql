@@ -99,7 +99,10 @@ module.exports = function(RED) {
             client.release();
           } catch (error) {
             node.error(error);
-            client.release();
+            msg.err = error;
+          }
+          finally {
+            node.send(msg);
           }
         }
       );
