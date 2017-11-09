@@ -8,11 +8,13 @@ module.exports = function(RED) {
 
   function getObjectValue(obj, str) {
     try {
-      return str.split(/\.|\[/g).map(function (crumb) {
-        return crumb.replace(/\]$/, '').trim().replace(/^(["'])((?:(?!\1)[^\\]|\\.)*?)\1$/, (match, quote, str) => str.replace(/\\(\\)?/g, "$1"));
-      }).reduce(function (obj, prop) {
-        return obj ? obj[prop] : undefined;
-      }, obj);
+      return str.split(/\.|\[/g).map((crumb) => crumb.replace(/\]$/, '')
+        .trim()
+        .replace(
+          /^(["'])((?:(?!\1)[^\\]|\\.)*?)\1$/,
+          (match, quote, str) => str.replace(/\\(\\)?/g, '$1')
+        )
+      ).reduce((obj, prop) => obj ? obj[prop] : undefined, obj);
     } catch (err) {
       return false;
     }
@@ -41,8 +43,10 @@ module.exports = function(RED) {
     node.min = configValues.min;
     node.idle = configValues.idle;
     if (node.credentials) {
-      node.user = getObjectValue(config, node.credentials.user) || node.credentials.user;
-      node.password = getObjectValue(config, node.credentials.password) || node.credentials.password;
+      node.user = getObjectValue(config, node.credentials.user)
+        || node.credentials.user;
+      node.password = getObjectValue(config, node.credentials.password)
+        || node.credentials.password;
     }
     class Pool extends PgPool {
       constructor() {
@@ -96,13 +100,12 @@ module.exports = function(RED) {
               mustache.render(config.query, template)
             );
             node.send(msg);
-            client.release();
           } catch (error) {
             node.error(error);
             msg.err = error;
-          }
-          finally {
+          } finally {
             node.send(msg);
+            client.release();
           }
         }
       );
