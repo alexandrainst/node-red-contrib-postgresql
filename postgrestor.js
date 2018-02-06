@@ -6,47 +6,48 @@ module.exports = function(RED) {
 
   let pgPool = null;
 
-  function getObjectValue(obj, str) {
-    try {
-      return str.split(/\.|\[/g).map((crumb) => crumb.replace(/\]$/, '')
-        .trim()
-        .replace(
-          /^(["'])((?:(?!\1)[^\\]|\\.)*?)\1$/,
-          (match, quote, str) => str.replace(/\\(\\)?/g, '$1')
-        )
-      ).reduce((obj, prop) => obj ? obj[prop] : undefined, obj);
-    } catch (err) {
-      return false;
-    }
-  };
-
   function PostgresDBNode(n) {
     let poolInstance = null;
-    const node = this;
-    const config = node.context().global.config;
-    const configValues = {
-      host: getObjectValue(config, n.host) || n.host,
-      port: getObjectValue(config, n.port) || n.port,
-      database: getObjectValue(config, n.database) || n.database,
-      ssl: getObjectValue(config, 'postgres.ssl') || n.ssl,
-      max: getObjectValue(config, n.max) || n.max,
-      min: getObjectValue(config, n.min) || n.min,
-      idle: getObjectValue(config, n.idle) || n.idle
-    };
     RED.nodes.createNode(this, n);
-    node.name = configValues.name;
-    node.host = configValues.host;
-    node.port = configValues.port;
-    node.database = configValues.database;
-    node.ssl = configValues.ssl;
-    node.max = configValues.max;
-    node.min = configValues.min;
-    node.idle = configValues.idle;
+    const _getField = (kind, key) => {
+      let value = false;
+      const node = this;
+      switch (kind) {
+        case 'flow': {
+          value = node.context().flow.get(key);
+          break;
+        }
+        case 'global': {
+          value = node.context().global.get(key);
+          break;
+        }
+        case 'num': {
+          value = parseInt(key);
+          break;
+        }
+        case 'bool': {
+          value = Boolean(key);
+          break;
+        }
+        default: {
+          value = key;
+          break;
+        }
+      }
+      return value;
+    };
+    const node = this;
+    node.name = n.name;
+    node.host = _getField(n.hostFieldType, n.host);
+    node.port = _getField(n.portFieldType, n.port);
+    node.database = _getField(n.databaseFieldType, n.database);
+    node.ssl = _getField(n.sslFieldType, n.ssl);
+    node.max = _getField(n.maxFieldType, n.max);
+    node.min = _getField(n.minFieldType, n.min);
+    node.idle = _getField(n.idleFieldType, n.idle);
     if (node.credentials) {
-      node.user = getObjectValue(config, node.credentials.user)
-        || node.credentials.user;
-      node.password = getObjectValue(config, node.credentials.password)
-        || node.credentials.password;
+      node.user = _getField(n.userFieldType, node.credentials.user);
+      node.password = _getField(n.passwordFieldType, node.credentials.password);
     }
     class Pool extends PgPool {
       constructor() {

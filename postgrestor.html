@@ -12,40 +12,49 @@
       <div class="form-row">
         <label for="node-config-input-host"><i class="fa fa-server"></i> <span>Host</span></label>
         <input class="input-append-left" type="text" id="node-config-input-host" placeholder="localhost" style="width: 40%;">
+        <input type="hidden" id="node-config-input-hostFieldType">
         <label for="node-config-input-port" style="margin-left: 10px; width: 30px; "> <span>Port</span></label>
         <input type="text" id="node-config-input-port" placeholder="5432" style="width:135px">
+        <input type="hidden" id="node-config-input-portFieldType">
       </div>
       <div class="form-row">
         <label for="node-config-input-database"><i class="fa fa-database"></i> <span>Database</span></label>
         <input type="text" id="node-config-input-database" placeholder="postgres">
+        <input type="hidden" id="node-config-input-databaseFieldType">
       </div>
       <div class="form-row">
-        <input type="checkbox" id="node-config-input-ssl" style="display: inline-block; width: auto; vertical-align: top;">
         <label for="node-config-input-ssl" style="width: auto;"> <span>SSL</span></label>
+        <input type="text" id="node-config-input-ssl" style="display: inline-block; width: auto; vertical-align: top;">
+        <input type="hidden" id="node-config-input-sslFieldType">
       </div>
     </div>
     <div id="postgrestor-config-tab-security" style="display: none;">
       <div class="form-row">
         <label for="node-config-input-user"><i class="fa fa-user"></i> <span>User</span></label>
-        <input type="text" id="node-config-input-user" placeholder="postgres">
+        <input type="text" id="node-config-input-user" placeholder="postgres" style="width: 40%;">
+        <input type="hidden" id="node-config-input-userFieldType">
       </div>
       <div class="form-row">
         <label for="node-config-input-password"><i class="fa fa-lock"></i> <span>Password</span></label>
-        <input type="password" id="node-config-input-password" placeholder="postgres">
+        <input type="password" id="node-config-input-password" placeholder="postgres" style="width: 40%;">
+        <input type="hidden" id="node-config-input-passwordFieldType">
       </div>
     </div>
     <div id="postgrestor-config-tab-pool" style="display: none;">
       <div class="form-row">
         <label title="Maximum number of physical database connections that this connection pool can contain." for="node-config-input-max" style="width: 150px;"><i class="fa fa-thermometer-full"></i> <span>Maximum size</span></label>
-        <input type="text" id="node-config-input-max" placeholder="10">
+        <input type="text" id="node-config-input-max" placeholder="10" style="width: 40%;">
+        <input type="hidden" id="node-config-input-maxFieldType">
       </div>
       <div class="form-row">
         <label title="Minimum number of physical database connections that this connection pool can contain." for="node-config-input-min" style="width: 150px;"><i class="fa fa-thermometer-empty"></i> <span>Minimum size</span></label>
-        <input type="text" id="node-config-input-lin" placeholder="1">
+        <input type="text" id="node-config-input-lin" placeholder="1" style="width: 40%;">
+        <input type="hidden" id="node-config-input-linFieldType">
       </div>
       <div class="form-row">
         <label for="node-config-input-idle" style="width: 150px;"><i class="fa fa-hourglass-half"></i> <span>Idle Timeout</span></label>
-        <input type="text" id="node-config-input-idle" placeholder="1000 (Milliseconds)">
+        <input type="text" id="node-config-input-idle" placeholder="1000 (Milliseconds)" style="width: 40%;">
+        <input type="hidden" id="node-config-input-idleFieldType">
       </div>
     </div>
   </div>
@@ -62,26 +71,47 @@ RED.nodes.registerType('postgresDB', {
       value: "127.0.0.1",
       required: true
     },
+    hostFieldType: {
+      value: "str"
+    },
     port: {
       value: 5432,
       required: true
+    },
+    portType: {
+      value: "num"
     },
     database: {
       value: "postgres",
       required: true
     },
+    databaseFieldType: {
+      value: "str"
+    },
     ssl: {
       value: false
+    },
+    sslFieldType: {
+      value: "bool"
     },
     max: {
       value: 10
     },
+    maxFieldType: {
+      value: "num"
+    },
     min: {
       value: 1
     },
+    minFieldType: {
+      value: "num"
+    },
     idle: {
       value: 1000
-    }
+    },
+    idleFieldType: {
+      value: "num"
+    },
   },
   credentials: {
     user: {
@@ -119,6 +149,70 @@ RED.nodes.registerType('postgresDB', {
     tabs.addTab({
       id: "postgrestor-config-tab-pool",
       label: "Pool"
+    });
+    $("#node-config-input-host").typedInput({
+        default: 'str',
+        types: ['str','flow','global'],
+        typeField: $("#node-config-input-hostFieldType")
+    });
+    $("#node-config-input-port").typedInput({
+        default: 'num',
+        types: ['num','flow','global'],
+        typeField: $("#node-config-input-portFieldType")
+    });
+    $("#node-config-input-database").typedInput({
+        default: 'str',
+        types: ['str','flow','global'],
+        typeField: $("#node-config-input-databaseFieldType")
+    });
+    $("#node-config-input-ssl").typedInput({
+        default: 'bool',
+        types: ['bool','flow','global'],
+        typeField: $("#node-config-input-sslFieldType")
+    });
+    $("#node-config-input-user").typedInput({
+        default: 'str',
+        types: ['str','flow','global'],
+        typeField: $("#node-config-input-userFieldType")
+    });
+    $("#node-config-input-password")
+      .typedInput({
+          default: 'str',
+          types: ['str','flow','global'],
+          typeField: $("#node-config-input-passwordFieldType")
+      })
+      .on('change', function(type, value) {
+        const e = $(this);
+        switch (value) {
+          case 'global':
+          case 'flow': {
+            e.attr('type', 'text');
+            break;
+          }
+          case 'str': {
+            e.attr('type', 'password');
+            break;
+          }
+          default: {
+            // Nothing to do here!!
+            break;
+          }
+        }
+      });
+    $("#node-config-input-max").typedInput({
+        default: 'num',
+        types: ['num','flow','global'],
+        typeField: $("#node-config-input-maxFieldType")
+    });
+    $("#node-config-input-lin").typedInput({
+        default: 'num',
+        types: ['num','flow','global'],
+        typeField: $("#node-config-input-linFieldType")
+    });
+    $("#node-config-input-idle").typedInput({
+        default: 'num',
+        types: ['num','flow','global'],
+        typeField: $("#node-config-input-idleFieldType")
     });
   }
 });
