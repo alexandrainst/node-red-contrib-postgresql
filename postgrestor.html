@@ -1,8 +1,10 @@
-<!--  Created by Hamza Jalouaja -->
 <script type="text/x-red" data-template-name="postgresDB">
   <div class="form-row">
-    <label for="node-config-input-name"><i class="fa fa-tag"></i> <span>Name</span></label>
-    <input type="text" id="node-config-input-name" placeholder="name">
+    <label for="node-config-input-name">
+      <i class="fa fa-tag"></i> 
+      <span data-i18n="postgrestor.label.name"></span>
+    </label>
+    <input type="text" id="node-config-input-name" data-i18n="[placeholder]postgrestor.placeholder.name">
   </div>
   <div class="form-row">
     <ul style="background: #fff; min-width: 600px; margin-bottom: 20px;" id="postgrestor-config-tabs"></ul>
@@ -10,52 +12,77 @@
   <div id="postgrestor-config-tabs-content" style="min-height: 170px;">
     <div id="postgrestor-config-tab-connection" style="display: none;">
       <div class="form-row">
-        <label for="node-config-input-host"><i class="fa fa-server"></i> <span>Host</span></label>
-        <input class="input-append-left" type="text" id="node-config-input-host" placeholder="localhost" style="width: 80%;">
+        <label for="node-config-input-host">
+          <i class="fa fa-server"></i>
+          <span data-i18n="postgrestor.label.host"></span>
+        </label>
+        <input type="text" id="node-config-input-host" data-i18n="[placeholder]postgrestor.placeholder.host" style="width: 80%;">
         <input type="hidden" id="node-config-input-hostFieldType">
       </div>
       <div class="form-row">
-          <label for="node-config-input-port" <span>Port</span></label>
-          <input type="text" id="node-config-input-port" placeholder="5432" style="width: 80%;">
+          <label for="node-config-input-port"> 
+            <span data-i18n="postgrestor.label.port"></span>
+          </label>
+          <input type="text" id="node-config-input-port" data-i18n="[placeholder]postgrestor.placeholder.port" style="width: 80%;">
           <input type="hidden" id="node-config-input-portFieldType">
         </div>
       <div class="form-row">
-        <label for="node-config-input-database"><i class="fa fa-database"></i> <span>Database</span></label>
-        <input type="text" id="node-config-input-database" placeholder="postgres" style="width: 80%;">
+        <label for="node-config-input-database">
+          <i class="fa fa-database"></i>
+          <span data-i18n="postgrestor.label.database"></span>
+        </label>
+        <input type="text" id="node-config-input-database" data-i18n="[placeholder]postgrestor.placeholder.database" style="width: 80%;">
         <input type="hidden" id="node-config-input-databaseFieldType">
       </div>
       <div class="form-row">
-        <label for="node-config-input-ssl" style="width: auto;margin-right: 72px;"> <span>SSL</span></label>
+        <label for="node-config-input-ssl" style="width: auto;margin-right: 72px;">
+          <span data-i18n="postgrestor.label.ssl"></span>
+        </label>
         <input type="text" id="node-config-input-ssl" style="display: inline-block; width: auto; vertical-align: top;">
         <input type="hidden" id="node-config-input-sslFieldType">
       </div>
     </div>
     <div id="postgrestor-config-tab-security" style="display: none;">
       <div class="form-row">
-        <label for="node-config-input-user"><i class="fa fa-user"></i> <span>User</span></label>
-        <input type="text" id="node-config-input-user" placeholder="postgres" style="width: 80%;">
+        <label for="node-config-input-user">
+          <i class="fa fa-user"></i> 
+          <span data-i18n="postgrestor.label.user"></span>
+        </label>
+        <input type="text" id="node-config-input-user" data-i18n="[placeholder]postgrestor.placeholder.user" style="width: 80%;">
         <input type="hidden" id="node-config-input-userFieldType">
       </div>
       <div class="form-row">
-        <label for="node-config-input-password"><i class="fa fa-lock"></i> <span>Password</span></label>
-        <input type="password" id="node-config-input-password" placeholder="postgres" style="width: 80%;">
+        <label for="node-config-input-password">
+          <i class="fa fa-lock"></i> 
+          <span data-i18n="postgrestor.label.password"></span>
+        </label>
+        <input type="password" id="node-config-input-password" data-i18n="[placeholder]postgrestor.placeholder.password" style="width: 80%;">
         <input type="hidden" id="node-config-input-passwordFieldType">
       </div>
     </div>
     <div id="postgrestor-config-tab-pool" style="display: none;">
       <div class="form-row">
-        <label title="Maximum number of physical database connections that this connection pool can contain." for="node-config-input-max" style="width: 150px;"><i class="fa fa-thermometer-full"></i> <span>Maximum size</span></label>
-        <input type="text" id="node-config-input-max" placeholder="10" style="width: 60%;">
+        <label data-i18n="[title]postgrestor.title.max" for="node-config-input-max" style="width: 150px;">
+          <i class="fa fa-thermometer-full"></i> 
+          <span data-i18n="postgrestor.label.max"></span>
+        </label>
+        <input type="text" id="node-config-input-max" data-i18n="[placeholder]postgrestor.placeholder.max" style="width: 60%;">
         <input type="hidden" id="node-config-input-maxFieldType">
       </div>
       <div class="form-row">
-        <label title="Minimum number of physical database connections that this connection pool can contain." for="node-config-input-min" style="width: 150px;"><i class="fa fa-thermometer-empty"></i> <span>Minimum size</span></label>
-        <input type="text" id="node-config-input-lin" placeholder="1" style="width: 60%;">
+        <label data-i18n="[title]postgrestor.title.min" for="node-config-input-min" style="width: 150px;">
+          <i class="fa fa-thermometer-empty"></i> 
+          <span data-i18n="postgrestor.label.min"></span>
+        </label>
+        <input type="text" id="node-config-input-lin" data-i18n="[placeholder]postgrestor.placeholder.min" style="width: 60%;">
         <input type="hidden" id="node-config-input-linFieldType">
       </div>
       <div class="form-row">
-        <label for="node-config-input-idle" style="width: 150px;"><i class="fa fa-hourglass-half"></i> <span>Idle Timeout</span></label>
-        <input type="text" id="node-config-input-idle" placeholder="1000 (Milliseconds)" style="width: 60%;">
+        <label for="node-config-input-idle" style="width: 150px;">
+          <i class="fa fa-hourglass-half"></i> 
+          <span data-i18n="postgrestor.label.idle"></span>
+        </label>
+        <input type="text" id="node-config-input-idle" data-i18n="[placeholder]postgrestor.placeholder.idle" style="width: 60%;">
         <input type="hidden" id="node-config-input-idleFieldType">
       </div>
     </div>
@@ -131,7 +158,7 @@ RED.nodes.registerType('postgresDB', {
       required: true
     },
     password: {
-      type: "password",
+      type: "text",
       required: true
     }
   },
@@ -154,15 +181,15 @@ RED.nodes.registerType('postgresDB', {
     });
     tabs.addTab({
       id: "postgrestor-config-tab-connection",
-      label: "Connection"
+      label: this._('postgrestor.tab.connection')
     });
     tabs.addTab({
       id: "postgrestor-config-tab-security",
-      label: "Security"
+      label: this._('postgrestor.tab.security')
     });
     tabs.addTab({
       id: "postgrestor-config-tab-pool",
-      label: "Pool"
+      label: this._('postgrestor.tab.pool')
     });
     $("#node-config-input-host").typedInput({
         default: 'str',
@@ -197,7 +224,8 @@ RED.nodes.registerType('postgresDB', {
       })
       .on('change', function(type, value) {
         const e = $(this);
-        switch (value) {
+        const kind = value === true ? e.typedInput('type') : value;
+        switch (kind) {
           case 'global':
           case 'flow': {
             e.attr('type', 'text');
@@ -233,18 +261,29 @@ RED.nodes.registerType('postgresDB', {
 </script>
 <script type="text/x-red" data-template-name="postgrestor">
   <div class="form-row">
-    <label for="node-input-name"><i class="icon-tag"></i> <span>Name</span></label>
-    <input type="text" id="node-input-name" placeholder="name"> </div>
+    <label for="node-input-name">
+      <i class="icon-tag"></i> 
+      <span data-i18n="postgrestor.label.name"></span>
+    </label>
+    <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name"> </div>
   <div class="form-row">
-    <label for="node-input-postgresDB"><i class="fa fa-server"></i> <span>Server</span></label>
+    <label for="node-input-postgresDB">
+      <i class="fa fa-server"></i> 
+      <span data-i18n="postgrestor.label.server"></span>
+    </label>
     <input type="text" id="node-input-postgresDB">
   </div>
   <div class="form-row">
     <input type="checkbox" id="node-input-output" style="display: inline-block; width: auto; vertical-align: top;">
-    <label for="node-input-output" style="width: auto;"> <span>Receive output</span></label>
+    <label for="node-input-output" style="width: auto;"> 
+      <span data-i18n="postgrestor.label.receiveOuput"></span>
+    </label>
   </div>
   <div class="form-row" style="position: relative; margin-bottom: 0px;">
-    <label for="node-input-query"><i class="fa fa-file-code-o"></i> <span>Query</span></label>
+    <label for="node-input-query">
+      <i class="fa fa-file-code-o"></i> 
+      <span data-i18n="postgrestor.label.query"></span>
+    </label>
     <input type="hidden" id="node-input-query" autofocus="autofocus"> </div>
   <div class="form-row node-text-editor-row">
     <div style="height: 300px; min-height: 150px;" class="node-text-editor" id="node-input-editor"></div>
@@ -295,28 +334,4 @@ RED.nodes.registerType("postgrestor", {
     delete this.editor;
   }
 });
-</script>
-<script type="text/x-red" data-help-name="postgrestor">
-  <p>Postgrestor 👾 is a Node-RED node allowing basic access to Postgres 🐘 database.</p>
-  <p>Postgrestor sets up a console to execute queries against the configured database.
-  </p>
-  <p><code>msg.payload</code> will contain the result object of the query. It has the following properties:
-  </p>
-  <ul>
-    <li> <i>command</i>: The sql command that was executed (e.g. "SELECT", "UPDATE", etc.)</li>
-    <li> <i>rowCount</i>: The number of rows affected by the SQL statement</li>
-    <li> <i>oid</i>: The oid returned</li>
-    <li> <i>rows</i>: An array of rows</li>
-  </ul>
-  <p>Postgres implements a template engine allowing parameterized queries:</p>
-  <pre>
-  /* INTEGER id COLUMN */
-  SELECT *
-  FROM table
-  WHERE id = {{ msg.id }}
-  /* VARCHAR id COLUMN*/
-  SELECT *
-  FROM table
-  WHERE id = '{{ msg.id }}'
-  </pre>
 </script>

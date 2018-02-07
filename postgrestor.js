@@ -84,7 +84,7 @@ module.exports = function(RED) {
   RED.nodes.registerType('postgresDB', PostgresDBNode, {
     credentials: {
       user: {type: 'text'},
-      password: {type: 'password'}
+      password: {type: 'text'}
     }
   });
 

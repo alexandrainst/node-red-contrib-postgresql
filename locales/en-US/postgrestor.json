@@ -1,0 +1,39 @@
+{
+    "postgrestor": {
+        "label": {
+            "name": "Name",
+            "host": "Host",
+            "port": "Port",
+            "database": "Database",
+            "ssl": "SSL",
+            "user": "User",
+            "password": "Password",
+            "min": "Minimum size",
+            "max": "Maximum size",
+            "idle": "Idle Timeout",
+            "server": "Server",
+            "query": "Query",
+            "receiveOuput": "Receive output"
+        },
+        "placeholder": {
+            "name": "dbConnection",
+            "host": "127.0.0.1",
+            "port": "5432",
+            "database": "dbExample",
+            "user": "dbUser",
+            "password": "dbPassword",
+            "min": "10",
+            "max": "1",
+            "idle": "1000 (Milliseconds)"
+        },
+        "tab": {
+            "connection": "Connection",
+            "security": "Security",
+            "pool": "Pool"
+        },
+        "title": {
+            "max": "Maximum number of physical database connections that this connection pool can contain.",
+            "min": "Minimum number of physical database connections that this connection pool can contain."
+        }        
+    }
+}
