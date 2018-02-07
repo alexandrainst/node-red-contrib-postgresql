@@ -26,7 +26,7 @@ module.exports = function(RED) {
           break;
         }
         case 'bool': {
-          value = Boolean(key);
+          value = JSON.parse(key);
           break;
         }
         default: {
@@ -39,16 +39,26 @@ module.exports = function(RED) {
     const node = this;
     node.name = n.name;
     node.host = _getField(n.hostFieldType, n.host);
+    node.hostFieldType = n.hostFieldType;
     node.port = _getField(n.portFieldType, n.port);
+    node.portFieldType = n.portFieldType;
     node.database = _getField(n.databaseFieldType, n.database);
+    node.databaseFieldType = n.databaseFieldType;
     node.ssl = _getField(n.sslFieldType, n.ssl);
+    node.sslFieldType = n.sslFieldType;
     node.max = _getField(n.maxFieldType, n.max);
+    node.maxFieldType = n.maxFieldType;
     node.min = _getField(n.minFieldType, n.min);
+    node.minFieldType = n.minFieldType;
     node.idle = _getField(n.idleFieldType, n.idle);
+    node.idleFieldType = n.idleFieldType;
     if (node.credentials) {
       node.user = _getField(n.userFieldType, node.credentials.user);
+      node.userFieldType = n.userFieldType;
       node.password = _getField(n.passwordFieldType, node.credentials.password);
+      node.passwordFieldType = n.passwordFieldType;
     }
+    console.log(node);
     class Pool extends PgPool {
       constructor() {
         if (!poolInstance) {
