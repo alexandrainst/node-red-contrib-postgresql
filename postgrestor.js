@@ -103,14 +103,11 @@ module.exports = function(RED) {
         function* () {
           let client = yield pgPool
             .connect()
-            .catch((error) => {
-            node.error(error);
-            });
+            .catch((error) => node.error(error));
           try {
             msg.payload = yield client.query(
               mustache.render(config.query, template)
             );
-            node.send(msg);
           } catch (error) {
             node.error(error);
             msg.err = error;
