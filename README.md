@@ -1,3 +1,12 @@
+[![CircleCI](https://img.shields.io/circleci/project/github/ymedlop/node-red-contrib-postgrestor.svg)](https://circleci.com/gh/ymedlop/node-red-contrib-postgrestor/tree/master)
+[![NPM version](https://badge.fury.io/js/node-red-contrib-postgrestor.svg)](http://badge.fury.io/js/node-red-contrib-postgrestor)
+[![dependencies Status](https://david-dm.org/ymedlop/node-red-contrib-postgrestor/status.svg)](https://david-dm.org/ymedlop/node-red-contrib-postgrestor)
+[![devDependencies Status](https://david-dm.org/ymedlop/node-red-contrib-postgrestor/dev-status.svg)](https://david-dm.org/ymedlop/node-red-contrib-postgrestor?type=dev)
+[![npm](https://img.shields.io/npm/dw/node-red-contrib-postgrestor.svg)](https://www.npmjs.com/package/node-red-contrib-postgrestor)
+[![npm](https://img.shields.io/npm/dm/node-red-contrib-postgrestor.svg)](https://www.npmjs.com/package/node-red-contrib-postgrestor)
+[![npm](https://img.shields.io/npm/dy/node-red-contrib-postgrestor.svg)](https://www.npmjs.com/package/node-red-contrib-postgrestor)
+[![npm](https://img.shields.io/npm/dt/node-red-contrib-postgrestor.svg)](https://www.npmjs.com/package/node-red-contrib-postgrestor)
+
 # node-red-contrib-postgrestor
 Node-red-contrib-postgrestor :space_invader: is a [**Node-RED**](http://nodered.org/) node allowing basic access to [**Postgres**](https://www.postgresql.org/) :elephant: database.
 
