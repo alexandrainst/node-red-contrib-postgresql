@@ -1,5 +1,5 @@
 {
-  "name": "postgrestor",
+  "name": "node-red-contrib-postgrestor",
   "version": "0.0.2",
   "scripts": {
     "test": "eslint postgrestor.js"
@@ -17,7 +17,7 @@
   "license": "Apache",
   "repository": {
     "type": "git",
-    "url": "https://github.com/HySoaKa/node-red-contrib-postgrestor"
+    "url": "https://github.com/ymedlop/node-red-contrib-postgrestor"
   },
   "keywords": [
     "node-red",
