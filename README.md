@@ -45,7 +45,8 @@ You will need to restart Node-RED for it to pick-up [**node-red-contrib-postgres
 ## Screen shots
 <p align="center">
 <img src="http://i.imgur.com/D03T3vH.png" width="600">
-<img src="http://i.imgur.com/gXPpsxz.png" width="600">
+<img src="https://i.imgur.com/43qkUp5.png" width="600">
+<img src="https://i.imgur.com/lJjLJTN.png" width="600">
 <img src="http://i.imgur.com/WTpmbT5.png" width="600">
 <img src="http://i.imgur.com/jR0Z08P.png" width="600">
 </p>
