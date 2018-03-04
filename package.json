@@ -2,6 +2,7 @@
   "name": "node-red-contrib-postgrestor",
   "version": "0.0.2",
   "scripts": {
+    "ci-publish": "ci-publish",
     "test": "eslint postgrestor.js"
   },
   "description": "Yet another Node-RED node to query PostgreSQL",
