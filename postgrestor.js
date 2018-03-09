@@ -67,22 +67,21 @@ module.exports = function(RED) {
     node.topic = config.topic;
     node.config = RED.nodes.getNode(config.postgresDB);
     node.on('input', (msg) => {
-      const template = {msg};
-      let client = false;
-      (async () => {
+      const query = mustache.render(config.query, {msg});
+      const pool = new Pool({
+        user: node.config.user,
+        password: node.config.password,
+        host: node.config.host,
+        port: node.config.port,
+        database: node.config.database,
+        ssl: node.config.ssl,
+        max: node.config.max,
+        min: node.config.min,
+        idleTimeoutMillis: node.config.idle
+      });
+      const asyncQuery = async () => {
+        let client = false;
         try {
-          const query = mustache.render(config.query, template);
-          const pool = new Pool({
-            user: node.config.user,
-            password: node.config.password,
-            host: node.config.host,
-            port: node.config.port,
-            database: node.config.database,
-            ssl: node.config.ssl,
-            max: node.config.max,
-            min: node.config.min,
-            idleTimeoutMillis: node.config.idle
-          });
           client = await pool.connect();
           msg.payload = await client.query(query);
         } catch (error) {
@@ -92,7 +91,8 @@ module.exports = function(RED) {
           node.send(msg);
           client && client.release();
         }
-      })();
+      };
+      asyncQuery();
     });
     node.on('close', () => node.status({}));
   }
