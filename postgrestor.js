@@ -9,23 +9,18 @@ module.exports = function(RED) {
       switch (kind) {
         case 'flow': {
           return node.context().flow.get(value);
-          break;
         }
         case 'global': {
           return node.context().global.get(value);
-          break;
         }
         case 'num': {
           return parseInt(value);
-          break;
         }
         case 'bool': {
           return JSON.parse(value);
-          break;
         }
         default: {
           return value;
-          break;
         }
       }
     };
