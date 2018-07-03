@@ -45,21 +45,13 @@ module.exports = function(RED) {
     node.minFieldType = n.minFieldType;
     node.idle = _getField( n.idleFieldType, n.idle);
     node.idleFieldType = n.idleFieldType;
-    // Check credentials
-    if (node.credentials) {
-      node.user = _getField(n.userFieldType, node.credentials.user);
-      node.userFieldType = n.userFieldType;
-      node.password = _getField(n.passwordFieldType, node.credentials.password);
-      node.passwordFieldType = n.passwordFieldType;
-    }
+    node.user = _getField(n.userFieldType, node.user);
+    node.userFieldType = n.userFieldType;
+    node.password = _getField(n.passwordFieldType, node.password);
+    node.passwordFieldType = n.passwordFieldType;
   }
 
-  RED.nodes.registerType('postgresDB', PostgresDBNode, {
-    credentials: {
-      user: {type: 'text'},
-      password: {type: 'text'}
-    }
-  });
+  RED.nodes.registerType('postgresDB', PostgresDBNode);
 
   function PostgrestorNode(config) {
     const node = this;

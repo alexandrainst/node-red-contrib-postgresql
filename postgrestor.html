@@ -145,26 +145,24 @@ RED.nodes.registerType('postgresDB', {
     idleFieldType: {
       value: "num"
     },
+    user: {
+      type: "text",
+      required: true
+    },
     userFieldType: {
       value: "str"
+    },
+    password: {
+      type: "text",
+      required: true
     },
     passwordFieldType: {
       value: "str"
     }
   },
-  credentials: {
-    user: {
-      type: "text",
-      required: true
-    },
-    password: {
-      type: "text",
-      required: true
-    }
-  },
   label: function() {
     if(!this.name) {
-      this.name = this.credentials.user + "@" + this.host + ":" + this.port + "/" + this.database;
+      this.name = this.user + "@" + this.host + ":" + this.port + "/" + this.database;
     }
     return this.name;
   },
