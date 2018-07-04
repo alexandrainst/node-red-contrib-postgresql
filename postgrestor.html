@@ -89,173 +89,173 @@
   </div>
 </script>
 <script type="text/javascript">
-RED.nodes.registerType('postgresDB', {
-  category: "config",
-  color: "#336791",
-  defaults: {
-    name: {
-      value: ""
-    },
-    host: {
-      value: "127.0.0.1",
-      required: true
-    },
-    hostFieldType: {
-      value: "str"
-    },
-    port: {
-      value: 5432,
-      required: true
-    },
-    portFieldType: {
-      value: "num"
-    },
-    database: {
-      value: "postgres",
-      required: true
-    },
-    databaseFieldType: {
-      value: "str"
-    },
-    ssl: {
-      value: false,
-      required: true
-    },
-    sslFieldType: {
-      value: "bool"
-    },
-    max: {
-      value: 10,
-      required: true
-    },
-    maxFieldType: {
-      value: "num"
-    },
-    min: {
-      value: 1,
-      required: true
-    },
-    minFieldType: {
-      value: "num"
-    },
-    idle: {
-      value: 1000,
-      required: true
-    },
-    idleFieldType: {
-      value: "num"
-    },
-    user: {
-      value: "str",
-      required: true
-    },
-    userFieldType: {
-      value: "str"
-    },
-    password: {
-      value: "str",
-      required: true
-    },
-    passwordFieldType: {
-      value: "str"
-    }
-  },
-  label: function() {
-    if(!this.name) {
-      this.name = this.user + "@" + this.host + ":" + this.port + "/" + this.database;
-    }
-    return this.name;
-  },
-  labelStyle: function() {
-    return this.name ? "node_label_italic" : "";
-  },
-  oneditprepare: function() {
-    const tabs = RED.tabs.create({
-      id: "postgrestor-config-tabs",
-      onchange: function(tab) {
-        $("#postgrestor-config-tabs-content").children().hide();
-        $("#" + tab.id).show();
+  RED.nodes.registerType('postgresDB', {
+    category: "config",
+    color: "#336791",
+    defaults: {
+      name: {
+        value: ""
+      },
+      host: {
+        value: "127.0.0.1",
+        required: true
+      },
+      hostFieldType: {
+        value: "str"
+      },
+      port: {
+        value: 5432,
+        required: true
+      },
+      portFieldType: {
+        value: "num"
+      },
+      database: {
+        value: "postgres",
+        required: true
+      },
+      databaseFieldType: {
+        value: "str"
+      },
+      ssl: {
+        value: false,
+        required: true
+      },
+      sslFieldType: {
+        value: "bool"
+      },
+      max: {
+        value: 10,
+        required: true
+      },
+      maxFieldType: {
+        value: "num"
+      },
+      min: {
+        value: 1,
+        required: true
+      },
+      minFieldType: {
+        value: "num"
+      },
+      idle: {
+        value: 1000,
+        required: true
+      },
+      idleFieldType: {
+        value: "num"
+      },
+      user: {
+        value: "",
+        required: true
+      },
+      userFieldType: {
+        value: "str"
+      },
+      password: {
+        value: "",
+        required: true
+      },
+      passwordFieldType: {
+        value: "str"
       }
-    });
-    tabs.addTab({
-      id: "postgrestor-config-tab-connection",
-      label: this._('postgrestor.tab.connection')
-    });
-    tabs.addTab({
-      id: "postgrestor-config-tab-security",
-      label: this._('postgrestor.tab.security')
-    });
-    tabs.addTab({
-      id: "postgrestor-config-tab-pool",
-      label: this._('postgrestor.tab.pool')
-    });
-    $("#node-config-input-host").typedInput({
-        default: 'str',
-        types: ['str','flow','global'],
-        typeField: $("#node-config-input-hostFieldType")
-    });
-    $("#node-config-input-port").typedInput({
-        default: 'num',
-        types: ['num','flow','global'],
-        typeField: $("#node-config-input-portFieldType")
-    });
-    $("#node-config-input-database").typedInput({
-        default: 'str',
-        types: ['str','flow','global'],
-        typeField: $("#node-config-input-databaseFieldType")
-    });
-    $("#node-config-input-ssl").typedInput({
-        default: 'bool',
-        types: ['bool','flow','global'],
-        typeField: $("#node-config-input-sslFieldType")
-    });
-    $("#node-config-input-user").typedInput({
-        default: 'str',
-        types: ['str','flow','global'],
-        typeField: $("#node-config-input-userFieldType")
-    });
-    $("#node-config-input-password")
-      .typedInput({
-          default: 'str',
-          types: ['str','flow','global'],
-          typeField: $("#node-config-input-passwordFieldType")
-      })
-      .on('change', function(type, value) {
-        const e = $(this);
-        const kind = value === true ? e.typedInput('type') : value;
-        switch (kind) {
-          case 'global':
-          case 'flow': {
-            e.attr('type', 'text');
-            break;
-          }
-          case 'str': {
-            e.attr('type', 'password');
-            break;
-          }
-          default: {
-            // Nothing to do here!!
-            break;
-          }
+    },
+    label: function () {
+      if (!this.name) {
+        this.name = this.user + "@" + this.host + ":" + this.port + "/" + this.database;
+      }
+      return this.name;
+    },
+    labelStyle: function () {
+      return this.name ? "node_label_italic" : "";
+    },
+    oneditprepare: function () {
+      const tabs = RED.tabs.create({
+        id: "postgrestor-config-tabs",
+        onchange: function (tab) {
+          $("#postgrestor-config-tabs-content").children().hide();
+          $("#" + tab.id).show();
         }
       });
-    $("#node-config-input-max").typedInput({
+      tabs.addTab({
+        id: "postgrestor-config-tab-connection",
+        label: this._('postgrestor.tab.connection')
+      });
+      tabs.addTab({
+        id: "postgrestor-config-tab-security",
+        label: this._('postgrestor.tab.security')
+      });
+      tabs.addTab({
+        id: "postgrestor-config-tab-pool",
+        label: this._('postgrestor.tab.pool')
+      });
+      $("#node-config-input-host").typedInput({
+        default: 'str',
+        types: ['str', 'flow', 'global'],
+        typeField: $("#node-config-input-hostFieldType")
+      });
+      $("#node-config-input-port").typedInput({
         default: 'num',
-        types: ['num','flow','global'],
+        types: ['num', 'flow', 'global'],
+        typeField: $("#node-config-input-portFieldType")
+      });
+      $("#node-config-input-database").typedInput({
+        default: 'str',
+        types: ['str', 'flow', 'global'],
+        typeField: $("#node-config-input-databaseFieldType")
+      });
+      $("#node-config-input-ssl").typedInput({
+        default: 'bool',
+        types: ['bool', 'flow', 'global'],
+        typeField: $("#node-config-input-sslFieldType")
+      });
+      $("#node-config-input-user").typedInput({
+        default: 'str',
+        types: ['str', 'flow', 'global'],
+        typeField: $("#node-config-input-userFieldType")
+      });
+      $("#node-config-input-password")
+        .typedInput({
+          default: 'str',
+          types: ['str', 'flow', 'global'],
+          typeField: $("#node-config-input-passwordFieldType")
+        })
+        .on('change', function (type, value) {
+          const e = $(this);
+          const kind = value === true ? e.typedInput('type') : value;
+          switch (kind) {
+            case 'global':
+            case 'flow': {
+              e.attr('type', 'text');
+              break;
+            }
+            case 'str': {
+              e.attr('type', 'password');
+              break;
+            }
+            default: {
+              // Nothing to do here!!
+              break;
+            }
+          }
+        });
+      $("#node-config-input-max").typedInput({
+        default: 'num',
+        types: ['num', 'flow', 'global'],
         typeField: $("#node-config-input-maxFieldType")
-    });
-    $("#node-config-input-lin").typedInput({
+      });
+      $("#node-config-input-lin").typedInput({
         default: 'num',
-        types: ['num','flow','global'],
+        types: ['num', 'flow', 'global'],
         typeField: $("#node-config-input-linFieldType")
-    });
-    $("#node-config-input-idle").typedInput({
+      });
+      $("#node-config-input-idle").typedInput({
         default: 'num',
-        types: ['num','flow','global'],
+        types: ['num', 'flow', 'global'],
         typeField: $("#node-config-input-idleFieldType")
-    });
-  }
-});
+      });
+    }
+  });
 </script>
 <script type="text/x-red" data-template-name="postgrestor">
   <div class="form-row">
@@ -288,48 +288,48 @@ RED.nodes.registerType('postgresDB', {
   </div>
 </script>
 <script type="text/javascript">
-RED.nodes.registerType("postgrestor", {
-  category: "storage",
-  color: '#336791',
-  defaults: {
-    name: {
-      value: ""
+  RED.nodes.registerType("postgrestor", {
+    category: "storage",
+    color: '#336791',
+    defaults: {
+      name: {
+        value: ""
+      },
+      query: {
+        value: "SELECT * FROM ;"
+      },
+      postgresDB: {
+        type: "postgresDB",
+        required: true
+      },
+      output: {
+        value: true
+      },
+      outputs: {
+        value: 1
+      }
     },
-    query: {
-      value: "SELECT * FROM ;"
+    inputs: 1,
+    icon: "postgres.png",
+    align: "left",
+    label: function () {
+      return this.name || "postgrestor";
     },
-    postgresDB: {
-      type: "postgresDB",
-      required: true
+    labelStyle: function () {
+      return this.name ? "node_label_italic" : "";
     },
-    output: {
-      value: true
+    oneditprepare: function () {
+      $("#node-input-output").prop("checked", this.output);
+      this.editor = RED.editor.createEditor({
+        id: 'node-input-editor',
+        mode: 'ace/mode/sql',
+        value: $("#node-input-query").val()
+      });
+      this.editor.focus();
     },
-    outputs: {
-      value: 1
+    oneditsave: function () {
+      $("#node-input-query").val(this.editor.getValue());
+      delete this.editor;
     }
-  },
-  inputs: 1,
-  icon: "postgres.png",
-  align: "left",
-  label: function() {
-    return this.name || "postgrestor";
-  },
-  labelStyle: function() {
-    return this.name ? "node_label_italic" : "";
-  },
-  oneditprepare: function() {
-    $("#node-input-output").prop("checked", this.output);
-    this.editor = RED.editor.createEditor({
-      id: 'node-input-editor',
-      mode: 'ace/mode/sql',
-      value: $("#node-input-query").val()
-    });
-    this.editor.focus();
-  },
-  oneditsave: function() {
-    $("#node-input-query").val(this.editor.getValue());
-    delete this.editor;
-  }
-});
+  });
 </script>
