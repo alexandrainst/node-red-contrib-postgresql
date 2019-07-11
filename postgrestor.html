@@ -74,8 +74,8 @@
           <i class="fa fa-thermometer-empty"></i> 
           <span data-i18n="postgrestor.label.min"></span>
         </label>
-        <input type="text" id="node-config-input-lin" data-i18n="[placeholder]postgrestor.placeholder.min" style="width: 60%;">
-        <input type="hidden" id="node-config-input-linFieldType">
+        <input type="text" id="node-config-input-min" data-i18n="[placeholder]postgrestor.placeholder.min" style="width: 60%;">
+        <input type="hidden" id="node-config-input-minFieldType">
       </div>
       <div class="form-row">
         <label for="node-config-input-idle" style="width: 150px;">
@@ -191,17 +191,17 @@
       });
       $("#node-config-input-host").typedInput({
         default: 'str',
-        types: ['str', 'flow', 'global'],
+        types: ['str', 'flow', 'global', 'env'],
         typeField: $("#node-config-input-hostFieldType")
       });
       $("#node-config-input-port").typedInput({
         default: 'num',
-        types: ['num', 'flow', 'global'],
+        types: ['num', 'flow', 'global', 'env'],
         typeField: $("#node-config-input-portFieldType")
       });
       $("#node-config-input-database").typedInput({
         default: 'str',
-        types: ['str', 'flow', 'global'],
+        types: ['str', 'flow', 'global', 'env'],
         typeField: $("#node-config-input-databaseFieldType")
       });
       $("#node-config-input-ssl").typedInput({
@@ -211,32 +211,22 @@
       });
       $("#node-config-input-user").typedInput({
         default: 'str',
-        types: ['str', 'flow', 'global'],
+        types: ['str', 'flow', 'global', 'env'],
         typeField: $("#node-config-input-userFieldType")
       });
       $("#node-config-input-password")
         .typedInput({
           default: 'str',
-          types: ['str', 'flow', 'global'],
+          types: ['str', 'flow', 'global', 'env'],
           typeField: $("#node-config-input-passwordFieldType")
         })
         .on('change', function (type, value) {
           const e = $(this);
           const kind = value === true ? e.typedInput('type') : value;
-          switch (kind) {
-            case 'global':
-            case 'flow': {
-              e.attr('type', 'text');
-              break;
-            }
-            case 'str': {
-              e.attr('type', 'password');
-              break;
-            }
-            default: {
-              // Nothing to do here!!
-              break;
-            }
+          if (kind === 'str') {
+            e.attr('type', 'password');
+          } else {
+            e.attr('type', 'text');
           }
         });
       $("#node-config-input-max").typedInput({
