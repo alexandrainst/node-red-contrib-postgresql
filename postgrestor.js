@@ -45,6 +45,17 @@ module.exports = function(RED) {
     node.userFieldType = n.userFieldType;
     node.password = n.password;
     node.passwordFieldType = n.passwordFieldType;
+    this.pgPool = new Pool({
+      user: getField(node, n.userFieldType, n.user),
+      password: getField(node, n.passwordFieldType, n.password),
+      host: getField(node, n.hostFieldType, n.host),
+      port: getField(node, n.portFieldType, n.port),
+      database: getField(node, n.databaseFieldType, n.database),
+      ssl: getField(node, n.sslFieldType, n.ssl),
+      max: getField(node, n.maxFieldType, n.max),
+      min: getField(node, n.minFieldType, n.min),
+      idleTimeoutMillis: getField(node, n.idleFieldType, n.iddle)
+    });
   }
 
   RED.nodes.registerType('postgresDB', PostgresDBNode);
@@ -56,46 +67,16 @@ module.exports = function(RED) {
     RED.nodes.createNode(node, config);
     node.topic = config.topic;
     node.config = RED.nodes.getNode(config.postgresDB);
+    console.log("AI ME ME",node.config)
     node.on('input', (msg) => {
       const query = mustache.render(config.query, { msg });
-      const {
-        user,
-        password,
-        host,
-        port,
-        database,
-        ssl,
-        max,
-        min,
-        iddle,
-        userFieldType,
-        passwordFieldType,
-        hostFieldType,
-        portFieldType,
-        databaseFieldType,
-        sslFieldType,
-        maxFieldType,
-        minFieldType,
-        idleFieldType
-      } = node.config;
-      myPool =
-        myPool ||
-        new Pool({
-          user: getField(node, userFieldType, user),
-          password: getField(node, passwordFieldType, password),
-          host: getField(node, hostFieldType, host),
-          port: getField(node, portFieldType, port),
-          database: getField(node, databaseFieldType, database),
-          ssl: getField(node, sslFieldType, ssl),
-          max: getField(node, maxFieldType, max),
-          min: getField(node, minFieldType, min),
-          idleTimeoutMillis: getField(node, idleFieldType, iddle)
-        });
-      const asyncQuery = async () => {
+      //node.config.pgPool;
+       
+      const asyncQuery = async()=> {
         let client = false;
         try {
-          client = await myPool.connect();
-          msg.payload = await client.query(query);
+          client = await node.config.pgPool.connect();
+          msg.payload = await client.query(query,msg.params||[]);
         } catch (err) {
           const error = err.toString();
           node.error(error);
