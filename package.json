@@ -1,5 +1,5 @@
 {
-  "name": "node-red-contrib-postgrestor",
+  "name": "node-red-contrib-postgrestor-next",
   "version": "0.0.6",
   "scripts": {
     "ci-publish": "ci-publish",
@@ -17,7 +17,7 @@
   "license": "Apache",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ymedlop/node-red-contrib-postgrestor"
+    "url": "https://github.com/andreabat/node-red-contrib-postgrestor"
   },
   "keywords": [
     "node-red",

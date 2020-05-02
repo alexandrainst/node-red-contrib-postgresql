@@ -36,25 +36,25 @@ msg.params = ['Andrea']
 ## Installation
 
 #### Using the Node-RED Editor
-From version 0.15 of [**Node-RED**](http://nodered.org/) you can install [**node-red-contrib-postgrestor**](https://github.com/ymedlop/node-red-contrib-postgrestor) directly using the editor. To do this select ```Manage Palette``` from the menu (top right), and then select the ```install``` tab in the palette.
+From version 0.15 of [**Node-RED**](http://nodered.org/) you can install [**node-red-contrib-postgrestor**](https://github.com/andreabat/node-red-contrib-postgrestor) directly using the editor. To do this select ```Manage Palette``` from the menu (top right), and then select the ```install``` tab in the palette.
 
-You can now search for [**node-red-contrib-postgrestor**](https://github.com/ymedlop/node-red-contrib-postgrestor) to install.
+You can now search for [**node-red-contrib-postgrestor**](https://github.com/andreabat/node-red-contrib-postgrestor) to install.
 
 
 #### Installing npm packaged nodes
-To install [**node-red-contrib-postgrestor**](https://github.com/andrea/node-red-contrib-postgrestor) npm-packaged node, you can also, either install it locally within your user data directory (by default, ```$HOME/.node-red```):
+To install [**node-red-contrib-postgrestor**](https://github.com/andreabat/node-red-contrib-postgrestor) npm-packaged node, you can also, either install it locally within your user data directory (by default, ```$HOME/.node-red```):
 ```bash
 cd $HOME/.node-red
-npm i node-red-contrib-postgrestor
+npm i node-red-contrib-postgrestor-next
 ```
 or globally alongside Node-RED:
 ```bash
-npm i -g node-red-contrib-postgrestor
+npm i -g node-red-contrib-postgrestor-next
 ```
 You will need to restart Node-RED for it to pick-up [**node-red-contrib-postgrestor**](https://github.com/ymedlop/node-red-contrib-postgrestor).
 
 
-[![NPM](https://nodei.co/npm/node-red-contrib-postgrestor.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/node-red-contrib-postgrestor/)
+[![NPM](https://nodei.co/npm/node-red-contrib-postgrestor-next.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/node-red-contrib-postgrestor-next/)
 
 
 ## Screen shots
