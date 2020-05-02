@@ -1,14 +1,12 @@
-[![CircleCI](https://img.shields.io/circleci/project/github/ymedlop/node-red-contrib-postgrestor.svg)](https://circleci.com/gh/ymedlop/node-red-contrib-postgrestor/tree/master)
-[![NPM version](https://badge.fury.io/js/node-red-contrib-postgrestor.svg)](http://badge.fury.io/js/node-red-contrib-postgrestor)
-[![dependencies Status](https://david-dm.org/ymedlop/node-red-contrib-postgrestor/status.svg)](https://david-dm.org/ymedlop/node-red-contrib-postgrestor)
-[![devDependencies Status](https://david-dm.org/ymedlop/node-red-contrib-postgrestor/dev-status.svg)](https://david-dm.org/ymedlop/node-red-contrib-postgrestor?type=dev)
-[![npm](https://img.shields.io/npm/dw/node-red-contrib-postgrestor.svg)](https://www.npmjs.com/package/node-red-contrib-postgrestor)
-[![npm](https://img.shields.io/npm/dm/node-red-contrib-postgrestor.svg)](https://www.npmjs.com/package/node-red-contrib-postgrestor)
-[![npm](https://img.shields.io/npm/dy/node-red-contrib-postgrestor.svg)](https://www.npmjs.com/package/node-red-contrib-postgrestor)
-[![npm](https://img.shields.io/npm/dt/node-red-contrib-postgrestor.svg)](https://www.npmjs.com/package/node-red-contrib-postgrestor)
 
-# node-red-contrib-postgrestor
+
+# node-red-contrib-pg
 Node-red-contrib-postgrestor :space_invader: is a [**Node-RED**](http://nodered.org/) node allowing basic access to [**Postgres**](https://www.postgresql.org/) :elephant: database.
+
+This fork has updated dependencies and allows to **Parameterized query**
+
+
+Pass them as a parameter array  ***params** of the msg object.
 
 Node-red-contrib-postgrestor sets up a console to execute queries against the configured database.
 
@@ -18,6 +16,7 @@ Node-red-contrib-postgrestor sets up a console to execute queries against the co
 * ```oid```: The oid returned
 * ```rows```: An array of rows
 
+
 Postgres implements a template engine allowing parameterized queries:
 ```sql
 /* INTEGER id COLUMN */
@@ -26,7 +25,14 @@ SELECT * FROM table WHERE id = {{ msg.id }}
 /* VARCHAR id COLUMN */
 SELECT * FROM table WHERE id = '{{ msg.id }}'
 
+
+
+SELECT * FROM table where name = $1;
+
 ```
+
+msg.params = ['Andrea'] 
+
 ## Installation
 
 #### Using the Node-RED Editor
@@ -36,7 +42,7 @@ You can now search for [**node-red-contrib-postgrestor**](https://github.com/yme
 
 
 #### Installing npm packaged nodes
-To install [**node-red-contrib-postgrestor**](https://github.com/ymedlop/node-red-contrib-postgrestor) npm-packaged node, you can also, either install it locally within your user data directory (by default, ```$HOME/.node-red```):
+To install [**node-red-contrib-postgrestor**](https://github.com/andrea/node-red-contrib-postgrestor) npm-packaged node, you can also, either install it locally within your user data directory (by default, ```$HOME/.node-red```):
 ```bash
 cd $HOME/.node-red
 npm i node-red-contrib-postgrestor
