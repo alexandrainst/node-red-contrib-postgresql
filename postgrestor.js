@@ -67,7 +67,6 @@ module.exports = function(RED) {
     RED.nodes.createNode(node, config);
     node.topic = config.topic;
     node.config = RED.nodes.getNode(config.postgresDB);
-    console.log("AI ME ME",node.config)
     node.on('input', (msg) => {
       const query = mustache.render(config.query, { msg });
       //node.config.pgPool;
