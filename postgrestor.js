@@ -1,4 +1,4 @@
-module.exports = function(RED) {
+module.exports = function (RED) {
   'use strict';
   const mustache = require('mustache');
   const Pool = require('pg').Pool;
@@ -54,7 +54,8 @@ module.exports = function(RED) {
       ssl: getField(node, n.sslFieldType, n.ssl),
       max: getField(node, n.maxFieldType, n.max),
       min: getField(node, n.minFieldType, n.min),
-      idleTimeoutMillis: getField(node, n.idleFieldType, n.iddle)
+      idleTimeoutMillis: getField(node, n.idleFieldType, n.iddle),
+      connectionTimeoutMillis: 15000,
     });
   }
 
@@ -70,12 +71,12 @@ module.exports = function(RED) {
     node.on('input', (msg) => {
       const query = mustache.render(config.query, { msg });
       //node.config.pgPool;
-       
-      const asyncQuery = async()=> {
+
+      const asyncQuery = async () => {
         let client = false;
         try {
           client = await node.config.pgPool.connect();
-          msg.payload = await client.query(query,msg.params||[]);
+          msg.payload = await client.query(query, msg.params || []);
         } catch (err) {
           const error = err.toString();
           node.error(error);
