@@ -45,6 +45,11 @@ module.exports = function (RED) {
     node.userFieldType = n.userFieldType;
     node.password = n.password;
     node.passwordFieldType = n.passwordFieldType;
+
+    node.connectionTimeout = n.connectionTimeout;
+    node.connectionTimeoutFieldType = n.connectionTimeoutFieldType;
+
+
     this.pgPool = new Pool({
       user: getField(node, n.userFieldType, n.user),
       password: getField(node, n.passwordFieldType, n.password),
@@ -54,8 +59,8 @@ module.exports = function (RED) {
       ssl: getField(node, n.sslFieldType, n.ssl),
       max: getField(node, n.maxFieldType, n.max),
       min: getField(node, n.minFieldType, n.min),
-      idleTimeoutMillis: getField(node, n.idleFieldType, n.iddle),
-      connectionTimeoutMillis: 15000,
+      idleTimeoutMillis: getField(node, n.idleFieldType, n.idle),
+      connectionTimeoutMillis: getField(node, n.connectionTimeoutFieldType, n.connectionTimeout),
     });
   }
 
@@ -83,6 +88,7 @@ module.exports = function (RED) {
           msg.payload = error;
         } finally {
           if (client) {
+            console.log("connection released");
             client.release();
           }
           node.send(msg);
