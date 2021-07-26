@@ -60,13 +60,12 @@ module.exports = function (RED) {
       max: getField(node, n.maxFieldType, n.max),
       min: getField(node, n.minFieldType, n.min),
       idleTimeoutMillis: getField(node, n.idleFieldType, n.idle),
-      connectionTimeoutMillis: getField(node, n.connectionTimeoutFieldType, n.connectionTimeout),
+      connectionTimeoutMillis:
+        getField(node, n.connectionTimeoutFieldType, n.connectionTimeout),
     });
   }
 
   RED.nodes.registerType('postgresDB', PostgresDBNode);
-
-  let myPool = false;
 
   function PostgrestorNode(config) {
     const node = this;
@@ -74,8 +73,7 @@ module.exports = function (RED) {
     node.topic = config.topic;
     node.config = RED.nodes.getNode(config.postgresDB);
     node.on('input', (msg) => {
-      const query = mustache.render(config.query, { msg });
-      //node.config.pgPool;
+      const query = mustache.render(config.query, {msg});
 
       const asyncQuery = async () => {
         let client = false;
@@ -88,7 +86,6 @@ module.exports = function (RED) {
           msg.payload = error;
         } finally {
           if (client) {
-            console.log("connection released");
             client.release();
           }
           node.send(msg);
