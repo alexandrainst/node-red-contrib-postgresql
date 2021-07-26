@@ -1,6 +1,3 @@
-/* jshint esversion: 8 */
-/* jshint esversion: 8 */
-
 module.exports = function (RED) {
   'use strict';
   const mustache = require('mustache');
