@@ -87,12 +87,12 @@ module.exports = function (RED) {
                 throw err;
               } else if (rows.length > 0) {
                 node.send(Object.assign(Object.assign({}, msg), {
-                  payload: ((node.rowsPerMsg || 1) > 1) ? rows : rows[0],
+                  payload: (config.rowsPerMsg || 1) > 1 ? rows : rows[0],
                 }));
-                cursor.read(node.rowsPerMsg || 1, getNextRows);
+                cursor.read(config.rowsPerMsg || 1, getNextRows);
               }
             };
-            cursor.read(node.rowsPerMsg || 1, getNextRows);
+            cursor.read(config.rowsPerMsg || 1, getNextRows);
           } else {
             msg.payload = await client.query(query, msg.params || []);
             node.send(msg);
