@@ -20,4 +20,18 @@
     FROM table
     WHERE id = '{{ msg.id }}'
     </pre>
+    <br>
+    <p>Pass parameters as an array in the msg.params object</p>
+     <pre>
+msg.params=[msg.id];
+
+    /* INTEGER id COLUMN */
+    SELECT *
+    FROM table
+    WHERE id = {{ msg.id }}
+    /* VARCHAR id COLUMN*/
+    SELECT *
+    FROM table
+    WHERE id = $1
+    </pre>
   </script>
