@@ -13,8 +13,10 @@
         "ArrowFunctionExpression": false
       }
     }],
-    "comma-dangle": ["error", "only-multiline"],
-    "space-before-function-paren": ["error", {
+    "comma-dangle": ["warn", "only-multiline"],
+    "max-len":  ["warn", 120],
+    "object-curly-spacing": ["warn", "always"],
+    "space-before-function-paren": ["warn", {
       "anonymous": "always",
       "named": "never",
       "asyncArrow": "always"

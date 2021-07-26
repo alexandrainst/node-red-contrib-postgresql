@@ -1,3 +1,6 @@
+/* jshint esversion: 8 */
+/* jshint esversion: 8 */
+
 module.exports = function (RED) {
   'use strict';
   const mustache = require('mustache');
@@ -60,8 +63,7 @@ module.exports = function (RED) {
       max: getField(node, n.maxFieldType, n.max),
       min: getField(node, n.minFieldType, n.min),
       idleTimeoutMillis: getField(node, n.idleFieldType, n.idle),
-      connectionTimeoutMillis:
-        getField(node, n.connectionTimeoutFieldType, n.connectionTimeout),
+      connectionTimeoutMillis: getField(node, n.connectionTimeoutFieldType, n.connectionTimeout),
     });
   }
 
@@ -73,7 +75,7 @@ module.exports = function (RED) {
     node.topic = config.topic;
     node.config = RED.nodes.getNode(config.postgresDB);
     node.on('input', (msg) => {
-      const query = mustache.render(config.query, {msg});
+      const query = mustache.render(config.query, { msg });
 
       const asyncQuery = async () => {
         let client = false;
