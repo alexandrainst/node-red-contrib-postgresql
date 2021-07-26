@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-postgrestor-next",
-  "version": "0.0.10",
+  "version": "0.1.0",
   "scripts": {
     "ci-publish": "ci-publish",
     "test": "eslint postgrestor.js"
@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "mustache": "^4.2.0",
-    "pg": "^8.6.0"
+    "pg": "^8.6.0",
+    "pg-cursor": "^2.6.0"
   },
   "license": "Apache",
   "repository": {

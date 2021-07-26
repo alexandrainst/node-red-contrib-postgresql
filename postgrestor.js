@@ -1,6 +1,7 @@
 module.exports = function (RED) {
   'use strict';
   const mustache = require('mustache');
+  const Cursor = require('pg-cursor');
   const Pool = require('pg').Pool;
 
   function getField(node, kind, value) {
@@ -78,16 +79,34 @@ module.exports = function (RED) {
         let client = false;
         try {
           client = await node.config.pgPool.connect();
-          msg.payload = await client.query(query, msg.params || []);
+
+          if (config.split) {
+            const cursor = client.query(new Cursor(query, msg.params || []));
+            const getNextRows = (err, rows) => {
+              if (err) {
+                throw err;
+              } else if (rows.length > 0) {
+                node.send(Object.assign(Object.assign({}, msg), {
+                  payload: ((node.rowsPerMsg || 1) > 1) ? rows : rows[0],
+                }));
+                cursor.read(node.rowsPerMsg || 1, getNextRows);
+              }
+            };
+            cursor.read(node.rowsPerMsg || 1, getNextRows);
+          } else {
+            msg.payload = await client.query(query, msg.params || []);
+            node.send(msg);
+          }
+
         } catch (err) {
           const error = err.toString();
           node.error(error);
           msg.payload = error;
+          node.send(msg);
         } finally {
           if (client) {
             client.release();
           }
-          node.send(msg);
         }
       };
       asyncQuery();
