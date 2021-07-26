@@ -14,6 +14,8 @@
       "connectionTimeout": "Connection Timeout",
       "server": "Server",
       "query": "Query",
+      "split": "Split results in multiple messages",
+      "rowsPerMsg": "Number of rows per message",
       "receiveOuput": "Receive output"
     },
     "placeholder": {
