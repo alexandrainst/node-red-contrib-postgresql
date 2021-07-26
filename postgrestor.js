@@ -67,8 +67,6 @@ module.exports = function (RED) {
 
   RED.nodes.registerType('postgresDB', PostgresDBNode);
 
-  let myPool = false;
-
   function PostgrestorNode(config) {
     const node = this;
     RED.nodes.createNode(node, config);
@@ -76,7 +74,6 @@ module.exports = function (RED) {
     node.config = RED.nodes.getNode(config.postgresDB);
     node.on('input', (msg) => {
       const query = mustache.render(config.query, { msg });
-      //node.config.pgPool;
 
       const asyncQuery = async () => {
         let client = false;
@@ -90,12 +87,12 @@ module.exports = function (RED) {
                 throw err;
               } else if (rows.length > 0) {
                 node.send(Object.assign(Object.assign({}, msg), {
-                  payload: ((node.rowsPerMsg || 1) > 1) ? rows : rows[0],
+                  payload: (config.rowsPerMsg || 1) > 1 ? rows : rows[0],
                 }));
-                cursor.read(node.rowsPerMsg || 1, getNextRows);
+                cursor.read(config.rowsPerMsg || 1, getNextRows);
               }
             };
-            cursor.read(node.rowsPerMsg || 1, getNextRows);
+            cursor.read(config.rowsPerMsg || 1, getNextRows);
           } else {
             msg.payload = await client.query(query, msg.params || []);
             node.send(msg);
@@ -108,7 +105,6 @@ module.exports = function (RED) {
           node.send(msg);
         } finally {
           if (client) {
-            console.log("connection released");
             client.release();
           }
         }
