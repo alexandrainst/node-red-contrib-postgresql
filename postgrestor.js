@@ -34,21 +34,16 @@ module.exports = function (RED) {
 
   function getField(node, kind, value) {
     switch (kind) {
-      case 'flow': {
+      case 'flow':
         return node.context().flow.get(value);
-      }
-      case 'global': {
+      case 'global':
         return node.context().global.get(value);
-      }
-      case 'num': {
+      case 'num':
         return parseInt(value);
-      }
-      case 'bool': {
+      case 'bool':
         return JSON.parse(value);
-      }
-      default: {
+      default:
         return value;
-      }
     }
   }
 
@@ -74,10 +69,8 @@ module.exports = function (RED) {
     node.userFieldType = n.userFieldType;
     node.password = n.password;
     node.passwordFieldType = n.passwordFieldType;
-
     node.connectionTimeout = n.connectionTimeout;
     node.connectionTimeoutFieldType = n.connectionTimeoutFieldType;
-
 
     this.pgPool = new Pool({
       user: getField(node, n.userFieldType, n.user),
