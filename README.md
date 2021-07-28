@@ -4,13 +4,13 @@
 
 It supports *splitting* the resultset and *backpressure* (flow control), to allow working with large datasets.
 
-It supports *parameterized queries* (passed as a parameter array `params` of the `msg` object).
+It supports *parameterized queries*.
 
-`msg.payload` will contain the result object of the query. It has the following properties:
+`msg.payload` will contain the result object of the query: (see also the documentation of the [underlying node-postgres library](https://node-postgres.com/api/result))
 
 * `command`: The SQL command that was executed (e.g. `SELECT`, `UPDATE`, etc.)
 * `rowCount`: The number of rows affected by the SQL statement
-* `oid`: The oid returned
+* `oid`: The [oid](https://www.postgresql.org/docs/current/datatype-oid.html) returned
 * `rows`: An array of rows
 
 There is a template engine allowing parameterized queries:
@@ -21,14 +21,20 @@ SELECT * FROM table WHERE id = {{{ msg.id }}};
 
 -- TEXT id column
 SELECT * FROM table WHERE id = '{{{ msg.id }}}';
-
--- Parameterized query
-SELECT * FROM table where name = $1;
 ```
 
+## Parameterized query
+
+Parameters for parameterized queries can be passed as a parameter array `params` of the `msg` object:
+
 ```js
-// Parameters for the parameterized query
-msg.params = ['Andrea'];
+// In a function, provide parameters for the parameterized query
+msg.params = [ msg.id ];
+```
+
+```sql
+-- In this node, use a parameterized query
+SELECT * FROM table where name = $1;
 ```
 
 ## Installation
@@ -67,6 +73,22 @@ So when the *Split results* option is enabled, this node will only output one me
 
 To make this behaviour potentially automatic (avoiding manual wires), this node declares its ability by exposing a truthy `node.tickConsumer` for downstream nodes to detect this feature, and a truthy `node.tickProvider` for upstream nodes.
 Likewise, this node detects upstream nodes using the same back-pressure convention, and automatically sends ticks.
+
+## Sequences
+
+When the *Split results* option is enabled, the messages contain some information following the conventions for [*messages sequences*](https://nodered.org/docs/user-guide/messages#message-sequences).
+
+```js
+{
+	payload: '...',
+	parts: {
+		id: 0.1234,	// sequence ID from upstream or randomly generated (changes for every sequence)
+		index: 5,	// incremented for each message of the same sequence
+		count: 6,	// total number of message; only available in the last message of a sequence
+	},
+	complete: true,	// True only for the last message of a sequence
+}
+```
 
 ## Credits
 
