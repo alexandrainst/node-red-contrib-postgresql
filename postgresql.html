@@ -1,366 +1,367 @@
 <script type="text/x-red" data-template-name="postgresDB">
-  <div class="form-row">
-    <label for="node-config-input-name">
-      <i class="fa fa-tag"></i>
-      <span data-i18n="postgresql.label.name"></span>
-    </label>
-    <input type="text" id="node-config-input-name" data-i18n="[placeholder]postgresql.placeholder.name">
-  </div>
-  <div class="form-row">
-    <ul style="background: #fff; min-width: 600px; margin-bottom: 20px;" id="postgresql-config-tabs"></ul>
-  </div>
-  <div id="postgresql-config-tabs-content" style="min-height: 170px;">
-    <div id="postgresql-config-tab-connection" style="display: none;">
-      <div class="form-row">
-        <label for="node-config-input-host">
-          <i class="fa fa-server"></i>
-          <span data-i18n="postgresql.label.host"></span>
-        </label>
-        <input type="text" id="node-config-input-host" data-i18n="[placeholder]postgresql.placeholder.host" style="width: 80%;">
-        <input type="hidden" id="node-config-input-hostFieldType">
-      </div>
-      <div class="form-row">
-          <label for="node-config-input-port">
-            <span data-i18n="postgresql.label.port"></span>
-          </label>
-          <input type="text" id="node-config-input-port" data-i18n="[placeholder]postgresql.placeholder.port" style="width: 80%;">
-          <input type="hidden" id="node-config-input-portFieldType">
-        </div>
-      <div class="form-row">
-        <label for="node-config-input-database">
-          <i class="fa fa-database"></i>
-          <span data-i18n="postgresql.label.database"></span>
-        </label>
-        <input type="text" id="node-config-input-database" data-i18n="[placeholder]postgresql.placeholder.database" style="width: 80%;">
-        <input type="hidden" id="node-config-input-databaseFieldType">
-      </div>
-      <div class="form-row">
-        <label for="node-config-input-ssl" style="width: auto;margin-right: 72px;">
-          <span data-i18n="postgresql.label.ssl"></span>
-        </label>
-        <input type="text" id="node-config-input-ssl" style="display: inline-block; width: auto; vertical-align: top;">
-        <input type="hidden" id="node-config-input-sslFieldType">
-      </div>
-    </div>
-    <div id="postgresql-config-tab-security" style="display: none;">
-      <div class="form-row">
-        <label for="node-config-input-user">
-          <i class="fa fa-user"></i>
-          <span data-i18n="postgresql.label.user"></span>
-        </label>
-        <input type="text" id="node-config-input-user" data-i18n="[placeholder]postgresql.placeholder.user" style="width: 80%;">
-        <input type="hidden" id="node-config-input-userFieldType">
-      </div>
-      <div class="form-row">
-        <label for="node-config-input-password">
-          <i class="fa fa-lock"></i>
-          <span data-i18n="postgresql.label.password"></span>
-        </label>
-        <input type="password" id="node-config-input-password" data-i18n="[placeholder]postgresql.placeholder.password" style="width: 80%;">
-        <input type="hidden" id="node-config-input-passwordFieldType">
-      </div>
-    </div>
-    <div id="postgresql-config-tab-pool" style="display: none;">
-      <div class="form-row">
-        <label data-i18n="[title]postgresql.title.max" for="node-config-input-max" style="width: 150px;">
-          <i class="fa fa-thermometer-full"></i>
-          <span data-i18n="postgresql.label.max"></span>
-        </label>
-        <input type="text" id="node-config-input-max" data-i18n="[placeholder]postgresql.placeholder.max" style="width: 60%;">
-        <input type="hidden" id="node-config-input-maxFieldType">
-      </div>
-      <div class="form-row">
-        <label data-i18n="[title]postgresql.title.min" for="node-config-input-min" style="width: 150px;">
-          <i class="fa fa-thermometer-empty"></i>
-          <span data-i18n="postgresql.label.min"></span>
-        </label>
-        <input type="text" id="node-config-input-min" data-i18n="[placeholder]postgresql.placeholder.min" style="width: 60%;">
-        <input type="hidden" id="node-config-input-minFieldType">
-      </div>
-      <div class="form-row">
-        <label for="node-config-input-idle" style="width: 150px;">
-          <i class="fa fa-hourglass-half"></i>
-          <span data-i18n="postgresql.label.idle"></span>
-        </label>
-        <input type="text" id="node-config-input-idle" data-i18n="[placeholder]postgresql.placeholder.idle" style="width: 60%;">
-        <input type="hidden" id="node-config-input-idleFieldType">
-      </div>
-       <div class="form-row">
-        <label for="node-config-input-connectionTimeout" style="width: 150px;">
-          <i class="fa fa-hourglass-half"></i>
-          <span data-i18n="postgresql.label.connectionTimeout" ></span>
-        </label>
-        <input type="text" id="node-config-input-connectionTimeout" data-i18n="[placeholder]postgresql.placeholder.connectionTimeout" style="width: 60%;">
-        <input type="hidden" id="node-config-input-connectionTimeoutFieldType">
-      </div>
-    </div>
-  </div>
+	<div class="form-row">
+		<label for="node-config-input-name">
+			<i class="fa fa-tag"></i>
+			<span data-i18n="postgresql.label.name"></span>
+		</label>
+		<input type="text" id="node-config-input-name" data-i18n="[placeholder]postgresql.placeholder.name" />
+	</div>
+	<div class="form-row">
+		<ul style="background: #fff; min-width: 600px; margin-bottom: 20px;" id="postgresql-config-tabs"></ul>
+	</div>
+	<div id="postgresql-config-tabs-content" style="min-height: 170px;">
+		<div id="postgresql-config-tab-connection" style="display: none;">
+			<div class="form-row">
+				<label for="node-config-input-host">
+					<i class="fa fa-server"></i>
+					<span data-i18n="postgresql.label.host"></span>
+				</label>
+				<input type="text" id="node-config-input-host" data-i18n="[placeholder]postgresql.placeholder.host" style="width: 80%;" />
+				<input type="hidden" id="node-config-input-hostFieldType" />
+			</div>
+			<div class="form-row">
+					<label for="node-config-input-port">
+						<span data-i18n="postgresql.label.port"></span>
+					</label>
+					<input type="text" id="node-config-input-port" data-i18n="[placeholder]postgresql.placeholder.port" style="width: 80%;" />
+					<input type="hidden" id="node-config-input-portFieldType" />
+				</div>
+			<div class="form-row">
+				<label for="node-config-input-database">
+					<i class="fa fa-database"></i>
+					<span data-i18n="postgresql.label.database"></span>
+				</label>
+				<input type="text" id="node-config-input-database" data-i18n="[placeholder]postgresql.placeholder.database" style="width: 80%;" />
+				<input type="hidden" id="node-config-input-databaseFieldType" />
+			</div>
+			<div class="form-row">
+				<label for="node-config-input-ssl" style="width: auto;margin-right: 72px;">
+					<span data-i18n="postgresql.label.ssl"></span>
+				</label>
+				<input type="text" id="node-config-input-ssl" style="display: inline-block; width: auto; vertical-align: top;" />
+				<input type="hidden" id="node-config-input-sslFieldType" />
+			</div>
+		</div>
+		<div id="postgresql-config-tab-security" style="display: none;">
+			<div class="form-row">
+				<label for="node-config-input-user">
+					<i class="fa fa-user"></i>
+					<span data-i18n="postgresql.label.user"></span>
+				</label>
+				<input type="text" id="node-config-input-user" data-i18n="[placeholder]postgresql.placeholder.user" style="width: 80%;" />
+				<input type="hidden" id="node-config-input-userFieldType" />
+			</div>
+			<div class="form-row">
+				<label for="node-config-input-password">
+					<i class="fa fa-lock"></i>
+					<span data-i18n="postgresql.label.password"></span>
+				</label>
+				<input type="password" id="node-config-input-password" data-i18n="[placeholder]postgresql.placeholder.password" style="width: 80%;" />
+				<input type="hidden" id="node-config-input-passwordFieldType" />
+			</div>
+		</div>
+		<div id="postgresql-config-tab-pool" style="display: none;">
+			<div class="form-row">
+				<label data-i18n="[title]postgresql.title.max" for="node-config-input-max" style="width: 150px;">
+					<i class="fa fa-thermometer-full"></i>
+					<span data-i18n="postgresql.label.max"></span>
+				</label>
+				<input type="text" id="node-config-input-max" data-i18n="[placeholder]postgresql.placeholder.max" style="width: 60%;" />
+				<input type="hidden" id="node-config-input-maxFieldType" />
+			</div>
+			<div class="form-row">
+				<label data-i18n="[title]postgresql.title.min" for="node-config-input-min" style="width: 150px;">
+					<i class="fa fa-thermometer-empty"></i>
+					<span data-i18n="postgresql.label.min"></span>
+				</label>
+				<input type="text" id="node-config-input-min" data-i18n="[placeholder]postgresql.placeholder.min" style="width: 60%;" />
+				<input type="hidden" id="node-config-input-minFieldType" />
+			</div>
+			<div class="form-row">
+				<label for="node-config-input-idle" style="width: 150px;">
+					<i class="fa fa-hourglass-half"></i>
+					<span data-i18n="postgresql.label.idle"></span>
+				</label>
+				<input type="text" id="node-config-input-idle" data-i18n="[placeholder]postgresql.placeholder.idle" style="width: 60%;" />
+				<input type="hidden" id="node-config-input-idleFieldType" />
+			</div>
+			<div class="form-row">
+				<label for="node-config-input-connectionTimeout" style="width: 150px;">
+					<i class="fa fa-hourglass-half"></i>
+					<span data-i18n="postgresql.label.connectionTimeout" ></span>
+				</label>
+				<input type="text" id="node-config-input-connectionTimeout" data-i18n="[placeholder]postgresql.placeholder.connectionTimeout" style="width: 60%;" />
+				<input type="hidden" id="node-config-input-connectionTimeoutFieldType" />
+			</div>
+		</div>
+	</div>
 </script>
-<script type="text/javascript">
-  RED.nodes.registerType('postgresDB', {
-    category: "config",
-    color: "#336791",
-    defaults: {
-      name: {
-        value: ""
-      },
-      host: {
-        value: "127.0.0.1",
-        required: true
-      },
-      hostFieldType: {
-        value: "str"
-      },
-      port: {
-        value: 5432,
-        required: true
-      },
-      portFieldType: {
-        value: "num"
-      },
-      database: {
-        value: "postgres",
-        required: true
-      },
-      databaseFieldType: {
-        value: "str"
-      },
-      ssl: {
-        value: false,
-        required: true
-      },
-      sslFieldType: {
-        value: "bool"
-      },
-      max: {
-        value: 10,
-        required: true
-      },
-      maxFieldType: {
-        value: "num"
-      },
-      min: {
-        value: 1,
-        required: true
-      },
-      minFieldType: {
-        value: "num"
-      },
-      idle: {
-        value: 1000,
-        required: true
-      },
-      idleFieldType: {
-        value: "num"
-      },
-      connectionTimeout: {
-        value: 10000,
-        required: true
-      },
-      connectionTimeoutFieldType: {
-        value: "num"
-      },
 
-      user: {
-        value: "",
-        required: true
-      },
-      userFieldType: {
-        value: "str"
-      },
-      password: {
-        value: "",
-        required: true
-      },
-      passwordFieldType: {
-        value: "str"
-      }
-    },
-    label: function () {
-      if (!this.name) {
-        this.name = this.user + "@" + this.host + ":" + this.port + "/" + this.database;
-      }
-      return this.name;
-    },
-    labelStyle: function () {
-      return this.name ? "node_label_italic" : "";
-    },
-    oneditprepare: function () {
-      const tabs = RED.tabs.create({
-        id: "postgresql-config-tabs",
-        onchange: function (tab) {
-          $("#postgresql-config-tabs-content").children().hide();
-          $("#" + tab.id).show();
-        }
-      });
-      tabs.addTab({
-        id: "postgresql-config-tab-connection",
-        label: this._('postgresql.tab.connection')
-      });
-      tabs.addTab({
-        id: "postgresql-config-tab-security",
-        label: this._('postgresql.tab.security')
-      });
-      tabs.addTab({
-        id: "postgresql-config-tab-pool",
-        label: this._('postgresql.tab.pool')
-      });
-      $("#node-config-input-host").typedInput({
-        default: 'str',
-        types: ['str', 'flow', 'global', 'env'],
-        typeField: $("#node-config-input-hostFieldType")
-      });
-      $("#node-config-input-port").typedInput({
-        default: 'num',
-        types: ['num', 'flow', 'global', 'env'],
-        typeField: $("#node-config-input-portFieldType")
-      });
-      $("#node-config-input-database").typedInput({
-        default: 'str',
-        types: ['str', 'flow', 'global', 'env'],
-        typeField: $("#node-config-input-databaseFieldType")
-      });
-      $("#node-config-input-ssl").typedInput({
-        default: 'bool',
-        types: ['bool', 'flow', 'global'],
-        typeField: $("#node-config-input-sslFieldType")
-      });
-      $("#node-config-input-user").typedInput({
-        default: 'str',
-        types: ['str', 'flow', 'global', 'env'],
-        typeField: $("#node-config-input-userFieldType")
-      });
-      $("#node-config-input-password")
-        .typedInput({
-          default: 'str',
-          types: ['str', 'flow', 'global', 'env'],
-          typeField: $("#node-config-input-passwordFieldType")
-        })
-        .on('change', function (type, value) {
-          const e = $(this);
-          const kind = value === true ? e.typedInput('type') : value;
-          if (kind === 'str') {
-            e.attr('type', 'password');
-          } else {
-            e.attr('type', 'text');
-          }
-        });
-      $("#node-config-input-max").typedInput({
-        default: 'num',
-        types: ['num', 'flow', 'global'],
-        typeField: $("#node-config-input-maxFieldType")
-      });
-      $("#node-config-input-lin").typedInput({
-        default: 'num',
-        types: ['num', 'flow', 'global'],
-        typeField: $("#node-config-input-linFieldType")
-      });
-      $("#node-config-input-idle").typedInput({
-        default: 'num',
-        types: ['num', 'flow', 'global'],
-        typeField: $("#node-config-input-idleFieldType")
-      });
-         $("#node-config-input-connectionTimeout").typedInput({
-        default: 'num',
-        types: ['num', 'flow', 'global'],
-        typeField: $("#node-config-input-connectionTimeoutFieldType")
-      });
-    }
-  });
+<script type="text/javascript">
+	RED.nodes.registerType('postgresDB', {
+		category: 'config',
+		color: '#336791',
+		defaults: {
+			name: {
+				value: '',
+			},
+			host: {
+				value: '127.0.0.1',
+				required: true,
+			},
+			hostFieldType: {
+				value: 'str',
+			},
+			port: {
+				value: 5432,
+				required: true,
+			},
+			portFieldType: {
+				value: 'num',
+			},
+			database: {
+				value: 'postgres',
+				required: true,
+			},
+			databaseFieldType: {
+				value: 'str',
+			},
+			ssl: {
+				value: false,
+				required: true,
+			},
+			sslFieldType: {
+				value: 'bool',
+			},
+			max: {
+				value: 10,
+				required: true,
+			},
+			maxFieldType: {
+				value: 'num',
+			},
+			min: {
+				value: 1,
+				required: true,
+			},
+			minFieldType: {
+				value: 'num',
+			},
+			idle: {
+				value: 1000,
+				required: true,
+			},
+			idleFieldType: {
+				value: 'num',
+			},
+			connectionTimeout: {
+				value: 10000,
+				required: true,
+			},
+			connectionTimeoutFieldType: {
+				value: 'num',
+			},
+			user: {
+				value: '',
+				required: true,
+			},
+			userFieldType: {
+				value: 'str',
+			},
+			password: {
+				value: '',
+				required: true,
+			},
+			passwordFieldType: {
+				value: 'str',
+			},
+		},
+		label: function () {
+			if (!this.name) {
+				this.name = this.user + '@' + this.host + ':' + this.port + '/' + this.database;
+			}
+			return this.name;
+		},
+		labelStyle: function () {
+			return this.name ? 'node_label_italic' : '';
+		},
+		oneditprepare: function () {
+			const tabs = RED.tabs.create({
+				id: 'postgresql-config-tabs',
+				onchange: function (tab) {
+					$('#postgresql-config-tabs-content').children().hide();
+					$('#' + tab.id).show();
+				},
+			});
+			tabs.addTab({
+				id: 'postgresql-config-tab-connection',
+				label: this._('postgresql.tab.connection'),
+			});
+			tabs.addTab({
+				id: 'postgresql-config-tab-security',
+				label: this._('postgresql.tab.security'),
+			});
+			tabs.addTab({
+				id: 'postgresql-config-tab-pool',
+				label: this._('postgresql.tab.pool'),
+			});
+			$('#node-config-input-host').typedInput({
+				default: 'str',
+				types: ['str', 'flow', 'global', 'env'],
+				typeField: $('#node-config-input-hostFieldType'),
+			});
+			$('#node-config-input-port').typedInput({
+				default: 'num',
+				types: ['num', 'flow', 'global', 'env'],
+				typeField: $('#node-config-input-portFieldType'),
+			});
+			$('#node-config-input-database').typedInput({
+				default: 'str',
+				types: ['str', 'flow', 'global', 'env'],
+				typeField: $('#node-config-input-databaseFieldType'),
+			});
+			$('#node-config-input-ssl').typedInput({
+				default: 'bool',
+				types: ['bool', 'flow', 'global'],
+				typeField: $('#node-config-input-sslFieldType'),
+			});
+			$('#node-config-input-user').typedInput({
+				default: 'str',
+				types: ['str', 'flow', 'global', 'env'],
+				typeField: $('#node-config-input-userFieldType'),
+			});
+			$('#node-config-input-password')
+				.typedInput({
+					default: 'str',
+					types: ['str', 'flow', 'global', 'env'],
+					typeField: $('#node-config-input-passwordFieldType'),
+				})
+				.on('change', function (type, value) {
+					const e = $(this);
+					const kind = value === true ? e.typedInput('type') : value;
+					if (kind === 'str') {
+						e.attr('type', 'password');
+					} else {
+						e.attr('type', 'text');
+					}
+				});
+			$('#node-config-input-max').typedInput({
+				default: 'num',
+				types: ['num', 'flow', 'global'],
+				typeField: $('#node-config-input-maxFieldType'),
+			});
+			$('#node-config-input-lin').typedInput({
+				default: 'num',
+				types: ['num', 'flow', 'global'],
+				typeField: $('#node-config-input-linFieldType'),
+			});
+			$('#node-config-input-idle').typedInput({
+				default: 'num',
+				types: ['num', 'flow', 'global'],
+				typeField: $('#node-config-input-idleFieldType'),
+			});
+			$('#node-config-input-connectionTimeout').typedInput({
+				default: 'num',
+				types: ['num', 'flow', 'global'],
+				typeField: $('#node-config-input-connectionTimeoutFieldType'),
+			});
+		},
+	});
 </script>
 <script type="text/x-red" data-template-name="postgresql">
-  <div class="form-row">
-    <label for="node-input-name">
-      <i class="icon-tag"></i>
-      <span data-i18n="postgresql.label.name"></span>
-    </label>
-    <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name"> </div>
-  <div class="form-row">
-    <label for="node-input-postgresDB">
-      <i class="fa fa-server"></i>
-      <span data-i18n="postgresql.label.server"></span>
-    </label>
-    <input type="text" id="node-input-postgresDB">
-  </div>
-  <div class="form-row">
-    <input type="checkbox" id="node-input-output" style="display: inline-block; width: auto; vertical-align: top;">
-    <label for="node-input-output" style="width: auto;">
-      <span data-i18n="postgresql.label.receiveOuput"></span>
-    </label>
-  </div>
-  <div class="form-row">
-    <input type="checkbox" id="node-input-split" style="display: inline-block; width: auto; vertical-align: top;">
-    <label for="node-input-split" style="width: auto;">
-      <span data-i18n="postgresql.label.split"></span>
-    </label>
-  </div>
-  <div class="form-row">
-    <label for="node-input-rowsPerMsg">
-      <span data-i18n="postgresql.label.rowsPerMsg"></span>
-    </label>
-    <input type="number" id="node-input-rowsPerMsg" placeholder="1" value="1" min="1" />
-  </div>
-  <div class="form-row" style="position: relative; margin-bottom: 0px;">
-    <label for="node-input-query">
-      <i class="fa fa-file-code-o"></i>
-      <span data-i18n="postgresql.label.query"></span>
-    </label>
-    <input type="hidden" id="node-input-query" autofocus="autofocus"> </div>
-  <div class="form-row node-text-editor-row">
-    <div style="height: 300px; min-height: 150px;" class="node-text-editor" id="node-input-editor"></div>
-  </div>
+	<div class="form-row">
+		<label for="node-input-name">
+			<i class="icon-tag"></i>
+			<span data-i18n="postgresql.label.name"></span>
+		</label>
+		<input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name"> </div>
+	<div class="form-row">
+		<label for="node-input-postgresDB">
+			<i class="fa fa-server"></i>
+			<span data-i18n="postgresql.label.server"></span>
+		</label>
+		<input type="text" id="node-input-postgresDB">
+	</div>
+	<div class="form-row">
+		<input type="checkbox" id="node-input-output" style="display: inline-block; width: auto; vertical-align: top;">
+		<label for="node-input-output" style="width: auto;">
+			<span data-i18n="postgresql.label.receiveOuput"></span>
+		</label>
+	</div>
+	<div class="form-row">
+		<input type="checkbox" id="node-input-split" style="display: inline-block; width: auto; vertical-align: top;">
+		<label for="node-input-split" style="width: auto;">
+			<span data-i18n="postgresql.label.split"></span>
+		</label>
+	</div>
+	<div class="form-row">
+		<label for="node-input-rowsPerMsg">
+			<span data-i18n="postgresql.label.rowsPerMsg"></span>
+		</label>
+		<input type="number" id="node-input-rowsPerMsg" placeholder="1" value="1" min="1" />
+	</div>
+	<div class="form-row" style="position: relative; margin-bottom: 0px;">
+		<label for="node-input-query">
+			<i class="fa fa-file-code-o"></i>
+			<span data-i18n="postgresql.label.query"></span>
+		</label>
+		<input type="hidden" id="node-input-query" autofocus="autofocus"> </div>
+	<div class="form-row node-text-editor-row">
+		<div style="height: 300px; min-height: 150px;" class="node-text-editor" id="node-input-editor"></div>
+	</div>
 </script>
+
 <script type="text/javascript">
-  RED.nodes.registerType("postgresql", {
-    category: "storage",
-    color: '#336791',
-    defaults: {
-      name: {
-        value: ""
-      },
-      query: {
-        value: "SELECT * FROM ;"
-      },
-      postgresDB: {
-        type: "postgresDB",
-        required: true
-      },
-      output: {
-        value: true
-      },
-      split: {
-        value: false,
-      },
-      rowsPerMsg: {
-        value: 1,
-      },
-      outputs: {
-        value: 1
-      }
-    },
-    inputs: 1,
-    icon: "postgres.png",
-    align: "left",
-    label: function () {
-      return this.name || "postgresql";
-    },
-    labelStyle: function () {
-      return this.name ? "node_label_italic" : "";
-    },
-    oneditprepare: function () {
-      $("#node-input-output").prop("checked", this.output);
-      $("#node-input-split").prop("checked", this.split);
-      $("#node-input-rowsPerMsg" ).value = this.rowsPerMsg;
-      this.editor = RED.editor.createEditor({
-        id: 'node-input-editor',
-        mode: 'ace/mode/sql',
-        value: $("#node-input-query").val()
-      });
-      this.editor.focus();
-    },
-    oneditsave: function () {
-      $("#node-input-query").val(this.editor.getValue());
-      delete this.editor;
-    }
-  });
+	RED.nodes.registerType('postgresql', {
+		category: 'storage',
+		color: '#336791',
+		defaults: {
+			name: {
+				value: '',
+			},
+			query: {
+				value: 'SELECT * FROM ;',
+			},
+			postgresDB: {
+				type: 'postgresDB',
+				required: true,
+			},
+			output: {
+				value: true,
+			},
+			split: {
+				value: false,
+			},
+			rowsPerMsg: {
+				value: 1,
+			},
+			outputs: {
+				value: 1,
+			},
+		},
+		inputs: 1,
+		icon: 'postgresql.png',
+		align: 'left',
+		label: function () {
+			return this.name || 'postgresql';
+		},
+		labelStyle: function () {
+			return this.name ? 'node_label_italic' : '';
+		},
+		oneditprepare: function () {
+			$('#node-input-output').prop('checked', this.output);
+			$('#node-input-split').prop('checked', this.split);
+			$('#node-input-rowsPerMsg' ).value = this.rowsPerMsg;
+			this.editor = RED.editor.createEditor({
+				id: 'node-input-editor',
+				mode: 'ace/mode/sql',
+				value: $('#node-input-query').val(),
+			});
+			this.editor.focus();
+		},
+		oneditsave: function () {
+			$('#node-input-query').val(this.editor.getValue());
+			delete this.editor;
+		},
+	});
 </script>

@@ -1,25 +1,27 @@
 {
-  "env": {
-    "node": true,
-    "es2017": true
-  },
-  "rules": {
-    "require-jsdoc": ["error", {
-      "require": {
-        "FunctionDeclaration": false,
-        "MethodDefinition": false,
-        "ClassDeclaration": false,
-        "ArrowFunctionExpression": false
-      }
-    }],
-    "comma-dangle": ["warn", "only-multiline"],
-    "max-len":  ["warn", 120],
-    "object-curly-spacing": ["warn", "always"],
-    "space-before-function-paren": ["warn", {
-      "anonymous": "always",
-      "named": "never",
-      "asyncArrow": "always"
-    }],
-    "new-cap": "warn"
-  }
+	"env": {
+		"node": true,
+		"es2017": true
+	},
+	"rules": {
+		"comma-dangle": ["warn", "always-multiline"],
+		"indent": ["error", "tab"],
+		"max-len":	["warn", 120],
+		"new-cap": "warn",
+		"object-curly-spacing": ["warn", "always"],
+		"quotes": ["warn", "single", { "avoidEscape": true }],
+		"require-jsdoc": ["error", {
+			"require": {
+				"FunctionDeclaration": false,
+				"MethodDefinition": false,
+				"ClassDeclaration": false,
+				"ArrowFunctionExpression": false
+			}
+		}],
+		"space-before-function-paren": ["warn", {
+			"anonymous": "always",
+			"named": "never",
+			"asyncArrow": "always"
+		}]
+	}
 }

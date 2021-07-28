@@ -1,36 +1,34 @@
 <script type="text/x-red" data-help-name="postgresql">
-    <p><code>node-red-contrib-postgresql</code> 👾 is a Node-RED node allowing basic access to Postgres 🐘 database.</p>
-    <p><code>msg.payload</code> will contain the result object of the query. It has the following properties:
-    </p>
-    <ul>
-      <li> <i>command</i>: The sql command that was executed (e.g. "SELECT", "UPDATE", etc.)</li>
-      <li> <i>rowCount</i>: The number of rows affected by the SQL statement</li>
-      <li> <i>oid</i>: The oid returned</li>
-      <li> <i>rows</i>: An array of rows</li>
-    </ul>
-    <p>Postgres implements a template engine allowing parameterized queries:</p>
-    <pre>
-    /* INTEGER id COLUMN */
-    SELECT *
-    FROM table
-    WHERE id = {{ msg.id }}
-    /* VARCHAR id COLUMN*/
-    SELECT *
-    FROM table
-    WHERE id = '{{ msg.id }}'
-    </pre>
-    <br>
-    <p>Pass parameters as an array in the msg.params object</p>
-     <pre>
+	<p><code>node-red-contrib-postgresql</code> 👾 is a Node-RED node allowing basic access to Postgres 🐘 database.</p>
+	<p><code>msg.payload</code> will contain the result object of the query. It has the following properties:</p>
+	<ul>
+		<li><dfn>command</dfn>: The SQL command that was executed (e.g. "SELECT", "UPDATE", etc.)</li>
+		<li><dfn>rowCount</dfn>: The number of rows affected by the SQL statement</li>
+		<li><dfn>oid</dfn>: The oid returned</li>
+		<li><dfn>rows</dfn>: An array of rows</li>
+	</ul>
+	<p>This node implements a template engine allowing parameterized queries:</p>
+	<pre>
+/* INTEGER id COLUMN */
+SELECT *
+FROM table
+WHERE id = {{ msg.id }}
+/* VARCHAR id COLUMN*/
+SELECT *
+FROM table
+WHERE id = '{{ msg.id }}'
+</pre>
+	<p>Pass parameters as an array in the <code>msg.params</code> object:</p>
+	<pre>
 msg.params=[msg.id];
+/* INTEGER id COLUMN */
+SELECT *
+FROM table
+WHERE id = {{ msg.id }}
+/* VARCHAR id COLUMN*/
+SELECT *
+FROM table
+WHERE id = $1
+	</pre>
 
-    /* INTEGER id COLUMN */
-    SELECT *
-    FROM table
-    WHERE id = {{ msg.id }}
-    /* VARCHAR id COLUMN*/
-    SELECT *
-    FROM table
-    WHERE id = $1
-    </pre>
-  </script>
+</script>

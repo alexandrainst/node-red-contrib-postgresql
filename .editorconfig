@@ -1,0 +1,8 @@
+# EditorConfig http://EditorConfig.org
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 4
+indent_style = tab
+insert_final_newline = true
