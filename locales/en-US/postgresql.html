@@ -1,33 +1,33 @@
 <script type="text/x-red" data-help-name="postgresql">
-	<p><code>node-red-contrib-postgresql</code> 👾 is a Node-RED node allowing basic access to Postgres 🐘 database.</p>
-	<p><code>msg.payload</code> will contain the result object of the query. It has the following properties:</p>
+	<p><code>node-red-contrib-postgresql</code> is a Node-RED node to query a PostgreSQL 🐘 database.</p>
+	<p><code>msg.payload</code> will contain the result object of the query with following properties:</p>
 	<ul>
 		<li><dfn>command</dfn>: The SQL command that was executed (e.g. "SELECT", "UPDATE", etc.)</li>
 		<li><dfn>rowCount</dfn>: The number of rows affected by the SQL statement</li>
 		<li><dfn>oid</dfn>: The oid returned</li>
 		<li><dfn>rows</dfn>: An array of rows</li>
 	</ul>
-	<p>This node implements a template engine allowing parameterized queries:</p>
+
+	<p>This node uses the [Mustache template system](https://github.com/janl/mustache.js) to generate queries based on the message payload:</p>
 	<pre>
-/* INTEGER id COLUMN */
-SELECT *
-FROM table
-WHERE id = {{ msg.id }}
-/* VARCHAR id COLUMN*/
-SELECT *
-FROM table
-WHERE id = '{{ msg.id }}'
+-- INTEGER id column
+SELECT * FROM table
+WHERE id = {{{ msg.id }}}
+
+-- TEXT id column
+SELECT * FROM table
+WHERE id = '{{{ msg.id }}}'
 </pre>
-	<p>Pass parameters as an array in the <code>msg.params</code> object:</p>
+
+	<p>Parameters for parameterized queries can be passed as an array in the <code>msg.params</code> object:</p>
 	<pre>
-msg.params=[msg.id];
-/* INTEGER id COLUMN */
-SELECT *
-FROM table
-WHERE id = {{ msg.id }}
-/* VARCHAR id COLUMN*/
-SELECT *
-FROM table
+// In a function:
+msg.params = [msg.id];
+	</pre>
+
+	<pre>
+-- In this node:
+SELECT * FROM table
 WHERE id = $1
 	</pre>
 
