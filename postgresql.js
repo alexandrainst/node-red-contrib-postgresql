@@ -88,7 +88,7 @@ module.exports = function (RED) {
 
   RED.nodes.registerType('postgresDB', PostgresDBNode);
 
-  function PostgrestorNode(config) {
+  function PostgreSQLNode(config) {
     const node = this;
     RED.nodes.createNode(node, config);
     node.topic = config.topic;
@@ -230,5 +230,5 @@ module.exports = function (RED) {
     node.on('close', () => node.status({}));
   }
 
-  RED.nodes.registerType('postgrestor', PostgrestorNode);
+  RED.nodes.registerType('postgresql', PostgreSQLNode);
 };
