@@ -1,4 +1,4 @@
-<script type="text/x-red" data-template-name="postgresDB">
+<script type="text/x-red" data-template-name="postgreSQLConfig">
 	<div class="form-row">
 		<label for="node-config-input-name">
 			<i class="fa fa-tag"></i>
@@ -98,7 +98,7 @@
 </script>
 
 <script type="text/javascript">
-	RED.nodes.registerType('postgresDB', {
+	RED.nodes.registerType('postgreSQLConfig', {
 		category: 'config',
 		color: '#336791',
 		defaults: {
@@ -276,11 +276,11 @@
 		</label>
 		<input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name"> </div>
 	<div class="form-row">
-		<label for="node-input-postgresDB">
+		<label for="node-input-postgreSQLConfig">
 			<i class="fa fa-server"></i>
 			<span data-i18n="postgresql.label.server"></span>
 		</label>
-		<input type="text" id="node-input-postgresDB">
+		<input type="text" id="node-input-postgreSQLConfig" />
 	</div>
 	<div class="form-row">
 		<input type="checkbox" id="node-input-output" style="display: inline-block; width: auto; vertical-align: top;">
@@ -322,8 +322,8 @@
 			query: {
 				value: 'SELECT * FROM ;',
 			},
-			postgresDB: {
-				type: 'postgresDB',
+			postgreSQLConfig: {
+				type: 'postgreSQLConfig',
 				required: true,
 			},
 			output: {

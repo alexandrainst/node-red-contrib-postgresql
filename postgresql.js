@@ -47,7 +47,7 @@ module.exports = function (RED) {
 		}
 	}
 
-	function PostgresDBNode(n) {
+	function PostgreSQLConfigNode(n) {
 		const node = this;
 		RED.nodes.createNode(node, n);
 		node.name = n.name;
@@ -86,7 +86,7 @@ module.exports = function (RED) {
 		});
 	}
 
-	RED.nodes.registerType('postgresDB', PostgresDBNode);
+	RED.nodes.registerType('postgreSQLConfig', PostgreSQLConfigNode);
 
 	function PostgreSQLNode(config) {
 		const node = this;
@@ -95,7 +95,7 @@ module.exports = function (RED) {
 		node.query = config.query;
 		node.split = config.split;
 		node.rowsPerMsg = config.rowsPerMsg;
-		node.config = RED.nodes.getNode(config.postgresDB);
+		node.config = RED.nodes.getNode(config.postgreSQLConfig);
 
 		// Declare the ability of this node to provide ticks upstream for back-pressure
 		node.tickProvider = true;
