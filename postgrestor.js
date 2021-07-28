@@ -66,8 +66,6 @@ module.exports = function (RED) {
 
   RED.nodes.registerType('postgresDB', PostgresDBNode);
 
-  let myPool = false;
-
   function PostgrestorNode(config) {
     const node = this;
     RED.nodes.createNode(node, config);
@@ -75,7 +73,6 @@ module.exports = function (RED) {
     node.config = RED.nodes.getNode(config.postgresDB);
     node.on('input', (msg) => {
       const query = mustache.render(config.query, { msg });
-      //node.config.pgPool;
 
       const asyncQuery = async () => {
         let client = false;
@@ -88,7 +85,6 @@ module.exports = function (RED) {
           msg.payload = error;
         } finally {
           if (client) {
-            console.log("connection released");
             client.release();
           }
           node.send(msg);

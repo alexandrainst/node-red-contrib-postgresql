@@ -1,9 +1,8 @@
 {
   "extends": "google",
-  "installedESLint": true,
   "env": {
     "node": true,
-    "es6": true
+    "es2017": true
   },
   "rules": {
     "require-jsdoc": ["error", {
@@ -14,7 +13,14 @@
         "ArrowFunctionExpression": false
       }
     }],
-    "comma-dangle": ["error", "never"],
+    "comma-dangle": ["warn", "only-multiline"],
+    "max-len":  ["warn", 120],
+    "object-curly-spacing": ["warn", "always"],
+    "space-before-function-paren": ["warn", {
+      "anonymous": "always",
+      "named": "never",
+      "asyncArrow": "always"
+    }],
     "new-cap": "warn"
   }
 }
