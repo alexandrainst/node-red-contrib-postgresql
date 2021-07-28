@@ -6,14 +6,21 @@ It supports *splitting* the resultset and *backpressure* (flow control), to allo
 
 It supports *parameterized queries*.
 
-`msg.payload` will contain the result object of the query: (see also the documentation of the [underlying node-postgres library](https://node-postgres.com/api/result))
+## Outputs
 
-* `command`: The SQL command that was executed (e.g. `SELECT`, `UPDATE`, etc.)
-* `rowCount`: The number of rows affected by the SQL statement
-* `oid`: The [oid](https://www.postgresql.org/docs/current/datatype-oid.html) returned
-* `rows`: An array of rows
+The response (rows) is provided in `msg.payload` as an array.
 
-There is a template engine allowing parameterized queries:
+An exception is if the *Split results* option is enabled and the *Number of rows per message* set to **1**, then `msg.payload` is not an array but the single-row response.
+
+Additional information is provided as `msg.pgsql.rowCount` and `msg.pgsql.command`. See the [underlying documentation](https://node-postgres.com/api/result) for details.
+
+In the case of multiple queries, then `msg.pgsql` is an array.
+
+## Inputs
+
+### SQL query template
+
+This node uses the [Mustache template system](https://github.com/janl/mustache.js) to generate queries based on the message:
 
 ```sql
 -- INTEGER id column
@@ -23,7 +30,7 @@ SELECT * FROM table WHERE id = {{{ msg.id }}};
 SELECT * FROM table WHERE id = '{{{ msg.id }}}';
 ```
 
-## Parameterized query
+### Parameterized query
 
 Parameters for parameterized queries can be passed as a parameter array `params` of the `msg` object:
 
@@ -34,7 +41,7 @@ msg.params = [ msg.id ];
 
 ```sql
 -- In this node, use a parameterized query
-SELECT * FROM table where name = $1;
+SELECT * FROM table WHERE id = $1;
 ```
 
 ## Installation
@@ -44,11 +51,11 @@ SELECT * FROM table where name = $1;
 You can install [**node-red-contrib-postgresql**](https://flows.nodered.org/node/node-red-contrib-postgresql) directly using the editor:
 Select *Manage Palette* from the menu (top right), and then select the *Install* tab in the palette.
 
-### Installing npm packaged nodes
+### Using npm
 
-You can also install the [npm-packaged node](https://www.npmjs.com/package/node-red-contrib-postgresql):
+You can alternatively install the [npm-packaged node](https://www.npmjs.com/package/node-red-contrib-postgresql):
 
-* Locally within your user data directory (by default, ```$HOME/.node-red```):
+* Locally within your user data directory (by default, `$HOME/.node-red`):
 
 ```sh
 cd $HOME/.node-red
@@ -74,19 +81,20 @@ So when the *Split results* option is enabled, this node will only output one me
 To make this behaviour potentially automatic (avoiding manual wires), this node declares its ability by exposing a truthy `node.tickConsumer` for downstream nodes to detect this feature, and a truthy `node.tickProvider` for upstream nodes.
 Likewise, this node detects upstream nodes using the same back-pressure convention, and automatically sends ticks.
 
-## Sequences
+## Sequences for split results
 
-When the *Split results* option is enabled, the messages contain some information following the conventions for [*messages sequences*](https://nodered.org/docs/user-guide/messages#message-sequences).
+When the *Split results* option is enabled (streaming), the messages contain some information following the conventions for [*messages sequences*](https://nodered.org/docs/user-guide/messages#message-sequences).
 
 ```js
 {
-	payload: '...',
-	parts: {
-		id: 0.1234,	// sequence ID from upstream or randomly generated (changes for every sequence)
-		index: 5,	// incremented for each message of the same sequence
-		count: 6,	// total number of message; only available in the last message of a sequence
-	},
-	complete: true,	// True only for the last message of a sequence
+  payload: '...',
+    parts: {
+      id: 0.1234, // sequence ID, randomly generated (changes for every sequence)
+      index: 5, // incremented for each message of the same sequence
+      count: 6, // total number of message; only available in the last message of a sequence
+      parts: {}, // optional upstream parts information
+    },
+    complete: true,	// True only for the last message of a sequence
 }
 ```
 

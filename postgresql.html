@@ -274,7 +274,8 @@
 			<i class="icon-tag"></i>
 			<span data-i18n="postgresql.label.name"></span>
 		</label>
-		<input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name"> </div>
+		<input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name" />
+	</div>
 	<div class="form-row">
 		<label for="node-input-postgreSQLConfig">
 			<i class="fa fa-server"></i>
@@ -283,13 +284,7 @@
 		<input type="text" id="node-input-postgreSQLConfig" />
 	</div>
 	<div class="form-row">
-		<input type="checkbox" id="node-input-output" style="display: inline-block; width: auto; vertical-align: top;">
-		<label for="node-input-output" style="width: auto;">
-			<span data-i18n="postgresql.label.receiveOuput"></span>
-		</label>
-	</div>
-	<div class="form-row">
-		<input type="checkbox" id="node-input-split" style="display: inline-block; width: auto; vertical-align: top;">
+		<input type="checkbox" id="node-input-split" style="display: inline-block; width: auto; vertical-align: top;" />
 		<label for="node-input-split" style="width: auto;">
 			<span data-i18n="postgresql.label.split"></span>
 		</label>
@@ -305,7 +300,8 @@
 			<i class="fa fa-file-code-o"></i>
 			<span data-i18n="postgresql.label.query"></span>
 		</label>
-		<input type="hidden" id="node-input-query" autofocus="autofocus"> </div>
+		<input type="hidden" id="node-input-query" autofocus="autofocus" />
+	</div>
 	<div class="form-row node-text-editor-row">
 		<div style="height: 300px; min-height: 150px;" class="node-text-editor" id="node-input-editor"></div>
 	</div>
@@ -325,9 +321,6 @@
 			postgreSQLConfig: {
 				type: 'postgreSQLConfig',
 				required: true,
-			},
-			output: {
-				value: true,
 			},
 			split: {
 				value: false,
@@ -349,9 +342,8 @@
 			return this.name ? 'node_label_italic' : '';
 		},
 		oneditprepare: function () {
-			$('#node-input-output').prop('checked', this.output);
 			$('#node-input-split').prop('checked', this.split);
-			$('#node-input-rowsPerMsg' ).value = this.rowsPerMsg;
+			$('#node-input-rowsPerMsg').value = this.split ? this.rowsPerMsg : 1;
 			this.editor = RED.editor.createEditor({
 				id: 'node-input-editor',
 				mode: 'ace/mode/sql',

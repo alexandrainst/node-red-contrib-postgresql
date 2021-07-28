@@ -28,22 +28,22 @@ function findInputNodeId(toNode, filter = null) {
 }
 
 module.exports = function (RED) {
-	const mustache = require('mustache');
-	const Cursor = require('pg-cursor');
+	const Mustache = require('mustache');
 	const Pool = require('pg').Pool;
+	const Cursor = require('pg-cursor');
 
 	function getField(node, kind, value) {
 		switch (kind) {
-		case 'flow':
-			return node.context().flow.get(value);
-		case 'global':
-			return node.context().global.get(value);
-		case 'num':
-			return parseInt(value);
-		case 'bool':
-			return JSON.parse(value);
-		default:
-			return value;
+			case 'flow':
+				return node.context().flow.get(value);
+			case 'global':
+				return node.context().global.get(value);
+			case 'num':
+				return parseInt(value);
+			case 'bool':
+				return JSON.parse(value);
+			default:
+				return value;
 		}
 	}
 
@@ -101,7 +101,6 @@ module.exports = function (RED) {
 		node.tickProvider = true;
 		let tickUpstreamId;
 		let tickUpstreamNode;
-		let upstreamPartsId = '';
 
 		// Declare the ability of this node to consume ticks from downstream for back-pressure
 		node.tickConsumer = true;
@@ -123,7 +122,8 @@ module.exports = function (RED) {
 					getNextRows();
 				}
 			} else {
-				const query = mustache.render(node.query, { msg });
+				const partsId = Math.random();
+				const query = Mustache.render(node.query, { msg });
 
 				let client = null;
 
@@ -146,7 +146,7 @@ module.exports = function (RED) {
 					handleDone();
 					msg.payload = error;
 					msg.parts = {
-						id: upstreamPartsId,
+						id: partsId,
 						abort: true,
 					};
 					downstreamReady = false;
@@ -154,7 +154,6 @@ module.exports = function (RED) {
 				};
 
 				handleDone();
-				upstreamPartsId = (msg.parts && msg.parts.id) || '' + Math.random();
 				downstreamReady = true;
 
 				try {
@@ -162,39 +161,46 @@ module.exports = function (RED) {
 
 					if (node.split) {
 						let partsIndex = 0;
+						delete msg.complete;
+
 						cursor = client.query(new Cursor(query, msg.params || []));
-						const cursorcallback = (err, rows) => {
+
+						const cursorcallback = (err, rows, result) => {
 							if (err) {
 								handleError(err);
-							} else if (rows.length > 0) {
-								downstreamReady = false;
-								node.send(Object.assign({}, msg, {
-									payload: (node.rowsPerMsg || 1) > 1 ? rows : rows[0],
-									parts: {
-										id: upstreamPartsId,
-										type: 'array',
-										index: partsIndex,
-									},
-								}));
-								partsIndex++;
-								getNextRows();
 							} else {
-								// Complete
-								handleDone();
-
-								downstreamReady = false;
-								node.send(Object.assign({}, msg, {
-									payload: [],
+								const done = rows.length < node.rowsPerMsg;
+								if (done) {
+									handleDone();
+								}
+								const msg2 = Object.assign({}, msg, {
+									payload: (node.rowsPerMsg || 1) > 1 ? rows : rows[0],
+									pgsql: {
+										command: result.command,
+										rowCount: result.rowCount,
+									},
 									parts: {
-										id: upstreamPartsId,
+										id: partsId,
 										type: 'array',
 										index: partsIndex,
-										count: partsIndex + 1,
 									},
-									complete: true,
-								}));
-								if (tickUpstreamNode) {
-									tickUpstreamNode.receive({ tick: true });
+								});
+								if (msg.parts) {
+									msg2.parts.parts = msg.parts;
+								}
+								if (done) {
+									msg2.parts.count = partsIndex + 1;
+									msg2.complete = true;
+								}
+								partsIndex++;
+								downstreamReady = false;
+								node.send(msg2);
+								if (done) {
+									if (tickUpstreamNode) {
+										tickUpstreamNode.receive({ tick: true });
+									}
+								} else {
+									getNextRows();
 								}
 							}
 						};
@@ -207,7 +213,27 @@ module.exports = function (RED) {
 					} else {
 						getNextRows = async () => {
 							try {
-								msg.payload = await client.query(query, msg.params || []);
+								const result = await client.query(query, msg.params || []);
+								if (result.length) {
+									// Multiple queries
+									msg.payload = [];
+									msg.pgsql = [];
+									for (const r of result) {
+										msg.payload = msg.payload.concat(r.rows);
+										msg.pgsql.push({
+											command: r.command,
+											rowCount: r.rowCount,
+											rows: r.rows,
+										});
+									}
+								} else {
+									msg.payload = result.rows;
+									msg.pgsql = {
+										command: result.command,
+										rowCount: result.rowCount,
+									};
+								}
+
 								handleDone();
 								downstreamReady = false;
 								node.send(msg);

@@ -1,28 +1,24 @@
 <script type="text/x-red" data-help-name="postgresql">
 	<p><a href="https://github.com/alexandrainst/node-red-contrib-postgresql">node-red-contrib-postgresql</a> is a Node-RED node to query a <a href="https://www.postgresql.org/">PostgreSQL</a> 🐘 database.</p>
-	<p>
-		<code>msg.payload</code> will contain the result object of the query with following properties:
-		(see also the documentation of the <a href="https://node-postgres.com/api/result">underlying node-postgres library</a>.
-	</p>
-	<ul>
-		<li><dfn>command</dfn>: The SQL command that was executed (e.g. "SELECT", "UPDATE", etc.)</li>
-		<li><dfn>rowCount</dfn>: The number of rows affected by the SQL statement</li>
-		<li><dfn>oid</dfn>: The oid returned</li>
-		<li><dfn>rows</dfn>: An array of rows</li>
-	</ul>
 
-	<p>This node uses the <a href="https://github.com/janl/mustache.js">Mustache template system</a> to generate queries based on the message payload:</p>
+	<h3>Outputs</h3>
+	<p>The response (rows) is provided in <code>msg.payload</code> as an array.</p>
+	<p>An exception is if the <em>Split results</em> option is enabled and the <em>Number of rows per message</em> set to 1, then <code>msg.payload</code> is not an array but the single-row response.</p>
+	<p>Additional information is provided as <code>msg.pgsql.rowCount</code> and <code>msg.pgsql.command</code>. See the <a href="https://node-postgres.com/api/result">underlying documentation</a> for details.</p>
+	<p>In the case of multiple queries, then <code>msg.pgsql</code> is an array.</p>
+
+	<h3>Inputs</h3>
+	<h4>SQL query template</h4>
+	<p>This node uses the <a href="https://github.com/janl/mustache.js">Mustache template system</a> to generate queries based on the message:</p>
 <pre>
 -- INTEGER id column
-SELECT * FROM table
-WHERE id = {{{ msg.id }}}
+SELECT * FROM table WHERE id = {{{ msg.id }}}
 
 -- TEXT id column
-SELECT * FROM table
-WHERE id = '{{{ msg.id }}}'
+SELECT * FROM table WHERE id = '{{{ msg.id }}}'
 </pre>
 
-	<h3>Parameterized queries</h3>
+	<h4>Parameterized queries</h4>
 	<p>Parameters for parameterized queries can be passed as an array in the <code>msg.params</code> object:</p>
 <pre>
 // In a function, provide parameters for the parameterized query
@@ -31,37 +27,37 @@ msg.params = [ msg.id ];
 
 <pre>
 -- In this node, use a parameterized query
-SELECT * FROM table
-WHERE id = $1
+SELECT * FROM table WHERE id = $1
 </pre>
 
 	<h3>Backpressure</h3>
 	<p>
-		This node supports <em>backpressure</em> / <em>flow control<em>:
+		This node supports <em>backpressure</em> / <em>flow control</em>:
 		when the <em>Split results</em> option is enabled, it waits for a <em>tick</em> before releasing the next batch of lines, to make sure the rest of your Node-RED flow is ready to process more data
 		(instead of risking an out-of-memory condition), and also conveys this information upstream.
-		
+	</p><p>
 		So when the <em>Split results</em> option is enabled, this node will only output one message at first, and then awaits a message containing a truthy <code>msg.tick</code> before releasing the next message.
-		
+	</p><p>
 		To make this behaviour potentially automatic (avoiding manual wires), this node declares its ability by exposing a truthy <code>node.tickConsumer</code> for downstream nodes to detect this feature,
 		and a truthy <code>node.tickProvider</code> for upstream nodes.
 		Likewise, this node detects upstream nodes using the same back-pressure convention, and automatically sends ticks.
 	</p>
 	
-	<h3>Sequences</h3>
+	<h3>Sequences for split results</h3>
 	<p>
-		When the <em>Split results</em> option is enabled, the messages contain some information following the conventions for <a href="https://nodered.org/docs/user-guide/messages#message-sequences"><em>messages sequences</em></a>.
+		When the <em>Split results</em> option is enabled (streaming), the messages contain some information following the conventions for <a href="https://nodered.org/docs/user-guide/messages#message-sequences"><em>messages sequences</em></a>.
 	</p>
 
 <pre>
 {
-	payload: '...',
-	parts: {
-		id: 0.1234,	// sequence ID from upstream or randomly generated (changes for every sequence)
-		index: 5,	// incremented for each message of the same sequence
-		count: 6,	// total number of messages; only available in the last message of a sequence
-	},
-	complete: true,	// True only for the last message of a sequence
+  payload: '...',
+    parts: {
+      id: 0.1234, // sequence ID, randomly generated (changes for every sequence)
+      index: 5, // incremented for each message of the same sequence
+      count: 6, // total number of messages; only available in the last message of a sequence
+      parts: {}, // optional upstream parts information
+    },
+    complete: true, // True only for the last message of a sequence
 }
 </pre>
 

@@ -15,8 +15,7 @@
 			"server": "Server",
 			"query": "Query",
 			"split": "Split results in multiple messages",
-			"rowsPerMsg": "Number of rows per message",
-			"receiveOuput": "Receive output"
+			"rowsPerMsg": "Number of rows per message"
 		},
 		"placeholder": {
 			"name": "dbConnection",

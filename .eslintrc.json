@@ -5,7 +5,7 @@
 	},
 	"rules": {
 		"comma-dangle": ["warn", "always-multiline"],
-		"indent": ["error", "tab"],
+		"indent": ["error", "tab", { "SwitchCase": 1 }],
 		"max-len":	["warn", 120],
 		"new-cap": "warn",
 		"object-curly-spacing": ["warn", "always"],
