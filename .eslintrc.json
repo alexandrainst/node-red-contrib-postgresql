@@ -1,5 +1,4 @@
 {
-  "extends": "google",
   "env": {
     "node": true,
     "es2017": true
