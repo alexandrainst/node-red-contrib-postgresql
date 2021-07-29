@@ -87,6 +87,17 @@ To make this behaviour potentially automatic (avoiding manual wires), this node 
 for downstream nodes to detect this feature, and a truthy `node.tickProvider` for upstream nodes.
 Likewise, this node detects upstream nodes using the same back-pressure convention, and automatically sends ticks.
 
+### Example of flow
+
+Example adding a new column in a table, then streaming (split) many lines from that table, batch-updating several lines at a time,
+then getting a sample consisting of a few lines:
+
+Example: [flow.json](doc/flow.json)
+
+![Node-RED flow](doc/flow.png)
+
+The *debug* nodes illustrate some relevant information to look at.
+
 ## Sequences for split results
 
 When the *Split results* option is enabled (streaming), the messages contain some information following the
@@ -101,7 +112,7 @@ conventions for [*messages sequences*](https://nodered.org/docs/user-guide/messa
       count: 6, // total number of message; only available in the last message of a sequence
       parts: {}, // optional upstream parts information
     },
-    complete: true,	// True only for the last message of a sequence
+    complete: true, // True only for the last message of a sequence
 }
 ```
 
