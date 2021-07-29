@@ -5,7 +5,7 @@ is a [**Node-RED**](https://nodered.org/) node to query a [**PostgreSQL**](https
 
 It supports *splitting* the resultset and *backpressure* (flow control), to allow working with large datasets.
 
-It supports *parameterized queries*.
+It supports *parameterized queries* and *multiple queries*.
 
 ## Outputs
 
@@ -109,7 +109,7 @@ conventions for [*messages sequences*](https://nodered.org/docs/user-guide/messa
     parts: {
       id: 0.1234, // sequence ID, randomly generated (changes for every sequence)
       index: 5, // incremented for each message of the same sequence
-      count: 6, // total number of message; only available in the last message of a sequence
+      count: 6, // total number of messages; only available in the last message of a sequence
       parts: {}, // optional upstream parts information
     },
     complete: true, // True only for the last message of a sequence
