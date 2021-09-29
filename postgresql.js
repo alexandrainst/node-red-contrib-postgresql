@@ -74,18 +74,55 @@ module.exports = function (RED) {
 		node.connectionTimeout = n.connectionTimeout;
 		node.connectionTimeoutFieldType = n.connectionTimeoutFieldType;
 
-		this.pgPool = new Pool({
-			user: getField(node, n.userFieldType, n.user),
-			password: getField(node, n.passwordFieldType, n.password),
-			host: getField(node, n.hostFieldType, n.host),
-			port: getField(node, n.portFieldType, n.port),
-			database: getField(node, n.databaseFieldType, n.database),
-			ssl: getField(node, n.sslFieldType, n.ssl),
-			max: getField(node, n.maxFieldType, n.max),
-			min: getField(node, n.minFieldType, n.min),
-			idleTimeoutMillis: getField(node, n.idleFieldType, n.idle),
-			connectionTimeoutMillis: getField(node, n.connectionTimeoutFieldType, n.connectionTimeout),
-		});
+		this.pgPool = null;
+
+		this.globalChange = function () {
+			if ((this.pgPool == null) ||
+				(['env', 'global'].includes(node.userFieldType) &&
+					getField(node, node.userFieldType, node.user) !== this.pgPool.config.user) ||
+				(['env', 'global'].includes(node.passwordFieldType) &&
+					getField(node, node.passwordFieldType, node.password) !== this.pgPool.config.password) ||
+				(['env', 'global'].includes(node.hostFieldType) &&
+					getField(node, node.hostFieldType, node.host) !== this.pgPool.config.host) ||
+				(['env', 'global'].includes(node.portFieldType) &&
+					getField(node, node.portFieldType, node.port) !== this.pgPool.config.port) ||
+				(['env', 'global'].includes(node.databaseFieldType) &&
+					getField(node, node.databaseFieldType, node.database) !== this.pgPool.config.database) ||
+				(['env', 'global'].includes(node.sslFieldType) &&
+					getField(node, node.sslFieldType, node.ssl) !== this.pgPool.config.ssl) ||
+				(['env', 'global'].includes(node.maxFieldType) &&
+					getField(node, node.maxFieldType, node.max) !== this.pgPool.config.max) ||
+				(['env', 'global'].includes(node.minFieldType) &&
+					getField(node, node.minFieldType, node.min) !== this.pgPool.config.min) ||
+				(['env', 'global'].includes(node.idleFieldType) &&
+					getField(node, node.idleFieldType, node.idleTimeoutMillis) !==
+						this.pgPool.config.idleTimeoutMillis) ||
+				(['env', 'global'].includes(node.connectionTimeoutFieldType) &&
+					getField(node, node.connectionTimeoutFieldType, node.connectionTimeoutMillis) !==
+						this.pgPool.config.connectionTimeoutMillis)
+			) {
+				return true;
+			}
+			return false;
+		};
+
+		this.refresh = function () {
+			if (this.pgPool == null || this.globalChange()) {
+				this.pgPool = new Pool({
+					user: getField(node, node.userFieldType, node.user),
+					password: getField(node, node.passwordFieldType, node.password),
+					host: getField(node, node.hostFieldType, node.host),
+					port: getField(node, node.portFieldType, node.port),
+					database: getField(node, node.databaseFieldType, node.database),
+					ssl: getField(node, node.sslFieldType, node.ssl),
+					max: getField(node, node.maxFieldType, node.max),
+					min: getField(node, node.minFieldType, node.min),
+					idleTimeoutMillis: getField(node, node.idleFieldType, node.idle),
+					connectionTimeoutMillis: getField(node, node.connectionTimeoutFieldType, node.connectionTimeout),
+				});
+			}
+		};
+		this.refresh();
 	}
 
 	RED.nodes.registerType('postgreSQLConfig', PostgreSQLConfigNode);
@@ -159,6 +196,7 @@ module.exports = function (RED) {
 				downstreamReady = true;
 
 				try {
+					node.config.refresh();
 					client = await node.config.pgPool.connect();
 
 					if (node.split) {
