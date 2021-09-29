@@ -34,7 +34,7 @@ module.exports = function (RED) {
 
 	function getField(node, kind, value) {
 		switch (kind) {
-			case 'flow':
+			case 'flow':	// Legacy
 				return node.context().flow.get(value);
 			case 'global':
 				return node.context().global.get(value);
