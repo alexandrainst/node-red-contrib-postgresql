@@ -55,7 +55,7 @@ it is possible to pass a [custom client configuration](https://node-postgres.com
 ```js
 msg.pgConfig = {
   user?: string, // default process.env.PGUSER || process.env.USER
-  password?: string or function, //default process.env.PGPASSWORD
+  password?: string, //or function, default process.env.PGPASSWORD
   host?: string, // default process.env.PGHOST
   database?: string, // default process.env.PGDATABASE || process.env.USER
   port?: number, // default process.env.PGPORT
