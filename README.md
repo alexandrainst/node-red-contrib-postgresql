@@ -70,7 +70,8 @@ msg.pgConfig = {
 };
 ```
 
-This does not use a [connection pool](https://node-postgres.com/features/pooling), and is therefore less efficient.
+However, this does not use a [connection pool](https://node-postgres.com/features/pooling), and is therefore less efficient.
+It is therefore recommended in most cases not to use `msg.pgConfig` at all and instead stick to the built-in configuration node.
 
 ## Installation
 

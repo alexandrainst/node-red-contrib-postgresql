@@ -62,7 +62,10 @@ msg.pgConfig = {
   idle_in_transaction_session_timeout?: number, // number of milliseconds before terminating any session with an open idle transaction, default is no timeout
 };
 </pre>
-	<p>This does not use a <a href="https://node-postgres.com/features/pooling">connection pool</a>, and is therefore less efficient.</p>
+	<p>
+		However, this does not use a <a href="https://node-postgres.com/features/pooling">connection pool</a>, and is therefore less efficient.
+		It is therefore recommended in most cases not to use `msg.pgConfig` at all and instead stick to the built-in configuration node.
+	</p>
 
 	<h3>Backpressure</h3>
 	<p>
