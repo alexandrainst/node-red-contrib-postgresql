@@ -47,6 +47,31 @@ msg.params = [ msg.id ];
 SELECT * FROM table WHERE id = $1;
 ```
 
+### Dynamic PostgreSQL connection parameters
+
+If the information about which database server to connect and how needs to be dynamic,
+it is possible to pass a [custom client configuration](https://node-postgres.com/api/client) in the message:
+
+```js
+msg.pgConfig = {
+  user?: string, // default process.env.PGUSER || process.env.USER
+  password?: string or function, //default process.env.PGPASSWORD
+  host?: string, // default process.env.PGHOST
+  database?: string, // default process.env.PGDATABASE || process.env.USER
+  port?: number, // default process.env.PGPORT
+  connectionString?: string, // e.g. postgres://user:password@host:5432/database
+  ssl?: any, // passed directly to node.TLSSocket, supports all tls.connect options
+  types?: any, // custom type parsers
+  statement_timeout?: number, // number of milliseconds before a statement in query will time out, default is no timeout
+  query_timeout?: number, // number of milliseconds before a query call will timeout, default is no timeout
+  application_name?: string, // The name of the application that created this Client instance
+  connectionTimeoutMillis?: number, // number of milliseconds to wait for connection, default is no timeout
+  idle_in_transaction_session_timeout?: number, // number of milliseconds before terminating any session with an open idle transaction, default is no timeout
+};
+```
+
+This does not use a [connection pool](https://node-postgres.com/features/pooling), and is therefore less efficient.
+
 ## Installation
 
 ### Using the Node-RED Editor
