@@ -132,13 +132,13 @@ conventions for [*messages sequences*](https://nodered.org/docs/user-guide/messa
 ```js
 {
   payload: '...',
-    parts: {
-      id: 0.1234, // sequence ID, randomly generated (changes for every sequence)
-      index: 5, // incremented for each message of the same sequence
-      count: 6, // total number of messages; only available in the last message of a sequence
-      parts: {}, // optional upstream parts information
-    },
-    complete: true, // True only for the last message of a sequence
+  parts: {
+    id: 0.1234, // sequence ID, randomly generated (changes for every sequence)
+    index: 5, // incremented for each message of the same sequence
+    count: 6, // total number of messages; only available in the last message of a sequence
+    parts: {}, // optional upstream parts information
+  },
+  complete: true, // True only for the last message of a sequence
 }
 ```
 

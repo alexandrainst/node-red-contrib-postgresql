@@ -1,27 +1,30 @@
 {
 	"env": {
-		"node": true,
-		"es2017": true
+		"es2017": true,
+		"node": true
 	},
+	"extends": [
+		"eslint:recommended",
+		"standard"
+	],
 	"rules": {
 		"comma-dangle": ["warn", "always-multiline"],
-		"indent": ["error", "tab", { "SwitchCase": 1 }],
+		"indent": ["warn", "tab", { "SwitchCase": 1 }],
+		"linebreak-style": ["error", "unix"],
 		"max-len":	["warn", 120],
-		"new-cap": "warn",
-		"object-curly-spacing": ["warn", "always"],
-		"quotes": ["warn", "single", { "avoidEscape": true }],
-		"require-jsdoc": ["error", {
-			"require": {
-				"FunctionDeclaration": false,
-				"MethodDefinition": false,
-				"ClassDeclaration": false,
-				"ArrowFunctionExpression": false
-			}
-		}],
+		"no-tabs": "off",
+		"semi": ["warn", "always"],
 		"space-before-function-paren": ["warn", {
 			"anonymous": "always",
 			"named": "never",
 			"asyncArrow": "always"
 		}]
+	},
+	"plugins": [
+		"html"
+	],
+	"settings": {
+		"html/indent": "tab",
+		"html/report-bad-indent": "warn"
 	}
 }
