@@ -26,5 +26,6 @@
 	"settings": {
 		"html/indent": "tab",
 		"html/report-bad-indent": "warn"
-	}
+	},
+	"root": true
 }
