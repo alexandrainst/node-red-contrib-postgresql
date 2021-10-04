@@ -29,7 +29,7 @@ function findInputNodeId(toNode, filter = null) {
 
 module.exports = function (RED) {
 	const Mustache = require('mustache');
-	const Pool = require('pg').Pool;
+	const { Client, Pool } = require('pg');
 	const Cursor = require('pg-cursor');
 
 	function getField(node, kind, value) {
@@ -129,13 +129,17 @@ module.exports = function (RED) {
 
 				let client = null;
 
-				const handleDone = () => {
+				const handleDone = async () => {
 					if (cursor) {
 						cursor.close();
 						cursor = null;
 					}
 					if (client) {
-						client.release(true);
+						if (client.release) {
+							client.release(true);
+						} else if (client.end) {
+							await client.end();
+						}
 						client = null;
 					}
 					getNextRows = null;
@@ -159,7 +163,12 @@ module.exports = function (RED) {
 				downstreamReady = true;
 
 				try {
-					client = await node.config.pgPool.connect();
+					if (msg.pgConfig) {
+						client = new Client(msg.pgConfig);
+						await client.connect();
+					} else {
+						client = await node.config.pgPool.connect();
+					}
 
 					if (node.split) {
 						let partsIndex = 0;
