@@ -1,6 +1,5 @@
 {
 	"env": {
-		"es2017": true,
 		"node": true
 	},
 	"extends": [
@@ -9,9 +8,10 @@
 	],
 	"rules": {
 		"comma-dangle": ["warn", "always-multiline"],
+		"eqeqeq": "off",
 		"indent": ["warn", "tab", { "SwitchCase": 1 }],
 		"linebreak-style": ["error", "unix"],
-		"max-len":	["warn", 120],
+		"max-len":	["warn", 160],
 		"no-tabs": "off",
 		"semi": ["warn", "always"],
 		"space-before-function-paren": ["warn", {
@@ -24,6 +24,7 @@
 		"html"
 	],
 	"settings": {
+		"html/html-extensions": [".html"],
 		"html/indent": "tab",
 		"html/report-bad-indent": "warn"
 	},
