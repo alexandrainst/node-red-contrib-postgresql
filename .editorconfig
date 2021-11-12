@@ -1,8 +1,24 @@
-# EditorConfig http://EditorConfig.org
+# http://EditorConfig.org
 
 [*]
 charset = utf-8
 end_of_line = lf
+insert_final_newline = true
+
+[*.html]
+indent_style = tab
+
+[*.js]
+indent_style = tab
+
+[*.json]
+indent_size = 2
+indent_style = space
+
+[*.md]
 indent_size = 4
 indent_style = tab
-insert_final_newline = true
+
+[*.yml]
+indent_size = 2
+indent_style = space
