@@ -112,7 +112,7 @@ module.exports = function (RED) {
 		let cursor;
 		let getNextRows;
 
-		node.on('input', async (msg) => {
+		node.on('input', async (msg, send, done) => {
 			if (tickUpstreamId === undefined) {
 				tickUpstreamId = findInputNodeId(node, (n) => RED.nodes.getNode(n.id).tickConsumer);
 				tickUpstreamNode = tickUpstreamId ? RED.nodes.getNode(tickUpstreamId) : null;
@@ -147,7 +147,6 @@ module.exports = function (RED) {
 
 				const handleError = (err) => {
 					const error = (err ? err.toString() : 'Unknown error!') + ' ' + query;
-					node.error(error);
 					handleDone();
 					msg.payload = error;
 					msg.parts = {
@@ -155,7 +154,15 @@ module.exports = function (RED) {
 						abort: true,
 					};
 					downstreamReady = false;
-					node.send(msg);
+					if (err) {
+						if (done) {
+							// Node-RED 1.0=< compatible
+							done(err);
+						} else {
+							// Node-RED 0.x compatible
+							node.error(err, msg);
+						}
+					}
 				};
 
 				handleDone();
@@ -246,9 +253,16 @@ module.exports = function (RED) {
 
 								handleDone();
 								downstreamReady = false;
-								node.send(msg);
 								if (tickUpstreamNode) {
 									tickUpstreamNode.receive({ tick: true });
+								}
+								if (done) {
+									// Node-RED 1.0=< compatible
+									send(msg);
+									done();
+								} else {
+									// Node-RED 0.x compatible
+									node.send(msg);
 								}
 							} catch (ex) {
 								handleError(ex);
