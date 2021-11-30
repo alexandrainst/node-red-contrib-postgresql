@@ -125,7 +125,7 @@ module.exports = function (RED) {
 				}
 			} else {
 				const partsId = Math.random();
-				const query = Mustache.render(node.query, { msg });
+				const query = msg.query ? msg.query : Mustache.render(node.query, { msg });
 
 				let client = null;
 

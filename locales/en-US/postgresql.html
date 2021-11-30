@@ -27,8 +27,11 @@ SELECT * FROM table WHERE id = {{{ msg.id }}}
 SELECT * FROM table WHERE id = '{{{ msg.id }}}'
 </pre>
 
+	<h4>Dynamic SQL queries</h4>
+	<p>As an alternative to using the query template above, this node also accepts an SQL query via the `msg.query` parameter.</p>
+
 	<h4>Parameterized queries</h4>
-	<p>Parameters for parameterized queries can be passed as an array in the <code>msg.params</code> object:</p>
+	<p>Parameters for parameterized queries can be passed as an array <code>msg.params</code>:</p>
 <pre>
 // In a function, provide parameters for the parameterized query
 msg.params = [ msg.id ];
