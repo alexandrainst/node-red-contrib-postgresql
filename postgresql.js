@@ -146,7 +146,6 @@ module.exports = function (RED) {
 				};
 
 				const handleError = (err) => {
-					console.error(err);
 					const error = (err ? err.toString() : 'Unknown error!') + ' ' + query;
 					node.error(error);
 					handleDone();
