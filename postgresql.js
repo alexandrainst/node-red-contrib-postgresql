@@ -276,8 +276,6 @@ module.exports = function (RED) {
 				}
 			}
 		});
-
-		node.on('close', () => node.status({}));
 	}
 
 	RED.nodes.registerType('postgresql', PostgreSQLNode);
