@@ -28,7 +28,7 @@ SELECT * FROM table WHERE id = '{{{ msg.id }}}'
 </pre>
 
 	<h4>Dynamic SQL queries</h4>
-	<p>As an alternative to using the query template above, this node also accepts an SQL query via the `msg.query` parameter.</p>
+	<p>As an alternative to using the query template above, this node also accepts an SQL query via the <code>msg.query</code> parameter.</p>
 
 	<h4>Parameterized queries</h4>
 	<p>Parameters for parameterized queries can be passed as an array <code>msg.params</code>:</p>
@@ -67,7 +67,7 @@ msg.pgConfig = {
 </pre>
 	<p>
 		However, this does not use a <a href="https://node-postgres.com/features/pooling">connection pool</a>, and is therefore less efficient.
-		It is therefore recommended in most cases not to use `msg.pgConfig` at all and instead stick to the built-in configuration node.
+		It is therefore recommended in most cases not to use <code>msg.pgConfig</code> at all and instead stick to the built-in configuration node.
 	</p>
 
 	<h3>Backpressure</h3>
