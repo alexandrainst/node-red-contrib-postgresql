@@ -253,16 +253,12 @@ module.exports = function (RED) {
 
 								handleDone();
 								downstreamReady = false;
+								node.send(msg);
 								if (tickUpstreamNode) {
 									tickUpstreamNode.receive({ tick: true });
 								}
 								if (done) {
-									// Node-RED 1.0=< compatible
-									send(msg);
 									done();
-								} else {
-									// Node-RED 0.x compatible
-									node.send(msg);
 								}
 							} catch (ex) {
 								handleError(ex);
