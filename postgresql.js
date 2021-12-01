@@ -188,8 +188,8 @@ module.exports = function (RED) {
 							if (err) {
 								handleError(err);
 							} else {
-								const done = rows.length < node.rowsPerMsg;
-								if (done) {
+								const complete = rows.length < node.rowsPerMsg;
+								if (complete) {
 									handleDone();
 								}
 								const msg2 = Object.assign({}, msg, {
@@ -207,14 +207,14 @@ module.exports = function (RED) {
 								if (msg.parts) {
 									msg2.parts.parts = msg.parts;
 								}
-								if (done) {
+								if (complete) {
 									msg2.parts.count = partsIndex + 1;
 									msg2.complete = true;
 								}
 								partsIndex++;
 								downstreamReady = false;
 								send(msg2);
-								if (done) {
+								if (complete) {
 									if (tickUpstreamNode) {
 										tickUpstreamNode.receive({ tick: true });
 									}
