@@ -218,6 +218,9 @@ module.exports = function (RED) {
 									if (tickUpstreamNode) {
 										tickUpstreamNode.receive({ tick: true });
 									}
+									if (done) {
+										done();
+									}
 								} else {
 									getNextRows();
 								}
