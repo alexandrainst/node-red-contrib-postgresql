@@ -112,7 +112,10 @@ module.exports = function (RED) {
 		let cursor;
 		let getNextRows;
 
-		node.on('input', async (msg) => {
+		node.on('input', async (msg, send, done) => {
+			// 'send' and 'done' require Node-RED 1.0+
+			send = send || function () { node.send.apply(node, arguments); };
+
 			if (tickUpstreamId === undefined) {
 				tickUpstreamId = findInputNodeId(node, (n) => RED.nodes.getNode(n.id).tickConsumer);
 				tickUpstreamNode = tickUpstreamId ? RED.nodes.getNode(tickUpstreamId) : null;
@@ -146,9 +149,7 @@ module.exports = function (RED) {
 				};
 
 				const handleError = (err) => {
-					console.error(err);
 					const error = (err ? err.toString() : 'Unknown error!') + ' ' + query;
-					node.error(error);
 					handleDone();
 					msg.payload = error;
 					msg.parts = {
@@ -156,7 +157,15 @@ module.exports = function (RED) {
 						abort: true,
 					};
 					downstreamReady = false;
-					node.send(msg);
+					if (err) {
+						if (done) {
+							// Node-RED 1.0+
+							done(err);
+						} else {
+							// Node-RED 0.x
+							node.error(err, msg);
+						}
+					}
 				};
 
 				handleDone();
@@ -180,8 +189,8 @@ module.exports = function (RED) {
 							if (err) {
 								handleError(err);
 							} else {
-								const done = rows.length < node.rowsPerMsg;
-								if (done) {
+								const complete = rows.length < node.rowsPerMsg;
+								if (complete) {
 									handleDone();
 								}
 								const msg2 = Object.assign({}, msg, {
@@ -199,16 +208,19 @@ module.exports = function (RED) {
 								if (msg.parts) {
 									msg2.parts.parts = msg.parts;
 								}
-								if (done) {
+								if (complete) {
 									msg2.parts.count = partsIndex + 1;
 									msg2.complete = true;
 								}
 								partsIndex++;
 								downstreamReady = false;
-								node.send(msg2);
-								if (done) {
+								send(msg2);
+								if (complete) {
 									if (tickUpstreamNode) {
 										tickUpstreamNode.receive({ tick: true });
+									}
+									if (done) {
+										done();
 									}
 								} else {
 									getNextRows();
@@ -247,9 +259,12 @@ module.exports = function (RED) {
 
 								handleDone();
 								downstreamReady = false;
-								node.send(msg);
+								send(msg);
 								if (tickUpstreamNode) {
 									tickUpstreamNode.receive({ tick: true });
+								}
+								if (done) {
+									done();
 								}
 							} catch (ex) {
 								handleError(ex);
@@ -263,8 +278,6 @@ module.exports = function (RED) {
 				}
 			}
 		});
-
-		node.on('close', () => node.status({}));
 	}
 
 	RED.nodes.registerType('postgresql', PostgreSQLNode);
