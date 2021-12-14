@@ -42,12 +42,32 @@ msg.params = [ msg.id ];
 SELECT * FROM table WHERE id = $1
 </pre>
 
+<h4>Parameterized queries</h4>
+<p>
+	As an alternative to numeric parameters,
+	named parameters for parameterized queries can be passed as a parameter arrayy <code>msg.queryParameters</code>:
+</p>
+<pre>
+// In a function, provide parameters for the named parameterized query
+msg.queryParameters.id = msg.id;
+</pre>
+
+<pre>
+-- In this node, use a named parameterized query
+SELECT * FROM table WHERE id = $id;
+</pre>
+
+<p>
+	<em>Note</em>: named parameters are not natively supported by PostgreSQL, and this library just emulates them,
+	so this is less robust than numeric parameters.
+</p>
+
 	<h4>Dynamic PostgreSQL connection parameters</h4>
 	<p>
 		If the information about which database server to connect and how needs to be dynamic,
 		it is possible to pass a <a href="https://node-postgres.com/api/client">custom client configuration</a> in the message:
 	</p>
-		
+
 <pre>
 msg.pgConfig = {
   user?: string, // default process.env.PGUSER || process.env.USER
@@ -85,7 +105,7 @@ msg.pgConfig = {
 		and a truthy <code>node.tickProvider</code> for upstream nodes.
 		Likewise, this node detects upstream nodes using the same back-pressure convention, and automatically sends ticks.
 	</p>
-	
+
 	<h3>Sequences for split results</h3>
 	<p>
 		When the <em>Split results</em> option is enabled (streaming), the messages contain some information following the conventions
