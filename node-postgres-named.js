@@ -1,20 +1,16 @@
 /**
- * This file is based on a copy of the library https://www.npmjs.com/package/node-postgres-named
- *
- * https://github.com/bwestergard/node-postgres-named/blob/master/main.js
- * Björn Westergard <https://github.com/bwestergard>:
- * Inspiration provided by a conversation with [Mike "ApeChimp" Atkins](https://github.com/apechimp).
- * Support for prepared statements added by [nuarhu](https://github.com/nuarhu).
- * Critical connection-pooling bugfix tediously diagnosed and patched by [Tony "tone81" Nguyen](https://github.com/tone81).
- * [Mike "mfine15" Fine](https://github.com/mfine15) righted my unaesthetic mixing of double and single-quotes,
- * and [Victor Quinn](https://github.com/victorquinn) fixed a spelling error.
- *
- * https://github.com/RaphaelAguiar/node-postgres-named/blob/master/main.js
+ * This file is based on a copy of the library https://github.com/bwestergard/node-postgres-named/blob/master/main.js
+ * by Björn Westergard <https://github.com/bwestergard>:
+ * > Inspiration provided by a conversation with [Mike "ApeChimp" Atkins](https://github.com/apechimp).
+ * > Support for prepared statements added by [nuarhu](https://github.com/nuarhu).
+ * > Critical connection-pooling bugfix tediously diagnosed and patched by [Tony "tone81" Nguyen](https://github.com/tone81).
+ * > [Mike "mfine15" Fine](https://github.com/mfine15) righted my unaesthetic mixing of double and single-quotes,
+ * > and [Victor Quinn](https://github.com/victorquinn) fixed a spelling error.
  */
 
 const _ = require('lodash');
 
-const tokenPattern = /(?<=\s)(\$[a-zA-Z]([a-zA-Z0-9_]*)\b)/g;
+const tokenPattern = /\$[a-zA-Z]([a-zA-Z0-9_]*)\b/g;
 
 function numericFromNamed(sql, parameters) {
 	const fillableTokens = Object.keys(parameters);
