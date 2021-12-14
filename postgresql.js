@@ -113,8 +113,9 @@ module.exports = function (RED) {
 		let getNextRows;
 
 		node.on('input', async (msg, send, done) => {
-			// If this is pre-1.0, 'send' will be undefined, so fallback to node.send
-			send = send || function() { node.send.apply(node,arguments) }
+			// 'send' and 'done' require Node-RED 1.0+
+			send = send || function () { node.send.apply(node, arguments); };
+
 			if (tickUpstreamId === undefined) {
 				tickUpstreamId = findInputNodeId(node, (n) => RED.nodes.getNode(n.id).tickConsumer);
 				tickUpstreamNode = tickUpstreamId ? RED.nodes.getNode(tickUpstreamId) : null;
@@ -158,10 +159,10 @@ module.exports = function (RED) {
 					downstreamReady = false;
 					if (err) {
 						if (done) {
-							// Node-RED 1.0=< compatible
+							// Node-RED 1.0+
 							done(err);
 						} else {
-							// Node-RED 0.x compatible
+							// Node-RED 0.x
 							node.error(err, msg);
 						}
 					}
