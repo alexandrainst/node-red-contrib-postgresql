@@ -37,7 +37,7 @@ SELECT * FROM table WHERE id = '{{{ msg.id }}}';
 
 As an alternative to using the query template above, this node also accepts an SQL query via the `msg.query` parameter.
 
-### Parameterized query
+### Parameterized query (numeric)
 
 Parameters for parameterized queries can be passed as a parameter array `msg.params`:
 
@@ -50,6 +50,24 @@ msg.params = [ msg.id ];
 -- In this node, use a parameterized query
 SELECT * FROM table WHERE id = $1;
 ```
+
+### Named parameterized query
+
+As an alternative to numeric parameters,
+named parameters for parameterized queries can be passed as a parameter array `msg.queryParameters`:
+
+```js
+// In a function, provide parameters for the named parameterized query
+msg.queryParameters.id = msg.id;
+```
+
+```sql
+-- In this node, use a named parameterized query
+SELECT * FROM table WHERE id = $id;
+```
+
+_Note_: named parameters are not natively supported by PostgreSQL, and this library just emulates them,
+so this is less robust than numeric parameters.
 
 ### Dynamic PostgreSQL connection parameters
 

@@ -31,6 +31,7 @@ module.exports = function (RED) {
 	const Mustache = require('mustache');
 	const { Client, Pool } = require('pg');
 	const Cursor = require('pg-cursor');
+	const named = require('./node-postgres-named.js');
 
 	function getField(node, kind, value) {
 		switch (kind) {
@@ -128,7 +129,7 @@ module.exports = function (RED) {
 				}
 			} else {
 				const partsId = Math.random();
-				const query = msg.query ? msg.query : Mustache.render(node.query, { msg });
+				let query = msg.query ? msg.query : Mustache.render(node.query, { msg });
 
 				let client = null;
 
@@ -179,11 +180,18 @@ module.exports = function (RED) {
 						client = await node.config.pgPool.connect();
 					}
 
+					let params = [];
+					if (msg.params && msg.params.length > 0) {
+						params = msg.params;
+					} else if (msg.queryParameters && (typeof msg.queryParameters === 'object')) {
+						({ text: query, values: params } = named.convert(query, msg.queryParameters));
+					}
+
 					if (node.split) {
 						let partsIndex = 0;
 						delete msg.complete;
 
-						cursor = client.query(new Cursor(query, msg.params || []));
+						cursor = client.query(new Cursor(query, params));
 
 						const cursorcallback = (err, rows, result) => {
 							if (err) {
@@ -236,7 +244,7 @@ module.exports = function (RED) {
 					} else {
 						getNextRows = async () => {
 							try {
-								const result = await client.query(query, msg.params || []);
+								const result = await client.query(query, params);
 								if (result.length) {
 									// Multiple queries
 									msg.payload = [];
