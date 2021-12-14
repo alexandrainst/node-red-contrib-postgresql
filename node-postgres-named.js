@@ -8,35 +8,24 @@
  * > and [Victor Quinn](https://github.com/victorquinn) fixed a spelling error.
  */
 
-const _ = require('lodash');
-
-const tokenPattern = /\$[a-zA-Z]([a-zA-Z0-9_]*)\b/g;
+const tokenPattern = /(?<=\$)[a-zA-Z]([a-zA-Z0-9_]*)\b/g;
 
 function numericFromNamed(sql, parameters) {
-	const fillableTokens = Object.keys(parameters);
-	const matchedTokens = _.uniq(_.map(sql.match(tokenPattern), function (token) {
-		return token.substring(1); // Remove leading dollar sign
-	}));
+	const fillableTokens = new Set(Object.keys(parameters));
+	const matchedTokens = new Set(sql.match(tokenPattern));
 
-	const fillTokens = _.intersection(fillableTokens, matchedTokens).sort();
-	const fillValues = _.map(fillTokens, function (token) {
-		return parameters[token];
-	});
+	const fillTokens = Array.from(matchedTokens).filter((token) => fillableTokens.has(token)).sort();
+	const fillValues = Array.from(fillTokens).map((token) => parameters[token]);
+	const unmatchedTokens = Array.from(matchedTokens).filter((token) => !fillableTokens.has(token));
 
-	const unmatchedTokens = _.difference(matchedTokens, fillableTokens);
-
-	if (unmatchedTokens.length) {
-		const missing = unmatchedTokens.join(', ');
-		throw new Error('Missing Parameters: ' + missing);
+	if (unmatchedTokens.length > 0) {
+		throw new Error('Missing Parameters: ' + unmatchedTokens.join(', '));
 	}
 
-	const interpolatedSql = _.reduce(fillTokens,
-		function (partiallyInterpolated, token, index) {
-			const replaceAllPattern = new RegExp('\\$' + fillTokens[index] + '\\b', 'g');
-			return partiallyInterpolated
-				.replace(replaceAllPattern,
-					'$' + (index + 1)); // PostGreSQL parameters are inexplicably 1-indexed.
-		}, sql);
+	const interpolatedSql = Array.from(fillTokens).reduce((partiallyInterpolated, token, index) => {
+		const replaceAllPattern = new RegExp('\\$' + fillTokens[index] + '\\b', 'g');
+		return partiallyInterpolated.replace(replaceAllPattern, '$' + (index + 1)); // PostgreSQL parameters are 1-indexed
+	}, sql);
 
 	const out = {};
 	out.sql = interpolatedSql;
@@ -54,7 +43,7 @@ function patch(client) {
 
 	const patchedQuery = function (config, values, callback) {
 		let reparameterized;
-		if (_.isPlainObject(config) && _.isPlainObject(config.values)) {
+		if (config && config.values && (typeof config.values === 'object')) {
 			reparameterized = numericFromNamed(config.text, config.values);
 			config.text = reparameterized.sql;
 			config.values = reparameterized.values;
@@ -62,9 +51,9 @@ function patch(client) {
 
 		if (arguments.length === 1) {
 			return originalQuery(config);
-		} else if (arguments.length === 2 && _.isFunction(values)) {
+		} else if (arguments.length === 2 && (typeof values === 'function')) {
 			return originalQuery(config, values);
-		} else if (_.isUndefined(values) || _.isNull(values) || _.isArray(values)) {
+		} else if (values === undefined || values === null || Array.isArray(values)) {
 			return originalQuery(config, values, callback);
 		} else {
 			reparameterized = numericFromNamed(config, values);
