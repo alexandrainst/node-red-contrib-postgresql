@@ -54,7 +54,7 @@ SELECT * FROM table WHERE id = $1;
 ### Named parameterized query
 
 As an alternative to numeric parameters,
-named parameters for parameterized queries can be passed as a parameter array `msg.queryParameters`:
+named parameters for parameterized queries can be passed as a parameter object `msg.queryParameters`:
 
 ```js
 // In a function, provide parameters for the named parameterized query
