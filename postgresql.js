@@ -42,6 +42,7 @@ module.exports = function (RED) {
 			case 'num':
 				return parseInt(value);
 			case 'bool':
+			case 'json':
 				return JSON.parse(value);
 			case 'env':
 				return process.env[value];
