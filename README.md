@@ -66,7 +66,7 @@ msg.queryParameters.id = msg.id;
 SELECT * FROM table WHERE id = $id;
 ```
 
-_Note_: named parameters are not natively supported by PostgreSQL, and this library just emulates them,
+*Note*: named parameters are not natively supported by PostgreSQL, and this library just emulates them,
 so this is less robust than numeric parameters.
 
 ### Dynamic PostgreSQL connection parameters
@@ -140,9 +140,9 @@ Likewise, this node detects upstream nodes using the same back-pressure conventi
 Example adding a new column in a table, then streaming (split) many lines from that table, batch-updating several lines at a time,
 then getting a sample consisting of a few lines:
 
-Example: [flow.json](doc/flow.json)
+Example: [flow.json](examples/flow.json)
 
-![Node-RED flow](doc/flow.png)
+![Node-RED flow](examples/flow.png)
 
 The *debug* nodes illustrate some relevant information to look at.
 
