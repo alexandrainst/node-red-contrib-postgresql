@@ -114,6 +114,39 @@ module.exports = function (RED) {
 		let cursor;
 		let getNextRows;
 
+		// Do not update status faster than x ms
+		const updateStatusPeriodMs = 1000;
+
+		let nbQueue = 0;
+		let hasError = false;
+		let statusTimer = null;
+		const updateStatus = (incQueue = 0, isError = false) => {
+			nbQueue += incQueue;
+			hasError |= isError;
+			if (!statusTimer) {
+				statusTimer = setTimeout(() => {
+					let fill = 'grey';
+					if (hasError) {
+						fill = 'red';
+					} else if (nbQueue <= 0) {
+						fill = 'blue';
+					} else if (nbQueue <= node.config.pgPool.totalCount) {
+						fill = 'green';
+					} else {
+						fill = 'yellow';
+					}
+					node.status({
+						fill,
+						shape: hasError || nbQueue > node.config.pgPool.totalCount ? 'ring' : 'dot',
+						text: 'Queue: ' + nbQueue + (hasError ? ' Error!' : ''),
+					});
+					hasError = false;
+					statusTimer = null;
+				}, updateStatusPeriodMs);
+			}
+		};
+		updateStatus(0, false);
+
 		node.on('input', async (msg, send, done) => {
 			// 'send' and 'done' require Node-RED 1.0+
 			send = send || function () { node.send.apply(node, arguments); };
@@ -134,7 +167,7 @@ module.exports = function (RED) {
 
 				let client = null;
 
-				const handleDone = async () => {
+				const handleDone = async (isError = false) => {
 					if (cursor) {
 						cursor.close();
 						cursor = null;
@@ -146,13 +179,16 @@ module.exports = function (RED) {
 							await client.end();
 						}
 						client = null;
+						updateStatus(-1, isError);
+					} else if (isError) {
+						updateStatus(-1, isError);
 					}
 					getNextRows = null;
 				};
 
 				const handleError = (err) => {
 					const error = (err ? err.toString() : 'Unknown error!') + ' ' + query;
-					handleDone();
+					handleDone(true);
 					msg.payload = error;
 					msg.parts = {
 						id: partsId,
@@ -171,6 +207,7 @@ module.exports = function (RED) {
 				};
 
 				handleDone();
+				updateStatus(+1);
 				downstreamReady = true;
 
 				try {
@@ -200,7 +237,7 @@ module.exports = function (RED) {
 							} else {
 								const complete = rows.length < node.rowsPerMsg;
 								if (complete) {
-									handleDone();
+									handleDone(false);
 								}
 								const msg2 = Object.assign({}, msg, {
 									payload: (node.rowsPerMsg || 1) > 1 ? rows : rows[0],
