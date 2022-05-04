@@ -62,6 +62,14 @@
 		</div>
 		<div id="postgresql-config-tab-pool" style="display: none;">
 			<div class="form-row">
+				<label data-i18n="[title]postgresql.title.applicationName" for="node-config-input-applicationName">
+					<i class="fa fa-tag"></i>
+					<span data-i18n="postgresql.label.applicationName"></span>
+				</label>
+				<input type="text" id="node-config-input-applicationName" data-i18n="[placeholder]postgresql.placeholder.applicationName" style="width: 80%;" />
+				<input type="hidden" id="node-config-input-applicationNameType" />
+			</div>
+			<div class="form-row">
 				<label data-i18n="[title]postgresql.title.max" for="node-config-input-max" style="width: 150px;">
 					<i class="fa fa-thermometer-full"></i>
 					<span data-i18n="postgresql.label.max"></span>
@@ -120,6 +128,12 @@
 			},
 			sslFieldType: {
 				value: 'bool',
+			},
+			applicationName: {
+				value: '',
+			},
+			applicationNameType: {
+				value: 'str',
 			},
 			max: {
 				value: 10,
@@ -210,6 +224,11 @@
 					types: ['str', 'global', 'env'],
 					typeField: $('#node-config-input-passwordFieldType'),
 				});
+			$('#node-config-input-applicationName').typedInput({
+				default: 'str',
+				types: ['str', 'global', 'env'],
+				typeField: $('#node-config-input-applicationNameType'),
+			});
 			$('#node-config-input-max').typedInput({
 				default: 'num',
 				types: ['num', 'global'],

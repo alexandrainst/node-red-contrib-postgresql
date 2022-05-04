@@ -63,6 +63,8 @@ module.exports = function (RED) {
 		node.databaseFieldType = n.databaseFieldType;
 		node.ssl = n.ssl;
 		node.sslFieldType = n.sslFieldType;
+		node.applicationName = n.applicationName;
+		node.applicationNameType = n.applicationNameType;
 		node.max = n.max;
 		node.maxFieldType = n.maxFieldType;
 		node.idle = n.idle;
@@ -81,6 +83,7 @@ module.exports = function (RED) {
 			port: getField(node, n.portFieldType, n.port),
 			database: getField(node, n.databaseFieldType, n.database),
 			ssl: getField(node, n.sslFieldType, n.ssl),
+			application_name: getField(node, n.applicationNameType, n.applicationName),
 			max: getField(node, n.maxFieldType, n.max),
 			idleTimeoutMillis: getField(node, n.idleFieldType, n.idle),
 			connectionTimeoutMillis: getField(node, n.connectionTimeoutFieldType, n.connectionTimeout),
