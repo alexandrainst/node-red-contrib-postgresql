@@ -279,8 +279,6 @@
 		"sslFieldType": "bool",
 		"max": "10",
 		"maxFieldType": "num",
-		"min": "1",
-		"minFieldType": "num",
 		"idle": "1000",
 		"idleFieldType": "num",
 		"connectionTimeout": "10000",

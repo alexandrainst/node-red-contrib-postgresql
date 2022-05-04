@@ -70,14 +70,6 @@
 				<input type="hidden" id="node-config-input-maxFieldType" />
 			</div>
 			<div class="form-row">
-				<label data-i18n="[title]postgresql.title.min" for="node-config-input-min" style="width: 150px;">
-					<i class="fa fa-thermometer-empty"></i>
-					<span data-i18n="postgresql.label.min"></span>
-				</label>
-				<input type="text" id="node-config-input-min" data-i18n="[placeholder]postgresql.placeholder.min" style="width: 60%;" />
-				<input type="hidden" id="node-config-input-minFieldType" />
-			</div>
-			<div class="form-row">
 				<label for="node-config-input-idle" style="width: 150px;">
 					<i class="fa fa-hourglass-half"></i>
 					<span data-i18n="postgresql.label.idle"></span>
@@ -135,12 +127,6 @@
 			maxFieldType: {
 				value: 'num',
 			},
-			min: {
-				value: 1,
-			},
-			minFieldType: {
-				value: 'num',
-			},
 			idle: {
 				value: 1000,
 			},
@@ -163,6 +149,7 @@
 				value: '',
 			},
 			passwordFieldType: {
+				// TODO: https://nodered.org/docs/creating-nodes/credentials
 				value: 'str',
 			},
 		},

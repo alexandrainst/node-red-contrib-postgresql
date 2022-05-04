@@ -8,7 +8,6 @@
 			"ssl": "SSL",
 			"user": "User",
 			"password": "Password",
-			"min": "Minimum size",
 			"max": "Maximum size",
 			"idle": "Idle Timeout",
 			"connectionTimeout": "Connection Timeout",
@@ -24,8 +23,7 @@
 			"database": "dbExample",
 			"user": "dbUser",
 			"password": "dbPassword",
-			"min": "10",
-			"max": "1",
+			"max": "10",
 			"idle": "1000 (Milliseconds)",
 			"connectionTimeout": "10000 (Milliseconds)"
 		},
@@ -35,8 +33,7 @@
 			"pool": "Pool"
 		},
 		"title": {
-			"max": "Maximum number of physical database connections that this connection pool can contain.",
-			"min": "Minimum number of physical database connections that this connection pool can contain."
+			"max": "Maximum number of physical database connections that this connection pool can contain."
 		}
 	}
 }

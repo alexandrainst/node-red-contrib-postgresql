@@ -65,8 +65,6 @@ module.exports = function (RED) {
 		node.sslFieldType = n.sslFieldType;
 		node.max = n.max;
 		node.maxFieldType = n.maxFieldType;
-		node.min = n.min;
-		node.minFieldType = n.minFieldType;
 		node.idle = n.idle;
 		node.idleFieldType = n.idleFieldType;
 		node.user = n.user;
@@ -84,7 +82,6 @@ module.exports = function (RED) {
 			database: getField(node, n.databaseFieldType, n.database),
 			ssl: getField(node, n.sslFieldType, n.ssl),
 			max: getField(node, n.maxFieldType, n.max),
-			min: getField(node, n.minFieldType, n.min),
 			idleTimeoutMillis: getField(node, n.idleFieldType, n.idle),
 			connectionTimeoutMillis: getField(node, n.connectionTimeoutFieldType, n.connectionTimeout),
 		});
