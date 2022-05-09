@@ -8,6 +8,7 @@
 			"ssl": "SSL",
 			"user": "User",
 			"password": "Password",
+			"applicationName": "Application name",
 			"max": "Maximum size",
 			"idle": "Idle Timeout",
 			"connectionTimeout": "Connection Timeout",
@@ -23,6 +24,7 @@
 			"database": "dbExample",
 			"user": "dbUser",
 			"password": "dbPassword",
+			"applicationName": "",
 			"max": "10",
 			"idle": "1000 (Milliseconds)",
 			"connectionTimeout": "10000 (Milliseconds)"
@@ -33,6 +35,7 @@
 			"pool": "Pool"
 		},
 		"title": {
+			"applicationName": "The name of the application that created this Client instance.",
 			"max": "Maximum number of physical database connections that this connection pool can contain."
 		}
 	}
