@@ -1,6 +1,6 @@
 {
 	"name": "node-red-contrib-postgresql",
-	"version": "0.10.0",
+	"version": "0.10.1",
 	"description": "Node-RED node for PostgreSQL, supporting parameters, split, back-pressure",
 	"author": {
 		"name": "Alexandre Alapetite",
