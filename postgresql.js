@@ -12,7 +12,7 @@ function findInputNodeId(toNode, filter = null) {
 		const allNodes = toNode._flow.global.allNodes;
 		for (const fromNodeId of Object.keys(allNodes)) {
 			const fromNode = allNodes[fromNodeId];
-			if (fromNode.wires) {
+			if (fromNode && fromNode.wires) {
 				for (const wireId of Object.keys(fromNode.wires)) {
 					const wire = fromNode.wires[wireId];
 					for (const toNodeId of wire) {
