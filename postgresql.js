@@ -174,7 +174,7 @@ module.exports = function (RED) {
 					}
 					if (client) {
 						if (client.release) {
-							client.release(true);
+							client.release(isError);
 						} else if (client.end) {
 							await client.end();
 						}
