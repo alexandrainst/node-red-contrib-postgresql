@@ -128,7 +128,7 @@ module.exports = function (RED) {
 					let fill = 'grey';
 					if (hasError) {
 						fill = 'red';
-					} else if (nbQueue <= 0) {
+					} else if (nbQueue <= 0 || !node.config.pgPool) {
 						fill = 'blue';
 					} else if (nbQueue <= node.config.pgPool.totalCount) {
 						fill = 'green';
@@ -137,7 +137,7 @@ module.exports = function (RED) {
 					}
 					node.status({
 						fill,
-						shape: hasError || nbQueue > node.config.pgPool.totalCount ? 'ring' : 'dot',
+						shape: hasError || !node.config.pgPool || nbQueue > node.config.pgPool.totalCount ? 'ring' : 'dot',
 						text: 'Queue: ' + nbQueue + (hasError ? ' Error!' : ''),
 					});
 					hasError = false;
