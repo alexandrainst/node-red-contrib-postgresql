@@ -99,7 +99,11 @@ module.exports = function (RED) {
 		node.query = config.query;
 		node.split = config.split;
 		node.rowsPerMsg = config.rowsPerMsg;
-		node.config = RED.nodes.getNode(config.postgreSQLConfig);
+		node.config = RED.nodes.getNode(config.postgreSQLConfig) || {
+			pgPool: {
+				totalCount: 0,
+			},
+		};
 
 		// Declare the ability of this node to provide ticks upstream for back-pressure
 		node.tickProvider = true;
@@ -128,7 +132,7 @@ module.exports = function (RED) {
 					let fill = 'grey';
 					if (hasError) {
 						fill = 'red';
-					} else if (nbQueue <= 0 || !node.config.pgPool) {
+					} else if (nbQueue <= 0) {
 						fill = 'blue';
 					} else if (nbQueue <= node.config.pgPool.totalCount) {
 						fill = 'green';
@@ -137,7 +141,7 @@ module.exports = function (RED) {
 					}
 					node.status({
 						fill,
-						shape: hasError || !node.config.pgPool || nbQueue > node.config.pgPool.totalCount ? 'ring' : 'dot',
+						shape: hasError || nbQueue > node.config.pgPool.totalCount ? 'ring' : 'dot',
 						text: 'Queue: ' + nbQueue + (hasError ? ' Error!' : ''),
 					});
 					hasError = false;
