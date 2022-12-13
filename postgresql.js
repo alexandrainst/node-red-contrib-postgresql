@@ -170,7 +170,7 @@ module.exports = function (RED) {
 
 				const flowContext = this.flow.keys().reduce((prev, k) => ({ ...prev, [k]: this.flow.get(k) }), { });
 				const globalContext = this.global.keys().reduce((prev, k) => ({ ...prev, [k]: this.global.get(k) }), { });
-				
+
 				let query = msg.query ? msg.query : Mustache.render(node.query, { flow: flowContext, global: globalContext, msg });
 
 				let client = null;
