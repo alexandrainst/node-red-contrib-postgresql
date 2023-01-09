@@ -156,7 +156,8 @@ module.exports = function (RED) {
 			send = send || function () { node.send.apply(node, arguments); };
 
 			if (tickUpstreamId === undefined) {
-				tickUpstreamId = findInputNodeId(node, (n) => RED.nodes.getNode(n.id).tickConsumer);
+				// TODO: Test with older versions of Node-RED:
+				tickUpstreamId = findInputNodeId(node, (n) => n && n.tickConsumer);
 				tickUpstreamNode = tickUpstreamId ? RED.nodes.getNode(tickUpstreamId) : null;
 			}
 
