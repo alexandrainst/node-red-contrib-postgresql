@@ -12,7 +12,7 @@
 	</p>
 	<p>
 		Additional information is provided as <code>msg.pgsql.rowCount</code> and <code>msg.pgsql.command</code>.
-		See the <a href="https://node-postgres.com/api/result">underlying documentation</a> for details.
+		See the <a href="https://node-postgres.com/apis/result">underlying documentation</a> for details.
 	</p>
 	<p>In the case of multiple queries, then <code>msg.pgsql</code> is an array.</p>
 
@@ -65,7 +65,7 @@ SELECT * FROM table WHERE id = $id;
 	<h4>Dynamic PostgreSQL connection parameters</h4>
 	<p>
 		If the information about which database server to connect and how needs to be dynamic,
-		it is possible to pass a <a href="https://node-postgres.com/api/client">custom client configuration</a> in the message:
+		it is possible to pass a <a href="https://node-postgres.com/apis/client">custom client configuration</a> in the message:
 	</p>
 
 <pre>

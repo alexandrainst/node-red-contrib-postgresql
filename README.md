@@ -15,7 +15,7 @@ An exception is if the *Split results* option is enabled and the *Number of rows
 then `msg.payload` is not an array but the single-row response.
 
 Additional information is provided as `msg.pgsql.rowCount` and `msg.pgsql.command`.
-See the [underlying documentation](https://node-postgres.com/api/result) for details.
+See the [underlying documentation](https://node-postgres.com/apis/result) for details.
 
 In the case of multiple queries, then `msg.pgsql` is an array.
 
@@ -72,7 +72,7 @@ so this is less robust than numeric parameters.
 ### Dynamic PostgreSQL connection parameters
 
 If the information about which database server to connect and how needs to be dynamic,
-it is possible to pass a [custom client configuration](https://node-postgres.com/api/client) in the message:
+it is possible to pass a [custom client configuration](https://node-postgres.com/apis/client) in the message:
 
 ```js
 msg.pgConfig = {
