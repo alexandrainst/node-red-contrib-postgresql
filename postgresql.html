@@ -279,6 +279,12 @@
 		</label>
 		<input type="number" id="node-input-rowsPerMsg" placeholder="1" value="1" min="1" />
 	</div>
+	<div class="form-row">
+		<input type="checkbox" id="node-input-listen" style="display: inline-block; width: auto; vertical-align: top;" />
+		<label for="node-input-listen" style="width: auto;">
+			<span data-i18n="postgresql.label.listen"></span>
+		</label>
+	</div>
 	<div class="form-row" style="position: relative; margin-bottom: 0px;">
 		<label for="node-input-query">
 			<i class="fa fa-file-code-o"></i>
@@ -313,6 +319,9 @@
 			rowsPerMsg: {
 				value: 1,
 			},
+			listen: {
+				value: false,
+			},
 			outputs: {
 				value: 1,
 			},
@@ -329,6 +338,7 @@
 		oneditprepare: function () {
 			$('#node-input-split').prop('checked', this.split);
 			$('#node-input-rowsPerMsg').value = this.split ? this.rowsPerMsg : 1;
+			$('#node-input-listen').prop('checked', this.listen);
 			this.editor = RED.editor.createEditor({
 				id: 'node-input-editor',
 				mode: 'ace/mode/sql',

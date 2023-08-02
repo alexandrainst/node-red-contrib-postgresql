@@ -95,6 +95,7 @@ module.exports = function (RED) {
 	function PostgreSQLNode(config) {
 		const node = this;
 		RED.nodes.createNode(node, config);
+		node.listen = config.listen;
 		node.topic = config.topic;
 		node.query = config.query;
 		node.split = config.split;
@@ -223,6 +224,22 @@ module.exports = function (RED) {
 						client = await node.config.pgPool.connect();
 					}
 
+					client.on('notice', (msg) => {
+						send({
+							notice: msg,
+						});
+					});
+
+					if (node.listen) {
+						client.on('notification', (msg) => {
+							send({
+								channel: msg.channel,
+								payload: msg.payload,
+								processId: msg.processId,
+							});
+						});
+					}
+
 					let params = [];
 					if (msg.params && msg.params.length > 0) {
 						params = msg.params;
@@ -241,7 +258,7 @@ module.exports = function (RED) {
 								handleError(err);
 							} else {
 								const complete = rows.length < node.rowsPerMsg;
-								if (complete) {
+								if (complete && !node.listen) {
 									handleDone(false);
 								}
 								const msg2 = Object.assign({}, msg, {
@@ -308,7 +325,9 @@ module.exports = function (RED) {
 									};
 								}
 
-								handleDone();
+								if (!node.listen) {
+									handleDone();
+								}
 								downstreamReady = false;
 								send(msg);
 								if (tickUpstreamNode) {
