@@ -152,6 +152,8 @@ module.exports = function (RED) {
 		};
 		updateStatus(0, false);
 
+		let client = null;
+
 		node.on('input', async (msg, send, done) => {
 			// 'send' and 'done' require Node-RED 1.0+
 			send = send || function () { node.send.apply(node, arguments); };
@@ -170,8 +172,6 @@ module.exports = function (RED) {
 			} else {
 				const partsId = Math.random();
 				let query = msg.query ? msg.query : Mustache.render(node.query, { msg });
-
-				let client = null;
 
 				const handleDone = async (isError = false) => {
 					if (cursor) {
@@ -212,7 +212,10 @@ module.exports = function (RED) {
 					}
 				};
 
-				handleDone();
+				if (node.listen) {
+					// Avoid multiple listening instances
+					handleDone();
+				}
 				updateStatus(+1);
 				downstreamReady = true;
 
