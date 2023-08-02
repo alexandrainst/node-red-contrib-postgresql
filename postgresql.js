@@ -220,8 +220,13 @@ module.exports = function (RED) {
 				downstreamReady = true;
 
 				try {
-					if (msg.pgConfig) {
-						client = new Client(msg.pgConfig);
+					if (msg.pgConfig || node.listen) {
+						// Do not use pool for clients with custom config nor for listeners
+						const pgConfig = Object.assign({},
+							node.config.pgPool.options, {
+								password: node.config.password,
+							}, msg.pgConfig);
+						client = new Client(pgConfig);
 						await client.connect();
 					} else {
 						client = await node.config.pgPool.connect();
