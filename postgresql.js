@@ -88,6 +88,9 @@ module.exports = function (RED) {
 			idleTimeoutMillis: getField(node, n.idleFieldType, n.idle),
 			connectionTimeoutMillis: getField(node, n.connectionTimeoutFieldType, n.connectionTimeout),
 		});
+		this.pgPool.on('error', (err, _) => {
+			node.error(err.message);
+		});
 	}
 
 	RED.nodes.registerType('postgreSQLConfig', PostgreSQLConfigNode);

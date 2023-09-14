@@ -45,15 +45,15 @@
 	},
 	"dependencies": {
 		"mustache": "^4.2.0",
-		"pg": "^8.11.0",
-		"pg-cursor": "^2.10.0"
+		"pg": "^8.11.3",
+		"pg-cursor": "^2.10.3"
 	},
 	"devDependencies": {
-		"eslint": "^8.46.0",
+		"eslint": "^8.49.0",
 		"eslint-config-standard": "^17.1.0",
 		"eslint-plugin-html": "^7.1.0",
-		"eslint-plugin-import": "^2.28.0",
-		"eslint-plugin-n": "^16.0.1",
+		"eslint-plugin-import": "^2.28.1",
+		"eslint-plugin-n": "^16.1.0",
 		"eslint-plugin-promise": "^6.1.1",
 		"mocha": "^10.2.0"
 	},
