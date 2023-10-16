@@ -1,6 +1,6 @@
 {
 	"name": "node-red-contrib-postgresql",
-	"version": "0.14.0",
+	"version": "0.14.1",
 	"description": "Node-RED node for PostgreSQL, supporting parameters, split, back-pressure",
 	"author": {
 		"name": "Alexandre Alapetite",
@@ -49,11 +49,11 @@
 		"pg-cursor": "^2.10.3"
 	},
 	"devDependencies": {
-		"eslint": "^8.49.0",
+		"eslint": "^8.51.0",
 		"eslint-config-standard": "^17.1.0",
 		"eslint-plugin-html": "^7.1.0",
 		"eslint-plugin-import": "^2.28.1",
-		"eslint-plugin-n": "^16.1.0",
+		"eslint-plugin-n": "^16.2.0",
 		"eslint-plugin-promise": "^6.1.1",
 		"mocha": "^10.2.0"
 	},
