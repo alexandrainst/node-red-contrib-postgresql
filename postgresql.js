@@ -82,11 +82,11 @@ module.exports = function (RED) {
 			host: getField(node, n.hostFieldType, n.host),
 			port: getField(node, n.portFieldType, n.port),
 			database: getField(node, n.databaseFieldType, n.database),
-			ssl: getField(node, n.sslFieldType, n.ssl),
+			ssl: getField(node, n.sslFieldType, n.ssl) != 'false',
 			application_name: getField(node, n.applicationNameType, n.applicationName),
 			max: getField(node, n.maxFieldType, n.max),
-			idleTimeoutMillis: getField(node, n.idleFieldType, n.idle),
-			connectionTimeoutMillis: getField(node, n.connectionTimeoutFieldType, n.connectionTimeout),
+			idleTimeoutMillis: +getField(node, n.idleFieldType, n.idle),
+			connectionTimeoutMillis: +getField(node, n.connectionTimeoutFieldType, n.connectionTimeout),
 		});
 		this.pgPool.on('error', (err, _) => {
 			node.error(err.message);
