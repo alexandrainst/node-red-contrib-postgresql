@@ -51,6 +51,38 @@ module.exports = function (RED) {
 		}
 	}
 
+	function changed(cnfg, prevCnfg) {
+		if (cnfg === undefined) {
+			return undefined;
+		}
+		else if (prevCnfg === undefined) {
+			return true;
+		}
+		else {
+			// Perform actual comparison
+			let result = false;
+			const cnfgKeys = Object.keys(cnfg).sort();
+			const prevCnfgKeys = Object.keys(prevCnfg).sort();
+			// Check for different numbers of keys
+			if (cnfgKeys.length !== prevCnfgKeys.length) {
+				result = true;
+			}
+			else {
+				// Same nambers of keys - check for at least one changed key
+				if (!(cnfgKeys.every((key, index) => key === prevCnfgKeys[index]))) {
+					result = true
+				}
+				else {
+					// Same keys - check for at least one changed value
+					if (!(cnfgKeys.every((key) => cnfg[key] === prevCnfg[key]))) {
+						result = true;
+					}
+				}
+			}
+			return result;
+		}
+	}
+
 	function PostgreSQLConfigNode(n) {
 		const node = this;
 		RED.nodes.createNode(node, n);
@@ -75,22 +107,6 @@ module.exports = function (RED) {
 		node.passwordFieldType = n.passwordFieldType;
 		node.connectionTimeout = n.connectionTimeout;
 		node.connectionTimeoutFieldType = n.connectionTimeoutFieldType;
-
-		this.pgPool = new Pool({
-			user: getField(node, n.userFieldType, n.user),
-			password: getField(node, n.passwordFieldType, n.password),
-			host: getField(node, n.hostFieldType, n.host),
-			port: getField(node, n.portFieldType, n.port),
-			database: getField(node, n.databaseFieldType, n.database),
-			ssl: getField(node, n.sslFieldType, n.ssl),
-			application_name: getField(node, n.applicationNameType, n.applicationName),
-			max: getField(node, n.maxFieldType, n.max),
-			idleTimeoutMillis: getField(node, n.idleFieldType, n.idle),
-			connectionTimeoutMillis: getField(node, n.connectionTimeoutFieldType, n.connectionTimeout),
-		});
-		this.pgPool.on('error', (err, _) => {
-			node.error(err.message);
-		});
 	}
 
 	RED.nodes.registerType('postgreSQLConfig', PostgreSQLConfigNode);
@@ -102,11 +118,8 @@ module.exports = function (RED) {
 		node.query = config.query;
 		node.split = config.split;
 		node.rowsPerMsg = config.rowsPerMsg;
-		node.config = RED.nodes.getNode(config.postgreSQLConfig) || {
-			pgPool: {
-				totalCount: 0,
-			},
-		};
+		node.config = RED.nodes.getNode(config.postgreSQLConfig) || {};
+		let pgPool = { totalCount: 0, end: null};
 
 		// Declare the ability of this node to provide ticks upstream for back-pressure
 		node.tickProvider = true;
@@ -137,14 +150,14 @@ module.exports = function (RED) {
 						fill = 'red';
 					} else if (nbQueue <= 0) {
 						fill = 'blue';
-					} else if (nbQueue <= node.config.pgPool.totalCount) {
+					} else if (nbQueue <= pgPool.totalCount) {
 						fill = 'green';
 					} else {
 						fill = 'yellow';
 					}
 					node.status({
 						fill,
-						shape: hasError || nbQueue > node.config.pgPool.totalCount ? 'ring' : 'dot',
+						shape: hasError || nbQueue > pgPool.totalCount ? 'ring' : 'dot',
 						text: 'Queue: ' + nbQueue + (hasError ? ' Error!' : ''),
 					});
 					hasError = false;
@@ -155,6 +168,35 @@ module.exports = function (RED) {
 		updateStatus(0, false);
 
 		node.on('input', async (msg, send, done) => {
+
+			// Get current db access configuration data
+			let dbAccessCfgData = {};
+			dbAccessCfgData.user = getField(node, node.config.userFieldType, node.config.user);
+			dbAccessCfgData.password = getField(node, node.config.passwordFieldType, node.config.password);
+			dbAccessCfgData.host = getField(node, node.config.hostFieldType, node.config.host);
+			dbAccessCfgData.port = getField(node, node.config.portFieldType, node.config.port);
+			dbAccessCfgData.database = getField(node, node.config.databaseFieldType, node.config.database);
+			dbAccessCfgData.ssl = getField(node, node.config.sslFieldType, node.config.ssl);
+			dbAccessCfgData.application_name = getField(node, node.config.applicationNameType, node.config.applicationName);
+			dbAccessCfgData.max = getField(node, node.config.maxFieldType, node.config.max);
+			dbAccessCfgData.idleTimeoutMillis = getField(node, node.config.idleFieldType, node.config.idle);
+			dbAccessCfgData.connectionTimeoutMillis = getField(node, node.config.connectionTimeoutFieldType, node.config.connectionTimeout);
+
+			// Get previous db access configuration data
+			const nodeContext = node.context();
+			const previousDbAccessCfgData = nodeContext.get('previousDbAccessCfgData')
+
+			if (changed(dbAccessCfgData, previousDbAccessCfgData))
+			{
+				// Reset connections pool
+				if (pgPool.end !== null) {
+					pgPool.end();
+				}
+				pgPool = new Pool(dbAccessCfgData);
+				// Update previous db access configuration datain context
+				nodeContext.set('previousDbAccessCfgData',dbAccessCfgData)
+			}
+
 			// 'send' and 'done' require Node-RED 1.0+
 			send = send || function () { node.send.apply(node, arguments); };
 
@@ -223,7 +265,7 @@ module.exports = function (RED) {
 						client = new Client(msg.pgConfig);
 						await client.connect();
 					} else {
-						client = await node.config.pgPool.connect();
+						client = await pgPool.connect();
 					}
 
 					let params = [];
