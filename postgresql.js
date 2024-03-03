@@ -119,7 +119,7 @@ module.exports = function (RED) {
 		node.split = config.split;
 		node.rowsPerMsg = config.rowsPerMsg;
 		node.config = RED.nodes.getNode(config.postgreSQLConfig) || {};
-		let pgPool = { totalCount: 0, end: null};
+		node.config.pgPool = { totalCount: 0, end: null};
 
 		// Declare the ability of this node to provide ticks upstream for back-pressure
 		node.tickProvider = true;
@@ -150,14 +150,14 @@ module.exports = function (RED) {
 						fill = 'red';
 					} else if (nbQueue <= 0) {
 						fill = 'blue';
-					} else if (nbQueue <= pgPool.totalCount) {
+					} else if (nbQueue <= node.config.pgPool.totalCount) {
 						fill = 'green';
 					} else {
 						fill = 'yellow';
 					}
 					node.status({
 						fill,
-						shape: hasError || nbQueue > pgPool.totalCount ? 'ring' : 'dot',
+						shape: hasError || nbQueue > node.config.pgPool.totalCount ? 'ring' : 'dot',
 						text: 'Queue: ' + nbQueue + (hasError ? ' Error!' : ''),
 					});
 					hasError = false;
@@ -189,10 +189,10 @@ module.exports = function (RED) {
 			if (changed(dbAccessCfgData, previousDbAccessCfgData))
 			{
 				// Reset connections pool
-				if (pgPool.end !== null) {
-					pgPool.end();
+				if (node.config.pgPool.end !== null) {
+					node.config.pgPool.end();
 				}
-				pgPool = new Pool(dbAccessCfgData);
+				node.config.pgPool = new Pool(dbAccessCfgData);
 				// Update previous db access configuration datain context
 				nodeContext.set('previousDbAccessCfgData',dbAccessCfgData)
 			}
@@ -265,7 +265,7 @@ module.exports = function (RED) {
 						client = new Client(msg.pgConfig);
 						await client.connect();
 					} else {
-						client = await pgPool.connect();
+						client = await node.config.pgPool.connect();
 					}
 
 					let params = [];
