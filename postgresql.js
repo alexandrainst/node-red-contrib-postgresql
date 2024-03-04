@@ -54,11 +54,9 @@ module.exports = function (RED) {
 	function changed(cnfg, prevCnfg) {
 		if (cnfg === undefined) {
 			return undefined;
-		}
-		else if (prevCnfg === undefined) {
+		} else if (prevCnfg === undefined) {
 			return true;
-		}
-		else {
+		} else {
 			// Perform actual comparison
 			let result = false;
 			const cnfgKeys = Object.keys(cnfg).sort();
@@ -66,13 +64,11 @@ module.exports = function (RED) {
 			// Check for different numbers of keys
 			if (cnfgKeys.length !== prevCnfgKeys.length) {
 				result = true;
-			}
-			else {
+			} else {
 				// Same nambers of keys - check for at least one changed key
 				if (!(cnfgKeys.every((key, index) => key === prevCnfgKeys[index]))) {
-					result = true
-				}
-				else {
+					result = true;
+				} else {
 					// Same keys - check for at least one changed value
 					if (!(cnfgKeys.every((key) => cnfg[key] === prevCnfg[key]))) {
 						result = true;
@@ -119,7 +115,7 @@ module.exports = function (RED) {
 		node.split = config.split;
 		node.rowsPerMsg = config.rowsPerMsg;
 		node.config = RED.nodes.getNode(config.postgreSQLConfig) || {};
-		node.config.pgPool = { totalCount: 0, end: null};
+		node.config.pgPool = { totalCount: 0, end: null };
 
 		// Declare the ability of this node to provide ticks upstream for back-pressure
 		node.tickProvider = true;
@@ -168,9 +164,8 @@ module.exports = function (RED) {
 		updateStatus(0, false);
 
 		node.on('input', async (msg, send, done) => {
-
 			// Get current db access configuration data
-			let dbAccessCfgData = {};
+			const dbAccessCfgData = {};
 			dbAccessCfgData.user = getField(node, node.config.userFieldType, node.config.user);
 			dbAccessCfgData.password = getField(node, node.config.passwordFieldType, node.config.password);
 			dbAccessCfgData.host = getField(node, node.config.hostFieldType, node.config.host);
@@ -184,17 +179,16 @@ module.exports = function (RED) {
 
 			// Get previous db access configuration data
 			const nodeContext = node.context();
-			const previousDbAccessCfgData = nodeContext.get('previousDbAccessCfgData')
+			const previousDbAccessCfgData = nodeContext.get('previousDbAccessCfgData');
 
-			if (changed(dbAccessCfgData, previousDbAccessCfgData))
-			{
+			if (changed(dbAccessCfgData, previousDbAccessCfgData)) {
 				// Reset connections pool
 				if (node.config.pgPool.end !== null) {
 					node.config.pgPool.end();
 				}
 				node.config.pgPool = new Pool(dbAccessCfgData);
 				// Update previous db access configuration datain context
-				nodeContext.set('previousDbAccessCfgData',dbAccessCfgData)
+				nodeContext.set('previousDbAccessCfgData', dbAccessCfgData);
 			}
 
 			// 'send' and 'done' require Node-RED 1.0+
