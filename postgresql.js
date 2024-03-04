@@ -58,24 +58,12 @@ module.exports = function (RED) {
 			return true;
 		} else {
 			// Perform actual comparison
-			let result = false;
 			const cnfgKeys = Object.keys(cnfg).sort();
-			const prevCnfgKeys = Object.keys(prevCnfg).sort();
-			// Check for different numbers of keys
-			if (cnfgKeys.length !== prevCnfgKeys.length) {
-				result = true;
-			} else {
-				// Same nambers of keys - check for at least one changed key
-				if (!(cnfgKeys.every((key, index) => key === prevCnfgKeys[index]))) {
-					result = true;
-				} else {
-					// Same keys - check for at least one changed value
-					if (!(cnfgKeys.every((key) => cnfg[key] === prevCnfg[key]))) {
-						result = true;
-					}
-				}
+			// Check for at least one changed value
+			if (!(cnfgKeys.every((key) => cnfg[key] === prevCnfg[key]))) {
+				return true;
 			}
-			return result;
+			return false;
 		}
 	}
 
