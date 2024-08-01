@@ -49,12 +49,12 @@
 		"pg-cursor": "^2.11.0"
 	},
 	"devDependencies": {
-		"eslint": "^8.57.0",
+		"eslint": "^9.8.0",
 		"eslint-config-standard": "^17.1.0",
 		"eslint-plugin-html": "^8.1.1",
 		"eslint-plugin-import": "^2.29.1",
-		"eslint-plugin-n": "^16.6.0",
-		"eslint-plugin-promise": "^6.1.1",
+		"eslint-plugin-n": "^17.10.1",
+		"eslint-plugin-promise": "^7.0.0",
 		"mocha": "^10.5.2"
 	},
 	"scripts": {
