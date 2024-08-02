@@ -143,7 +143,7 @@ module.exports = function (RED) {
 						fill = 'yellow';
 					}
 					node.status({
-						fill,
+						fill: fill,
 						shape: hasError || nbQueue > node.config.pgPool.totalCount ? 'ring' : 'dot',
 						text: 'Queue: ' + nbQueue + (hasError ? ' Error!' : ''),
 					});
