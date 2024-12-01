@@ -16,6 +16,23 @@
 	</p>
 	<p>In the case of multiple queries, then <code>msg.pgsql</code> is an array.</p>
 
+	<h3>Events</h3>
+	<p>
+		If you tick the <em>Keep listening for notifications</em> option along with a <a href="https://www.postgresql.org/docs/current/sql-listen.html"><code>LISTEN</code></a> request (see below),
+		you will receive a message for each <a href="https://www.postgresql.org/docs/current/sql-notify.html"><code>NOTIFY</code> event,
+		where <code>msg.channel</code> is the name of the channel, <code>msg.payload</code> is content of the notification, and <code>msg.processId</code> indicates the process ID.
+	</p>
+
+<pre>
+LISTEN my_topic;
+</pre>
+
+This can be especially useful when combined with a <a href="https://www.postgresql.org/docs/15/sql-createtrigger.html"><code>TRIGGER</code></a> to be informed of database changes such as new insertions.
+
+See the <a href="https://node-postgres.com/apis/client#notification">underlying documentation</a> for details.
+
+Likewise, you may get notice messages producted by <a href="https://www.postgresql.org/docs/current/plpgsql-errors-and-messages.html"><code>RAISE</code></a> as a <code>msg.notice</code> message.
+
 	<h3>Inputs</h3>
 	<h4>SQL query template</h4>
 	<p>This node uses the <a href="https://github.com/janl/mustache.js">Mustache template system</a> to generate queries based on the message:</p>
