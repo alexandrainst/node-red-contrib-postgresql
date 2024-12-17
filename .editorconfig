@@ -9,7 +9,7 @@ trim_trailing_whitespace = true
 [*.html]
 indent_style = tab
 
-[*.js]
+[*.{js,mjs}]
 indent_style = tab
 
 [*.json]

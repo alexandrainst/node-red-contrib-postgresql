@@ -1,6 +1,6 @@
 {
 	"name": "node-red-contrib-postgresql",
-	"version": "0.14.0",
+	"version": "0.14.2",
 	"description": "Node-RED node for PostgreSQL, supporting parameters, split, back-pressure",
 	"author": {
 		"name": "Alexandre Alapetite",
@@ -45,23 +45,26 @@
 	},
 	"dependencies": {
 		"mustache": "^4.2.0",
-		"pg": "^8.11.3",
-		"pg-cursor": "^2.10.3"
+		"pg": "^8.12.0",
+		"pg-cursor": "^2.11.0"
 	},
 	"devDependencies": {
-		"eslint": "^8.49.0",
-		"eslint-config-standard": "^17.1.0",
-		"eslint-plugin-html": "^7.1.0",
-		"eslint-plugin-import": "^2.28.1",
-		"eslint-plugin-n": "^16.1.0",
-		"eslint-plugin-promise": "^6.1.1",
-		"mocha": "^10.2.0"
+		"eslint": "^9.8.0",
+		"@eslint/js": "^9.8.0",
+		"eslint-plugin-html": "^8.1.1",
+		"globals": "^15.9.0",
+		"markdownlint-cli": "^0.43.0",
+		"neostandard": "^0.11.2",
+		"mocha": "^10.7.0"
 	},
 	"scripts": {
+		"eslint": "eslint .",
+		"eslint_fix": "eslint --fix .",
+		"markdownlint": "markdownlint '**/*.md'",
+		"markdownlint_fix": "markdownlint --fix '**/*.md'",
+		"fix": "npm run rtlcss && npm run eslint_fix && npm run markdownlint_fix",
+		"pretest": "npm run eslint && npm run markdownlint",
 		"mocha": "mocha",
-		"eslint": "eslint --ext .js,.html .",
-		"eslint_fix": "eslint --fix --ext .js,.html .",
-		"fix": "npm run eslint_fix",
-		"test": "npm run eslint && npm run mocha"
+		"test": "npm run mocha"
 	}
 }
