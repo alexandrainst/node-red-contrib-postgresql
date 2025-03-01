@@ -7,6 +7,8 @@ It supports *splitting* the resultset and *backpressure* (flow control), to allo
 
 It supports *parameterized queries* and *multiple queries*.
 
+It supports [`LISTEN`](https://www.postgresql.org/docs/current/sql-listen.html) / [`NOTIFY`](https://www.postgresql.org/docs/current/sql-notify.html) / [`RAISE`](https://www.postgresql.org/docs/current/plpgsql-errors-and-messages.html) events.
+
 ## Outputs
 
 The response (rows) is provided in `msg.payload` as an array.
@@ -18,6 +20,22 @@ Additional information is provided as `msg.pgsql.rowCount` and `msg.pgsql.comman
 See the [underlying documentation](https://node-postgres.com/apis/result) for details.
 
 In the case of multiple queries, then `msg.pgsql` is an array.
+
+## Events
+
+If you tick the *Keep listening for notifications* option along with a [`LISTEN`](https://www.postgresql.org/docs/current/sql-listen.html) request (see below),
+you will receive a message for each [`NOTIFY`](https://www.postgresql.org/docs/current/sql-notify.html) event,
+where `msg.channel` is the name of the channel, `msg.payload` is content of the notification, and `msg.processId` indicates the process ID.
+
+```sql
+LISTEN my_topic;
+```
+
+This can be especially useful when combined with a [`TRIGGER`](https://www.postgresql.org/docs/15/sql-createtrigger.html) to be informed of database changes such as new insertions.
+
+See the [underlying documentation](https://node-postgres.com/apis/client#notification) for details.
+
+Likewise, you may get notice messages producted by [`RAISE`](https://www.postgresql.org/docs/current/plpgsql-errors-and-messages.html) as a `msg.notice` message.
 
 ## Inputs
 
