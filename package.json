@@ -45,17 +45,17 @@
 	},
 	"dependencies": {
 		"mustache": "^4.2.0",
-		"pg": "^8.12.0",
-		"pg-cursor": "^2.11.0"
+		"pg": "^8.14.1",
+		"pg-cursor": "^2.13.1"
 	},
 	"devDependencies": {
-		"eslint": "^9.8.0",
-		"@eslint/js": "^9.8.0",
-		"eslint-plugin-html": "^8.1.1",
+		"eslint": "^9.22.0",
+		"@eslint/js": "^9.22.0",
+		"eslint-plugin-html": "^8.1.2",
 		"globals": "^16.0.0",
 		"markdownlint-cli": "^0.44.0",
-		"neostandard": "^0.12.0",
-		"mocha": "^11.0.1"
+		"neostandard": "^0.12.1",
+		"mocha": "^11.1.0"
 	},
 	"scripts": {
 		"eslint": "eslint .",
