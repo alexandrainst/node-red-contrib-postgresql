@@ -221,6 +221,9 @@ module.exports = function (RED) {
 				try {
 					if (msg.pgConfig) {
 						client = new Client(msg.pgConfig);
+						client.on('error', (err) => {
+							node.error(err.message);
+						});
 						await client.connect();
 					} else {
 						client = await node.config.pgPool.connect();
