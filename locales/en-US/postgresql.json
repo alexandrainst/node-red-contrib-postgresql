@@ -15,6 +15,7 @@
 			"server": "Server",
 			"query": "Query",
 			"split": "Split results in multiple messages",
+			"listen": "Keep listening for notifications",
 			"rowsPerMsg": "Number of rows per message"
 		},
 		"placeholder": {

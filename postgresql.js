@@ -82,11 +82,11 @@ module.exports = function (RED) {
 			host: getField(node, n.hostFieldType, n.host),
 			port: getField(node, n.portFieldType, n.port),
 			database: getField(node, n.databaseFieldType, n.database),
-			ssl: getField(node, n.sslFieldType, n.ssl),
+			ssl: getField(node, n.sslFieldType, n.ssl) != 'false',
 			application_name: getField(node, n.applicationNameType, n.applicationName),
 			max: getField(node, n.maxFieldType, n.max),
-			idleTimeoutMillis: getField(node, n.idleFieldType, n.idle),
-			connectionTimeoutMillis: getField(node, n.connectionTimeoutFieldType, n.connectionTimeout),
+			idleTimeoutMillis: +getField(node, n.idleFieldType, n.idle),
+			connectionTimeoutMillis: +getField(node, n.connectionTimeoutFieldType, n.connectionTimeout),
 		});
 		this.pgPool.on('error', (err, _) => {
 			node.error(err.message);
@@ -98,6 +98,7 @@ module.exports = function (RED) {
 	function PostgreSQLNode(config) {
 		const node = this;
 		RED.nodes.createNode(node, config);
+		node.listen = config.listen;
 		node.topic = config.topic;
 		node.query = config.query;
 		node.split = config.split;
@@ -154,6 +155,8 @@ module.exports = function (RED) {
 		};
 		updateStatus(0, false);
 
+		let client = null;
+
 		node.on('input', async (msg, send, done) => {
 			// 'send' and 'done' require Node-RED 1.0+
 			send = send || function () { node.send.apply(node, arguments); };
@@ -172,8 +175,6 @@ module.exports = function (RED) {
 			} else {
 				const partsId = Math.random();
 				let query = msg.query ? msg.query : Mustache.render(node.query, { msg });
-
-				let client = null;
 
 				const handleDone = async (isError = false) => {
 					if (cursor) {
@@ -214,16 +215,40 @@ module.exports = function (RED) {
 					}
 				};
 
-				handleDone();
+				if (node.listen) {
+					// Avoid multiple listening instances
+					handleDone();
+				}
 				updateStatus(+1);
 				downstreamReady = true;
 
 				try {
-					if (msg.pgConfig) {
-						client = new Client(msg.pgConfig);
+					if (msg.pgConfig || node.listen) {
+						// Do not use pool for clients with custom config nor for listeners
+						const pgConfig = Object.assign({},
+							node.config.pgPool.options, {
+								password: node.config.password,
+							}, msg.pgConfig);
+						client = new Client(pgConfig);
 						await client.connect();
 					} else {
 						client = await node.config.pgPool.connect();
+					}
+
+					client.on('notice', (msg) => {
+						send({
+							notice: msg,
+						});
+					});
+
+					if (node.listen) {
+						client.on('notification', (msg) => {
+							send({
+								channel: msg.channel,
+								payload: msg.payload,
+								processId: msg.processId,
+							});
+						});
 					}
 
 					let params = [];
@@ -244,7 +269,7 @@ module.exports = function (RED) {
 								handleError(err);
 							} else {
 								const complete = rows.length < node.rowsPerMsg;
-								if (complete) {
+								if (complete && !node.listen) {
 									handleDone(false);
 								}
 								const msg2 = Object.assign({}, msg, {
@@ -311,7 +336,9 @@ module.exports = function (RED) {
 									};
 								}
 
-								handleDone();
+								if (!node.listen) {
+									handleDone();
+								}
 								downstreamReady = false;
 								send(msg);
 								if (tickUpstreamNode) {
