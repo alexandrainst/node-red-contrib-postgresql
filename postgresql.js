@@ -253,8 +253,8 @@ module.exports = function (RED) {
 								const msg2 = Object.assign({}, msg, {
 									payload: (node.rowsPerMsg || 1) > 1 ? rows : rows[0],
 									pgsql: {
-										command: result.command,
-										rowCount: result.rowCount,
+										command: result ? result.command : undefined,
+										rowCount: result ? result.rowCount : undefined,
 									},
 									parts: {
 										id: partsId,
