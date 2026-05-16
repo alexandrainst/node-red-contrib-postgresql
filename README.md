@@ -7,6 +7,44 @@ It supports *splitting* the resultset and *backpressure* (flow control), to allo
 
 It supports *parameterized queries* and *multiple queries*.
 
+## Configuration
+
+### Connection credentials
+
+The PostgreSQL **user** and **password** are stored as
+[Node-RED credentials](https://nodered.org/docs/creating-nodes/credentials),
+which means they are encrypted at rest in `flows_cred.json` and never appear in plain text in `flows.json`.
+
+### Environment variables and global context
+
+Instead of entering credentials directly, you can source the user or password
+from a **Node-RED environment variable** or a **global context** variable.
+Use the dropdown next to each field in the *Security* tab to choose the source:
+
+| Source | What to enter | Resolves to |
+| --- | --- | --- |
+| **credential** (default) | the value itself | stored encrypted in `flows_cred.json` |
+| **env variable** | the variable name, e.g. `PG_USER` | resolved at deploy from OS environment variables |
+| **global** | the global context key | read from `global.get(key)` at deploy |
+
+All other connection fields (host, port, database, SSL, etc.) continue to support
+the same `str` / `env` / `global` typed-input options as before.
+
+### Upgrading from versions before 0.16.0
+
+Earlier versions stored user and password as plain text in `flows.json`.
+When upgrading, the node **automatically migrates** those values into encrypted credentials
+on the first start. A warning is logged prompting you to **deploy** once,
+which removes the old plain-text values from `flows.json`.
+
+No manual editing of `flows.json` is required.
+
+### Security notes
+
+After migration, credentials take priority over any values injected into `flows.json`.
+The plain-text fallback in `flows.json` is only used if credentials are empty
+(e.g. on first migration, or if `flows_cred.json` is deleted).
+
 ## Outputs
 
 The response (rows) is provided in `msg.payload` as an array.
