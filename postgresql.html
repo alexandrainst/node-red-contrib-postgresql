@@ -49,9 +49,9 @@
 					<span data-i18n="postgresql.label.user"></span>
 				</label>
 				<select id="node-config-input-userFieldType" style="width: 110px; margin-right: 5px;">
-					<option value="cred">credential</option>
-					<option value="env">env variable</option>
-					<option value="global">global</option>
+					<option value="cred" data-i18n="postgresql.source.cred"></option>
+					<option value="env" data-i18n="postgresql.source.env"></option>
+					<option value="global" data-i18n="postgresql.source.global"></option>
 				</select>
 				<input type="text" id="node-config-input-user" data-i18n="[placeholder]postgresql.placeholder.user" style="width: calc(80% - 120px);" />
 				<input type="text" id="node-config-input-userEnv" placeholder="ENV_VAR_NAME" style="width: calc(80% - 120px); display: none;" />
@@ -62,9 +62,9 @@
 					<span data-i18n="postgresql.label.password"></span>
 				</label>
 				<select id="node-config-input-passwordFieldType" style="width: 110px; margin-right: 5px;">
-					<option value="cred">credential</option>
-					<option value="env">env variable</option>
-					<option value="global">global</option>
+					<option value="cred" data-i18n="postgresql.source.cred"></option>
+					<option value="env" data-i18n="postgresql.source.env"></option>
+					<option value="global" data-i18n="postgresql.source.global"></option>
 				</select>
 				<input type="password" id="node-config-input-password" data-i18n="[placeholder]postgresql.placeholder.password" style="width: calc(80% - 120px);" />
 				<input type="text" id="node-config-input-passwordEnv" placeholder="ENV_VAR_NAME" style="width: calc(80% - 120px); display: none;" />
@@ -249,11 +249,8 @@
 					}
 				}
 
-				// Migrate from legacy: if userFieldType was 'str' (old default), treat as 'cred'
-				let currentType = node.userFieldType;
-				if (fieldName === 'password') {
-					currentType = node.passwordFieldType;
-				}
+				// Migrate from legacy: if the field type was 'str' (old default), treat as 'cred'
+				let currentType = node[fieldName + 'FieldType'];
 				if (currentType === 'str' || !currentType) {
 					currentType = 'cred';
 				}

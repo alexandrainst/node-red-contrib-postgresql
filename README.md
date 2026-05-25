@@ -33,9 +33,9 @@ the same `str` / `env` / `global` typed-input options as before.
 ### Upgrading from versions before 0.16.0
 
 Earlier versions stored user and password as plain text in `flows.json`.
-When upgrading, the node **automatically migrates** those values into encrypted credentials
-on the first start. A warning is logged prompting you to **deploy** once,
-which removes the old plain-text values from `flows.json`.
+On first start after upgrading, the node **automatically copies** those values into encrypted credentials
+and logs a warning. To finish the migration and remove the plain-text values from `flows.json`,
+**open the config node, click Done, then Deploy**. The warning will keep appearing on every restart until you do so.
 
 No manual editing of `flows.json` is required.
 

@@ -21,8 +21,10 @@
 	<h3>Upgrading from &lt; 0.16.0</h3>
 	<p>
 		Earlier versions stored user and password as plain text in <code>flows.json</code>.
-		On first start after upgrading, the node automatically migrates those values to encrypted credentials.
-		Deploy once to remove the old plain-text values from <code>flows.json</code>.
+		On first start after upgrading, the node automatically copies those values into encrypted credentials
+		and logs a warning. To finish the migration and remove the plain-text values from <code>flows.json</code>,
+		open the config node, click <strong>Done</strong>, then <strong>Deploy</strong>.
+		The warning will keep appearing on every restart until you do.
 	</p>
 </script>
 

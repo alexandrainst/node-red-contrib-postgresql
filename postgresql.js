@@ -74,9 +74,11 @@ module.exports = function (RED) {
 		node.connectionTimeoutFieldType = n.connectionTimeoutFieldType;
 
 		// --- Resolve user and password ---
-		// Supports three sources: credentials (default), env/global variables, and legacy flows.json values
+		// Supports three sources: credentials (default), env/global variables, and legacy flows.json values.
+		// 'str' is a legacy compatibility value produced by pre-0.16.0 versions; the editor now writes 'cred'.
 		const userFieldType = n.userFieldType || 'str';
 		const passwordFieldType = n.passwordFieldType || 'str';
+		const hasLegacyPlaintext = !!(n.user || n.password);
 
 		let user, password;
 		let migrated = false;
@@ -111,9 +113,27 @@ module.exports = function (RED) {
 			if (password) {
 				node.credentials.password = password;
 			}
-			RED.nodes.addCredentials(node.id, node.credentials);
-			node.warn('PostgreSQL config "' + (n.name || node.id) + '": user/password migrated from flows.json to encrypted credentials. ' +
-				'Deploy to remove the plain-text values from flows.json.');
+			const nodeLabel = n.name || node.id;
+			if (typeof RED.nodes.addCredentials === 'function') {	// Not guaranteed to exist
+				try {
+					RED.nodes.addCredentials(node.id, node.credentials);
+				} catch (err) {
+					node.warn('PostgreSQL config "' + nodeLabel + '": failed to persist migrated credentials. (' +
+						(err && err.message ? err.message : err) + '). ' +
+						'Open the config node and re-deploy to store them as credentials.');
+				}
+			} else {
+				node.warn('PostgreSQL config "' + nodeLabel + '": cannot migrate user/password ' +
+					'because RED.nodes.addCredentials is unavailable in this Node-RED version. ' +
+					'Open the config node, re-enter the user/password, and deploy to store them as credentials.');
+			}
+		}
+
+		// Warn on every start while plain-text values are still present in flows.json,
+		// so the user is not silently left in an insecure state after the first migration.
+		if (hasLegacyPlaintext) {
+			node.warn('PostgreSQL config "' + (n.name || node.id) + '": plain-text user/password still present in flows.json. ' +
+				'Open the config node, click Done, then Deploy to remove them.');
 		}
 
 		// Store user on node for label display

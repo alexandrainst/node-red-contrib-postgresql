@@ -34,6 +34,11 @@
 			"security": "Security",
 			"pool": "Pool"
 		},
+		"source": {
+			"cred": "credential",
+			"env": "env variable",
+			"global": "global"
+		},
 		"title": {
 			"applicationName": "The name of the application that created this Client instance.",
 			"max": "Maximum number of physical database connections that this connection pool can contain."
