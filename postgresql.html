@@ -44,20 +44,30 @@
 		</div>
 		<div id="postgresql-config-tab-security" style="display: none;">
 			<div class="form-row">
-				<label for="node-config-input-user">
+				<label for="node-config-input-userFieldType">
 					<i class="fa fa-user"></i>
 					<span data-i18n="postgresql.label.user"></span>
 				</label>
-				<input type="text" id="node-config-input-user" data-i18n="[placeholder]postgresql.placeholder.user" style="width: 80%;" />
-				<input type="hidden" id="node-config-input-userFieldType" />
+				<select id="node-config-input-userFieldType" style="width: 110px; margin-right: 5px;">
+					<option value="cred" data-i18n="postgresql.source.cred"></option>
+					<option value="env" data-i18n="postgresql.source.env"></option>
+					<option value="global" data-i18n="postgresql.source.global"></option>
+				</select>
+				<input type="text" id="node-config-input-user" data-i18n="[placeholder]postgresql.placeholder.user" style="width: calc(80% - 120px);" />
+				<input type="text" id="node-config-input-userEnv" placeholder="ENV_VAR_NAME" style="width: calc(80% - 120px); display: none;" />
 			</div>
 			<div class="form-row">
-				<label for="node-config-input-password">
+				<label for="node-config-input-passwordFieldType">
 					<i class="fa fa-lock"></i>
 					<span data-i18n="postgresql.label.password"></span>
 				</label>
-				<input type="password" id="node-config-input-password" data-i18n="[placeholder]postgresql.placeholder.password" style="width: 80%;" />
-				<input type="hidden" id="node-config-input-passwordFieldType" />
+				<select id="node-config-input-passwordFieldType" style="width: 110px; margin-right: 5px;">
+					<option value="cred" data-i18n="postgresql.source.cred"></option>
+					<option value="env" data-i18n="postgresql.source.env"></option>
+					<option value="global" data-i18n="postgresql.source.global"></option>
+				</select>
+				<input type="password" id="node-config-input-password" data-i18n="[placeholder]postgresql.placeholder.password" style="width: calc(80% - 120px);" />
+				<input type="text" id="node-config-input-passwordEnv" placeholder="ENV_VAR_NAME" style="width: calc(80% - 120px); display: none;" />
 			</div>
 		</div>
 		<div id="postgresql-config-tab-pool" style="display: none;">
@@ -153,27 +163,33 @@
 			connectionTimeoutFieldType: {
 				value: 'num',
 			},
-			user: {
-				value: '',
-			},
 			userFieldType: {
-				value: 'str',
+				value: 'cred',
 			},
-			password: {
+			userEnv: {
 				value: '',
 			},
 			passwordFieldType: {
-				// TODO: https://nodered.org/docs/creating-nodes/credentials
-				value: 'str',
+				value: 'cred',
+			},
+			passwordEnv: {
+				value: '',
 			},
 		},
+		credentials: {
+			user: { type: 'text' },
+			password: { type: 'password' },
+		},
 		label: function () {
-			return this.name || this.user + '@' + this.host + ':' + this.port + '/' + this.database;
+			const user = (this.credentials && this.credentials.user) || this.user || '';
+			return this.name || (user ? user + '@' : '') + this.host + ':' + this.port + '/' + this.database;
 		},
 		labelStyle: function () {
 			return this.name ? 'node_label_italic' : '';
 		},
 		oneditprepare: function () {
+			const node = this;
+
 			const tabs = RED.tabs.create({
 				id: 'postgresql-config-tabs',
 				onchange: function (tab) {
@@ -193,6 +209,8 @@
 				id: 'postgresql-config-tab-pool',
 				label: this._('postgresql.tab.pool'),
 			});
+
+			// --- Connection tab typedInputs ---
 			$('#node-config-input-host').typedInput({
 				default: 'str',
 				types: ['str', 'global', 'env'],
@@ -213,17 +231,48 @@
 				types: ['bool', 'global', 'env', 'json'],
 				typeField: $('#node-config-input-sslFieldType'),
 			});
-			$('#node-config-input-user').typedInput({
-				default: 'str',
-				types: ['str', 'global', 'env'],
-				typeField: $('#node-config-input-userFieldType'),
-			});
-			$('#node-config-input-password')
-				.typedInput({
-					default: 'str',
-					types: ['str', 'global', 'env'],
-					typeField: $('#node-config-input-passwordFieldType'),
-				});
+
+			// --- Security tab: user/password with credential/env/global support ---
+			function setupFieldToggle(fieldName) {
+				const $select = $('#node-config-input-' + fieldName + 'FieldType');
+				const $credInput = $('#node-config-input-' + fieldName);
+				const $envInput = $('#node-config-input-' + fieldName + 'Env');
+
+				function toggle() {
+					const type = $select.val();
+					if (type === 'cred') {
+						$credInput.show();
+						$envInput.hide();
+					} else {
+						$credInput.hide();
+						$envInput.show();
+					}
+				}
+
+				// Migrate from legacy: if the field type was 'str' (old default), treat as 'cred'
+				let currentType = node[fieldName + 'FieldType'];
+				if (currentType === 'str' || !currentType) {
+					currentType = 'cred';
+				}
+				$select.val(currentType);
+
+				// Pre-fill env/global input from legacy defaults or saved env value
+				const envVal = node[fieldName + 'Env'] || '';
+				if (currentType === 'env' || currentType === 'global') {
+					// If migrating from legacy, the var name was in node.user/node.password
+					$envInput.val(envVal || node[fieldName] || '');
+				} else {
+					$envInput.val(envVal);
+				}
+
+				$select.on('change', toggle);
+				toggle();
+			}
+
+			setupFieldToggle('user');
+			setupFieldToggle('password');
+
+			// --- Pool tab typedInputs ---
 			$('#node-config-input-applicationName').typedInput({
 				default: 'str',
 				types: ['str', 'global', 'env'],
@@ -233,11 +282,6 @@
 				default: 'num',
 				types: ['num', 'global'],
 				typeField: $('#node-config-input-maxFieldType'),
-			});
-			$('#node-config-input-lin').typedInput({
-				default: 'num',
-				types: ['num', 'global'],
-				typeField: $('#node-config-input-linFieldType'),
 			});
 			$('#node-config-input-idle').typedInput({
 				default: 'num',
@@ -249,6 +293,26 @@
 				types: ['num', 'global'],
 				typeField: $('#node-config-input-connectionTimeoutFieldType'),
 			});
+		},
+		oneditsave: function () {
+			// Sync env/global values to their stored properties
+			const userType = $('#node-config-input-userFieldType').val();
+			const passwordType = $('#node-config-input-passwordFieldType').val();
+
+			if (userType !== 'cred') {
+				this.userEnv = $('#node-config-input-userEnv').val();
+				// Clear credential input so stale value isn't saved
+				$('#node-config-input-user').val('');
+			} else {
+				this.userEnv = '';
+			}
+
+			if (passwordType !== 'cred') {
+				this.passwordEnv = $('#node-config-input-passwordEnv').val();
+				$('#node-config-input-password').val('');
+			} else {
+				this.passwordEnv = '';
+			}
 		},
 	});
 </script>
