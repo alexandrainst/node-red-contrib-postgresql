@@ -54,6 +54,7 @@ module.exports = function (RED) {
 	function PostgreSQLConfigNode(n) {
 		const node = this;
 		RED.nodes.createNode(node, n);
+
 		node.name = n.name;
 		node.host = n.host;
 		node.hostFieldType = n.hostFieldType;
@@ -69,16 +70,12 @@ module.exports = function (RED) {
 		node.maxFieldType = n.maxFieldType;
 		node.idle = n.idle;
 		node.idleFieldType = n.idleFieldType;
-		node.user = n.user;
-		node.userFieldType = n.userFieldType;
-		node.password = n.password;
-		node.passwordFieldType = n.passwordFieldType;
 		node.connectionTimeout = n.connectionTimeout;
 		node.connectionTimeoutFieldType = n.connectionTimeoutFieldType;
 
 		this.pgPool = new Pool({
-			user: getField(node, n.userFieldType, n.user),
-			password: getField(node, n.passwordFieldType, n.password),
+			user: node.credentials.user,
+			password: node.credentials.password,
 			host: getField(node, n.hostFieldType, n.host),
 			port: getField(node, n.portFieldType, n.port),
 			database: getField(node, n.databaseFieldType, n.database),
@@ -88,12 +85,18 @@ module.exports = function (RED) {
 			idleTimeoutMillis: getField(node, n.idleFieldType, n.idle),
 			connectionTimeoutMillis: getField(node, n.connectionTimeoutFieldType, n.connectionTimeout),
 		});
+
 		this.pgPool.on('error', (err, _) => {
 			node.error(err.message);
 		});
 	}
 
-	RED.nodes.registerType('postgreSQLConfig', PostgreSQLConfigNode);
+	RED.nodes.registerType('postgreSQLConfig', PostgreSQLConfigNode, {
+		credentials: {
+			user: { type: 'text' },
+			password: { type: 'password' },
+		},
+	});
 
 	function PostgreSQLNode(config) {
 		const node = this;

@@ -49,7 +49,6 @@
 					<span data-i18n="postgresql.label.user"></span>
 				</label>
 				<input type="text" id="node-config-input-user" data-i18n="[placeholder]postgresql.placeholder.user" style="width: 80%;" />
-				<input type="hidden" id="node-config-input-userFieldType" />
 			</div>
 			<div class="form-row">
 				<label for="node-config-input-password">
@@ -57,7 +56,6 @@
 					<span data-i18n="postgresql.label.password"></span>
 				</label>
 				<input type="password" id="node-config-input-password" data-i18n="[placeholder]postgresql.placeholder.password" style="width: 80%;" />
-				<input type="hidden" id="node-config-input-passwordFieldType" />
 			</div>
 		</div>
 		<div id="postgresql-config-tab-pool" style="display: none;">
@@ -153,22 +151,13 @@
 			connectionTimeoutFieldType: {
 				value: 'num',
 			},
-			user: {
-				value: '',
-			},
-			userFieldType: {
-				value: 'str',
-			},
-			password: {
-				value: '',
-			},
-			passwordFieldType: {
-				// TODO: https://nodered.org/docs/creating-nodes/credentials
-				value: 'str',
-			},
+		},
+		credentials: {
+			user: { type: 'text' },
+			password: { type: 'password' },
 		},
 		label: function () {
-			return this.name || this.user + '@' + this.host + ':' + this.port + '/' + this.database;
+			return this.name || this.host + ':' + this.port + '/' + this.database;
 		},
 		labelStyle: function () {
 			return this.name ? 'node_label_italic' : '';
@@ -213,17 +202,6 @@
 				types: ['bool', 'global', 'env', 'json'],
 				typeField: $('#node-config-input-sslFieldType'),
 			});
-			$('#node-config-input-user').typedInput({
-				default: 'str',
-				types: ['str', 'global', 'env'],
-				typeField: $('#node-config-input-userFieldType'),
-			});
-			$('#node-config-input-password')
-				.typedInput({
-					default: 'str',
-					types: ['str', 'global', 'env'],
-					typeField: $('#node-config-input-passwordFieldType'),
-				});
 			$('#node-config-input-applicationName').typedInput({
 				default: 'str',
 				types: ['str', 'global', 'env'],
@@ -233,11 +211,6 @@
 				default: 'num',
 				types: ['num', 'global'],
 				typeField: $('#node-config-input-maxFieldType'),
-			});
-			$('#node-config-input-lin').typedInput({
-				default: 'num',
-				types: ['num', 'global'],
-				typeField: $('#node-config-input-linFieldType'),
 			});
 			$('#node-config-input-idle').typedInput({
 				default: 'num',
