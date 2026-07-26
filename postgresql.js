@@ -51,9 +51,63 @@ module.exports = function (RED) {
 		}
 	}
 
+	function getParam(cnfg, key) {
+		switch (key) {
+			case 'host':
+				return getField(cnfg, cnfg.hostFieldType, cnfg.host);
+			case 'port':
+				return getField(cnfg, cnfg.portFieldType, cnfg.port);
+			case 'database':
+				return getField(cnfg, cnfg.databaseFieldType, cnfg.database);
+			case 'ssl':
+				return getField(cnfg, cnfg.sslFieldType, cnfg.ssl);
+			case 'user':
+				return getField(cnfg, cnfg.userFieldType, cnfg.user);
+			case 'password':
+				return getField(cnfg, cnfg.passwordFieldType, cnfg.password);
+			case 'appname':
+				return getField(cnfg, cnfg.applicationNameType, cnfg.applicationName);
+			case 'max':
+				return getField(cnfg, cnfg.maxFieldType, cnfg.max);
+			case 'idle':
+				return getField(cnfg, cnfg.idleFieldType, cnfg.idle);
+			case 'timeout':
+				return getField(cnfg, cnfg.connectionTimeoutFieldType, cnfg.connectionTimeout);
+		}
+		return cnfg;
+	}
+	
+	function getDbAccessData(cnfg) {
+		return {
+			user:						getParam(cnfg, 'user'),
+			password:					getParam(cnfg, 'password'),
+			host:						getParam(cnfg, 'host'),
+			port:						getParam(cnfg, 'port'),
+			database:					getParam(cnfg, 'database'),
+			ssl:						getParam(cnfg, 'ssl'),
+			application_name:			getParam(cnfg, 'appname'),
+			max:						getParam(cnfg, 'max'),
+			idleTimeoutMillis:			getParam(cnfg, 'idle'),
+			connectionTimeoutMillis:	getParam(cnfg, 'timeout'),
+		}
+	}
+
 	function PostgreSQLConfigNode(n) {
 		const node = this;
 		RED.nodes.createNode(node, n);
+
+		// Build an array of keys of parameters to be watched
+		const watchFlags = {
+			host:		n.hostWatch,
+			port:		n.portWatch,
+			database:	n.databaseWatch,
+			ssl:		n.sslWatch,
+			user:		n.userWatch,
+			password:	n.passwordWatch,
+		}
+		node.watchList = [];
+		for (const key in watchFlags) { if (watchFlags[key] === true) node.watchList.push(key) };
+
 		node.name = n.name;
 		node.host = n.host;
 		node.hostFieldType = n.hostFieldType;
@@ -76,19 +130,11 @@ module.exports = function (RED) {
 		node.connectionTimeout = n.connectionTimeout;
 		node.connectionTimeoutFieldType = n.connectionTimeoutFieldType;
 
-		this.pgPool = new Pool({
-			user: getField(node, n.userFieldType, n.user),
-			password: getField(node, n.passwordFieldType, n.password),
-			host: getField(node, n.hostFieldType, n.host),
-			port: getField(node, n.portFieldType, n.port),
-			database: getField(node, n.databaseFieldType, n.database),
-			ssl: getField(node, n.sslFieldType, n.ssl),
-			application_name: getField(node, n.applicationNameType, n.applicationName),
-			max: getField(node, n.maxFieldType, n.max),
-			idleTimeoutMillis: getField(node, n.idleFieldType, n.idle),
-			connectionTimeoutMillis: getField(node, n.connectionTimeoutFieldType, n.connectionTimeout),
-		});
-		this.pgPool.on('error', (err, _) => {
+		node.dbAccessData = getDbAccessData(node);
+
+		node.pgPool = new Pool(node.dbAccessData);
+
+		node.pgPool.on('error', (err, _) => {
 			node.error(err.message);
 		});
 	}
@@ -105,6 +151,7 @@ module.exports = function (RED) {
 		node.config = RED.nodes.getNode(config.postgreSQLConfig) || {
 			pgPool: {
 				totalCount: 0,
+				end: null
 			},
 		};
 
@@ -155,6 +202,28 @@ module.exports = function (RED) {
 		updateStatus(0, false);
 
 		node.on('input', async (msg, send, done) => {
+
+			// Scan watchList array, check for parameter changes
+			let changed = false;
+			let newParam = undefined;
+			for (const key of node.config.watchList) {
+				const param = node.config.dbAccessData[key];
+				newParam = getParam(node.config, key);
+				if (newParam !== param) {
+					node.config.dbAccessData[key] = newParam;
+					changed = true;
+				};
+			};
+			
+			// Reset connections pool, if needed
+			if (changed || msg.reconnect) {
+				if (node.config.pgPool.end !== null) {
+					node.config.pgPool.end();
+				}
+				node.config.dbAccessData = getDbAccessData(node.config);
+				node.config.pgPool = new Pool(node.config.dbAccessData);
+			}
+
 			// 'send' and 'done' require Node-RED 1.0+
 			send = send || function () { node.send.apply(node, arguments); };
 

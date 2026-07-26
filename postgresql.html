@@ -20,12 +20,30 @@
 				<input type="hidden" id="node-config-input-hostFieldType" />
 			</div>
 			<div class="form-row">
-					<label for="node-config-input-port">
-						<span data-i18n="postgresql.label.port"></span>
-					</label>
-					<input type="text" id="node-config-input-port" data-i18n="[placeholder]postgresql.placeholder.port" style="width: 80%;" />
-					<input type="hidden" id="node-config-input-portFieldType" />
-				</div>
+				<label for="node-config-input-hostWatch">
+					<span ""></span>
+				</label>
+				<input type="checkbox" id="node-config-input-hostWatch" style="display: inline-block; width: auto; vertical-align: top;" />
+				<label for="node-config-input-hostWatch" style="width: auto;">
+					<span data-i18n="postgresql.label.hostWatch"></span>
+				</label>
+			</div>
+			<div class="form-row">
+				<label for="node-config-input-port">
+					<span data-i18n="postgresql.label.port"></span>
+				</label>
+				<input type="text" id="node-config-input-port" data-i18n="[placeholder]postgresql.placeholder.port" style="width: 80%;" />
+				<input type="hidden" id="node-config-input-portFieldType" />
+			</div>
+			<div class="form-row">
+				<label for="node-config-input-portWatch">
+					<span ""></span>
+				</label>
+				<input type="checkbox" id="node-config-input-portWatch" style="display: inline-block; width: auto; vertical-align: top;" />
+				<label for="node-config-input-portWatch" style="width: auto;">
+					<span data-i18n="postgresql.label.portWatch"></span>
+				</label>
+			</div>
 			<div class="form-row">
 				<label for="node-config-input-database">
 					<i class="fa fa-database"></i>
@@ -35,11 +53,29 @@
 				<input type="hidden" id="node-config-input-databaseFieldType" />
 			</div>
 			<div class="form-row">
-				<label for="node-config-input-ssl" style="width: auto;margin-right: 72px;">
+				<label for="node-config-input-databaseWatch">
+					<span ""></span>
+				</label>
+				<input type="checkbox" id="node-config-input-databaseWatch" style="display: inline-block; width: auto; vertical-align: top;" />
+				<label for="node-config-input-databaseWatch" style="width: auto;">
+					<span data-i18n="postgresql.label.databaseWatch"></span>
+				</label>
+			</div>
+			<div class="form-row">
+				<label for="node-config-input-ssl">
 					<span data-i18n="postgresql.label.ssl"></span>
 				</label>
-				<input type="text" id="node-config-input-ssl" style="display: inline-block; width: auto; vertical-align: top;" />
+				<input type="text" id="node-config-input-ssl" data-i18n="[placeholder]postgresql.placeholder.ssl" style="width: 80%;" />
 				<input type="hidden" id="node-config-input-sslFieldType" />
+			</div>
+			<div class="form-row">
+				<label for="node-config-input-sslWatch">
+					<span ""></span>
+				</label>
+				<input type="checkbox" id="node-config-input-sslWatch" style="display: inline-block; width: auto; vertical-align: top;" />
+				<label for="node-config-input-sslWatch" style="width: auto;">
+					<span data-i18n="postgresql.label.sslWatch"></span>
+				</label>
 			</div>
 		</div>
 		<div id="postgresql-config-tab-security" style="display: none;">
@@ -52,12 +88,30 @@
 				<input type="hidden" id="node-config-input-userFieldType" />
 			</div>
 			<div class="form-row">
+				<label for="node-config-input-userWatch">
+					<span ""></span>
+				</label>
+				<input type="checkbox" id="node-config-input-userWatch" style="display: inline-block; width: auto; vertical-align: top;" />
+				<label for="node-config-input-userWatch" style="width: auto;">
+					<span data-i18n="postgresql.label.userWatch"></span>
+				</label>
+			</div>
+			<div class="form-row">
 				<label for="node-config-input-password">
 					<i class="fa fa-lock"></i>
 					<span data-i18n="postgresql.label.password"></span>
 				</label>
 				<input type="password" id="node-config-input-password" data-i18n="[placeholder]postgresql.placeholder.password" style="width: 80%;" />
 				<input type="hidden" id="node-config-input-passwordFieldType" />
+			</div>
+			<div class="form-row">
+				<label for="node-config-input-passwordWatch">
+					<span ""></span>
+				</label>
+				<input type="checkbox" id="node-config-input-passwordWatch" style="display: inline-block; width: auto; vertical-align: top;" />
+				<label for="node-config-input-passwordWatch" style="width: auto;">
+					<span data-i18n="postgresql.label.passwordWatch"></span>
+				</label>
 			</div>
 		</div>
 		<div id="postgresql-config-tab-pool" style="display: none;">
@@ -111,11 +165,17 @@
 			hostFieldType: {
 				value: 'str',
 			},
+			hostWatch: {
+				value: false,
+			},
 			port: {
 				value: 5432,
 			},
 			portFieldType: {
 				value: 'num',
+			},
+			portWatch: {
+				value: false,
 			},
 			database: {
 				value: 'postgres',
@@ -123,11 +183,17 @@
 			databaseFieldType: {
 				value: 'str',
 			},
+			databaseWatch: {
+				value: false,
+			},
 			ssl: {
 				value: false,
 			},
 			sslFieldType: {
 				value: 'bool',
+			},
+			sslWatch: {
+				value: false,
 			},
 			applicationName: {
 				value: '',
@@ -159,12 +225,18 @@
 			userFieldType: {
 				value: 'str',
 			},
+			userWatch: {
+				value: false,
+			},
 			password: {
 				value: '',
 			},
 			passwordFieldType: {
 				// TODO: https://nodered.org/docs/creating-nodes/credentials
 				value: 'str',
+			},
+			passwordWatch: {
+				value: false,
 			},
 		},
 		label: function () {
