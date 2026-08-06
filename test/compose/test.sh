@@ -18,6 +18,7 @@ command -v curl >/dev/null 2>&1 || {
 	exit 1
 }
 
+mkdir -p "$script_dir/../../node_modules"
 docker compose -f "$compose_file" up --detach --pull always
 published_address="$(docker compose -f "$compose_file" port node-red 1880)"
 published_port="${published_address##*:}"

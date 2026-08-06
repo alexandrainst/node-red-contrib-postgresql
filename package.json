@@ -66,6 +66,7 @@
 		"pretest": "npm run eslint && npm run markdownlint",
 		"mocha": "mocha",
 		"test": "npm run mocha",
+		"precompose:up": "mkdir -p node_modules",
 		"compose:up": "docker compose -f test/compose/compose.yaml up --detach --pull always",
 		"compose:down": "docker compose -f test/compose/compose.yaml down --volumes --remove-orphans",
 		"test:integration": "sh test/compose/test.sh"
