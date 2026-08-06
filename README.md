@@ -164,6 +164,61 @@ conventions for [*messages sequences*](https://nodered.org/docs/user-guide/messa
 }
 ```
 
+## Testing
+
+The repository includes a self-contained Docker Compose integration environment using the latest
+[Node-RED](https://hub.docker.com/r/nodered/node-red) and
+[PostgreSQL](https://hub.docker.com/_/postgres) images by default.
+
+Requirements: cURL, Docker, Docker Compose.
+
+### Headless integration testing
+
+```sh
+npm run test:integration
+```
+
+The host-side test script waits for Node-RED, calls the flow's HTTP endpoint, prints its JSON summary,
+and returns a non-zero exit code for startup errors, timeouts, database errors, or failed assertions.
+
+Specific image versions are supported:
+
+```sh
+NODE_RED_IMAGE=nodered/node-red:latest POSTGRES_IMAGE=postgres:latest npm run test:integration
+```
+
+For a quick check that database failures propagate to the command-line exit code:
+
+```sh
+TEST_PGPASSWORD=incorrect npm run test:integration
+```
+
+### Manual testing in the Web editor
+
+Start PostgreSQL and Node-RED:
+
+```sh
+npm run compose:up
+```
+
+Open <http://localhost:1880>, and click the *Run integration test* Inject node.
+The *Integration test result* Debug node reports the result.
+The flow tests SQL query templates, dynamic queries, numeric and named parameters, split results, and backpressure ticks.
+
+To inspect the runtime logs or remove the environment:
+
+```sh
+docker compose -f test/compose/compose.yaml logs --follow node-red
+npm run compose:down
+```
+
+The module is mounted read-only, while editor deployments are persisted directly to the committed [integration flow](test/compose/flows.json).
+After changing module files, restart Node-RED:
+
+```sh
+docker compose -f test/compose/compose.yaml restart node-red
+```
+
 ## Credits
 
 Major rewrite in July 2021 by [Alexandre Alapetite](https://alexandra.dk/alexandre.alapetite) ([Alexandra Institute](https://alexandra.dk)),

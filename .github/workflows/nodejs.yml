@@ -31,3 +31,13 @@ jobs:
     - run: npm ci
     - run: npm run build --if-present
     - run: npm test
+
+  integration:
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+    - uses: actions/checkout@v7
+    - name: Run Node-RED and PostgreSQL integration flow
+      run: npm run test:integration

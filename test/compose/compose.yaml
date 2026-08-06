@@ -1,0 +1,41 @@
+name: node-red-contrib-postgresql-test
+
+services:
+  postgres:
+    image: ${POSTGRES_IMAGE:-postgres:latest}
+    environment:
+      POSTGRES_DB: node_red_test
+      POSTGRES_USER: node_red_test
+      POSTGRES_PASSWORD: node_red_test
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U node_red_test -d node_red_test"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+      start_period: 5s
+    tmpfs:
+      - /var/lib/postgresql
+
+  node-red:
+    image: ${NODE_RED_IMAGE:-nodered/node-red:latest}
+    environment:
+      PGHOST: postgres
+      PGPORT: "5432"
+      PGDATABASE: node_red_test
+      PGUSER: node_red_test
+      PGPASSWORD: ${TEST_PGPASSWORD:-node_red_test}
+      TZ: UTC
+      FLOWS: project/flows.json
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${NODE_RED_PORT:-1880}:1880"
+    volumes:
+      - ../..:/local-module:ro
+      - .:/data/project
+      - ./settings.js:/data/settings.js:ro
+      - ./start-node-red.sh:/start-node-red.sh:ro
+    tmpfs:
+      - /local-module/node_modules
+    entrypoint: ["/bin/sh", "/start-node-red.sh"]

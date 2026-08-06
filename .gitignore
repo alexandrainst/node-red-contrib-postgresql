@@ -1,2 +1,4 @@
 .idea/
 node_modules/
+test/compose/.flows.json.backup
+test/compose/flows_cred.json
