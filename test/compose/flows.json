@@ -1,0 +1,453 @@
+[
+    {
+        "id": "integration-test-tab",
+        "type": "tab",
+        "label": "PostgreSQL integration test",
+        "disabled": false,
+        "info": "Creates, tests, and removes its own PostgreSQL table. Covers query templates, dynamic queries, numeric and named parameters, split results, and backpressure. Use the Inject node for manual testing or POST /postgresql-test/run for automation."
+    },
+    {
+        "id": "manual-trigger",
+        "type": "inject",
+        "z": "integration-test-tab",
+        "name": "Run integration test",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 170,
+        "y": 180,
+        "wires": [
+            [
+                "start-test"
+            ]
+        ]
+    },
+    {
+        "id": "http-trigger",
+        "type": "http in",
+        "z": "integration-test-tab",
+        "name": "POST run test",
+        "url": "/postgresql-test/run",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 240,
+        "wires": [
+            [
+                "start-test"
+            ]
+        ]
+    },
+    {
+        "id": "ready-endpoint",
+        "type": "http in",
+        "z": "integration-test-tab",
+        "name": "GET readiness",
+        "url": "/postgresql-test/ready",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 100,
+        "wires": [
+            [
+                "ready-response-body"
+            ]
+        ]
+    },
+    {
+        "id": "ready-response-body",
+        "type": "function",
+        "z": "integration-test-tab",
+        "name": "Ready",
+        "func": "msg.statusCode = 200;\nmsg.headers = { 'content-type': 'application/json' };\nmsg.payload = { ready: true };\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 100,
+        "wires": [
+            [
+                "http-response"
+            ]
+        ]
+    },
+    {
+        "id": "start-test",
+        "type": "function",
+        "z": "integration-test-tab",
+        "name": "Start test",
+        "func": "if (flow.get('integrationTestActive')) {\n\tmsg.statusCode = 409;\n\tmsg.headers = { 'content-type': 'application/json' };\n\tmsg.payload = { ok: false, error: 'An integration test is already running' };\n\treturn [null, msg.res ? msg : null, msg.res ? null : msg];\n}\n\nflow.set('integrationTestActive', true);\nmsg.test = {\n\tstartedAt: Date.now(),\n\texpectedRows: 23,\n\texpectedBatches: 5,\n\tbatchCount: 0,\n\ttickCount: 0,\n\tupdatedRows: 0,\n\tpartsId: null,\n};\nreturn [msg, null, null];",
+        "outputs": 3,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "flow.set('integrationTestActive', false);",
+        "finalize": "flow.set('integrationTestActive', false);",
+        "libs": [],
+        "x": 370,
+        "y": 210,
+        "wires": [
+            [
+                "seed-test-table"
+            ],
+            [
+                "http-response"
+            ],
+            [
+                "test-result"
+            ]
+        ]
+    },
+    {
+        "id": "seed-test-table",
+        "type": "postgresql",
+        "z": "integration-test-tab",
+        "name": "Reset and seed table",
+        "query": "DROP TABLE IF EXISTS node_red_postgresql_test;\n\nCREATE TABLE node_red_postgresql_test (\n\tid INTEGER PRIMARY KEY,\n\tvalue INTEGER NOT NULL,\n\tprocessed BOOLEAN NOT NULL DEFAULT FALSE\n);\n\nINSERT INTO node_red_postgresql_test (id, value)\nSELECT id, id * 10\nFROM generate_series(1, 23) AS id;",
+        "postgreSQLConfig": "test-database",
+        "split": false,
+        "rowsPerMsg": "1",
+        "outputs": 1,
+        "x": 600,
+        "y": 210,
+        "wires": [
+            [
+                "prepare-named-select"
+            ]
+        ]
+    },
+    {
+        "id": "prepare-named-select",
+        "type": "function",
+        "z": "integration-test-tab",
+        "name": "Assert setup",
+        "func": "const ensure = (condition, message) => {\n\tif (!condition) {\n\t\tthrow new Error(message);\n\t}\n};\n\nensure(Array.isArray(msg.pgsql), 'Expected results for all setup queries');\nensure(msg.pgsql.map((result) => result.command).join(',') === 'DROP,CREATE,INSERT', 'Unexpected setup commands');\nconst insertResult = msg.pgsql[msg.pgsql.length - 1];\nensure(insertResult.rowCount === msg.test.expectedRows, `Expected ${msg.test.expectedRows} inserted rows, got ${insertResult.rowCount}`);\nmsg.queryParameters = { minimum: 1, maximum: msg.test.expectedRows };\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 820,
+        "y": 210,
+        "wires": [
+            [
+                "named-select"
+            ]
+        ]
+    },
+    {
+        "id": "named-select",
+        "type": "postgresql",
+        "z": "integration-test-tab",
+        "name": "Named parameter SELECT",
+        "query": "SELECT id, value, processed\nFROM node_red_postgresql_test\nWHERE id BETWEEN $minimum AND $maximum\nORDER BY id;",
+        "postgreSQLConfig": "test-database",
+        "split": false,
+        "rowsPerMsg": "1",
+        "outputs": 1,
+        "x": 1050,
+        "y": 210,
+        "wires": [
+            [
+                "assert-named-select"
+            ]
+        ]
+    },
+    {
+        "id": "assert-named-select",
+        "type": "function",
+        "z": "integration-test-tab",
+        "name": "Assert non-split result",
+        "func": "const ensure = (condition, message) => {\n\tif (!condition) {\n\t\tthrow new Error(message);\n\t}\n};\n\nensure(msg.pgsql.command === 'SELECT', `Expected SELECT command, got ${msg.pgsql.command}`);\nensure(msg.pgsql.rowCount === msg.test.expectedRows, `Expected ${msg.test.expectedRows} selected rows, got ${msg.pgsql.rowCount}`);\nensure(Array.isArray(msg.payload) && msg.payload.length === msg.test.expectedRows, 'Non-split payload has the wrong size');\nfor (let index = 0; index < msg.payload.length; index++) {\n\tconst row = msg.payload[index];\n\tensure(row.id === index + 1, `Unexpected row id ${row.id} at index ${index}`);\n\tensure(row.value === row.id * 10, `Unexpected value for row ${row.id}`);\n\tensure(row.processed === false, `Row ${row.id} was already processed`);\n}\ndelete msg.queryParameters;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1300,
+        "y": 210,
+        "wires": [
+            [
+                "split-select"
+            ]
+        ]
+    },
+    {
+        "id": "split-select",
+        "type": "postgresql",
+        "z": "integration-test-tab",
+        "name": "Template + split SELECT",
+        "query": "SELECT id, value\nFROM node_red_postgresql_test\nWHERE id <= {{{ msg.test.expectedRows }}}\nORDER BY id;",
+        "postgreSQLConfig": "test-database",
+        "split": true,
+        "rowsPerMsg": "5",
+        "outputs": 1,
+        "x": 210,
+        "y": 390,
+        "wires": [
+            [
+                "validate-split-batch"
+            ]
+        ]
+    },
+    {
+        "id": "validate-split-batch",
+        "type": "function",
+        "z": "integration-test-tab",
+        "name": "Assert split batch",
+        "func": "const ensure = (condition, message) => {\n\tif (!condition) {\n\t\tthrow new Error(message);\n\t}\n};\nconst rows = msg.payload;\nconst test = msg.test;\nconst expectedSize = test.batchCount === test.expectedBatches - 1 ? 3 : 5;\n\nensure(Array.isArray(rows), 'Split payload is not an array');\nensure(msg.parts && msg.parts.type === 'array', 'Split sequence metadata is missing');\nensure(msg.parts.index === test.batchCount, `Expected batch index ${test.batchCount}, got ${msg.parts.index}`);\nensure(rows.length === expectedSize, `Expected ${expectedSize} rows in batch ${test.batchCount}, got ${rows.length}`);\nif (test.partsId === null) {\n\ttest.partsId = msg.parts.id;\n}\nensure(msg.parts.id === test.partsId, 'Sequence ID changed between batches');\nfor (let index = 0; index < rows.length; index++) {\n\tconst expectedId = test.batchCount * 5 + index + 1;\n\tensure(rows[index].id === expectedId, `Expected row ${expectedId}, got ${rows[index].id}`);\n}\nif (test.batchCount === test.expectedBatches - 1) {\n\tensure(msg.complete === true, 'Final batch is not marked complete');\n\tensure(msg.parts.count === test.expectedBatches, `Expected ${test.expectedBatches} batches, got ${msg.parts.count}`);\n} else {\n\tensure(msg.complete !== true, `Batch ${test.batchCount} was marked complete too early`);\n\tensure(msg.parts.count === undefined, `Batch ${test.batchCount} exposed a premature count`);\n}\nmsg.query = 'UPDATE node_red_postgresql_test SET processed = TRUE WHERE id = ANY($1::integer[])';\nmsg.params = [rows.map((row) => row.id)];\ntest.batchCount++;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 390,
+        "wires": [
+            [
+                "update-batch"
+            ]
+        ]
+    },
+    {
+        "id": "update-batch",
+        "type": "postgresql",
+        "z": "integration-test-tab",
+        "name": "Dynamic numeric UPDATE",
+        "query": "SELECT 1 / 0 AS msg_query_override_failed;",
+        "postgreSQLConfig": "test-database",
+        "split": false,
+        "rowsPerMsg": "1",
+        "outputs": 1,
+        "x": 650,
+        "y": 390,
+        "wires": [
+            [
+                "continue-or-verify"
+            ]
+        ]
+    },
+    {
+        "id": "continue-or-verify",
+        "type": "function",
+        "z": "integration-test-tab",
+        "name": "Tick or verify",
+        "func": "const expectedUpdated = msg.params[0].length;\nif (msg.pgsql.command !== 'UPDATE' || msg.pgsql.rowCount !== expectedUpdated) {\n\tthrow new Error(`Expected UPDATE of ${expectedUpdated} rows, got ${msg.pgsql.command} ${msg.pgsql.rowCount}`);\n}\nmsg.test.updatedRows += msg.pgsql.rowCount;\nif (msg.complete) {\n\tdelete msg.query;\n\tdelete msg.params;\n\treturn [msg, null];\n}\nmsg.test.tickCount++;\nreturn [null, { tick: true }];",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 850,
+        "y": 390,
+        "wires": [
+            [
+                "verify-table"
+            ],
+            [
+                "split-select"
+            ]
+        ]
+    },
+    {
+        "id": "verify-table",
+        "type": "postgresql",
+        "z": "integration-test-tab",
+        "name": "Verify table",
+        "query": "SELECT\n\tCOUNT(*)::integer AS total,\n\tCOUNT(*) FILTER (WHERE processed)::integer AS processed,\n\tSUM(value)::integer AS value_sum\nFROM node_red_postgresql_test;",
+        "postgreSQLConfig": "test-database",
+        "split": false,
+        "rowsPerMsg": "1",
+        "outputs": 1,
+        "x": 1060,
+        "y": 390,
+        "wires": [
+            [
+                "assert-final-state"
+            ]
+        ]
+    },
+    {
+        "id": "assert-final-state",
+        "type": "function",
+        "z": "integration-test-tab",
+        "name": "Assert final state",
+        "func": "const result = msg.payload[0];\nconst test = msg.test;\nif (test.batchCount !== test.expectedBatches || test.tickCount !== test.expectedBatches - 1 || test.updatedRows !== test.expectedRows) {\n\tthrow new Error(`Processed ${test.batchCount} batches, ${test.tickCount} ticks, and ${test.updatedRows} rows`);\n}\nif (!result || result.total !== test.expectedRows || result.processed !== test.expectedRows || result.value_sum !== 2760) {\n\tthrow new Error(`Unexpected aggregate result: ${JSON.stringify(result)}`);\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1260,
+        "y": 390,
+        "wires": [
+            [
+                "drop-after-test"
+            ]
+        ]
+    },
+    {
+        "id": "drop-after-test",
+        "type": "postgresql",
+        "z": "integration-test-tab",
+        "name": "Drop test table",
+        "query": "DROP TABLE node_red_postgresql_test;",
+        "postgreSQLConfig": "test-database",
+        "split": false,
+        "rowsPerMsg": "1",
+        "outputs": 1,
+        "x": 1470,
+        "y": 390,
+        "wires": [
+            [
+                "complete-test"
+            ]
+        ]
+    },
+    {
+        "id": "complete-test",
+        "type": "function",
+        "z": "integration-test-tab",
+        "name": "PASS",
+        "func": "flow.set('integrationTestActive', false);\nmsg.statusCode = 200;\nmsg.headers = { 'content-type': 'application/json' };\nmsg.payload = {\n\tok: true,\n\trows: msg.test.expectedRows,\n\tbatches: msg.test.batchCount,\n\tticks: msg.test.tickCount,\n\tupdatedRows: msg.test.updatedRows,\n\tdurationMs: Date.now() - msg.test.startedAt,\n};\nreturn [msg.res ? msg : null, msg.res ? null : msg];",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1660,
+        "y": 390,
+        "wires": [
+            [
+                "http-response",
+                "test-result"
+            ],
+            [
+                "test-result"
+            ]
+        ]
+    },
+    {
+        "id": "test-catch",
+        "type": "catch",
+        "z": "integration-test-tab",
+        "name": "Catch test failure",
+        "scope": [
+            "seed-test-table",
+            "prepare-named-select",
+            "named-select",
+            "assert-named-select",
+            "split-select",
+            "validate-split-batch",
+            "update-batch",
+            "continue-or-verify",
+            "verify-table",
+            "assert-final-state",
+            "drop-after-test"
+        ],
+        "uncaught": false,
+        "x": 210,
+        "y": 500,
+        "wires": [
+            [
+                "fail-test"
+            ]
+        ]
+    },
+    {
+        "id": "fail-test",
+        "type": "function",
+        "z": "integration-test-tab",
+        "name": "FAIL",
+        "func": "flow.set('integrationTestActive', false);\nconst source = msg.error && msg.error.source ? msg.error.source.name || msg.error.source.id : 'unknown';\nconst error = msg.error && msg.error.message ? msg.error.message : String(msg.payload || 'Unknown error');\nmsg.statusCode = 500;\nmsg.headers = { 'content-type': 'application/json' };\nmsg.payload = { ok: false, source, error };\nreturn [msg.res ? msg : null, msg.res ? null : msg];",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 500,
+        "wires": [
+            [
+                "http-response",
+                "test-result"
+            ],
+            [
+                "test-result"
+            ]
+        ]
+    },
+    {
+        "id": "test-result",
+        "type": "debug",
+        "z": "integration-test-tab",
+        "name": "Integration test result",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload.ok",
+        "statusType": "msg",
+        "x": 640,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "http-response",
+        "type": "http response",
+        "z": "integration-test-tab",
+        "name": "HTTP response",
+        "statusCode": "",
+        "headers": {},
+        "x": 570,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "test-database",
+        "type": "postgreSQLConfig",
+        "name": "Compose PostgreSQL",
+        "host": "PGHOST",
+        "hostFieldType": "env",
+        "port": "PGPORT",
+        "portFieldType": "env",
+        "database": "PGDATABASE",
+        "databaseFieldType": "env",
+        "ssl": "false",
+        "sslFieldType": "bool",
+        "applicationName": "node-red-contrib-postgresql-test",
+        "applicationNameType": "str",
+        "max": "5",
+        "maxFieldType": "num",
+        "idle": "1000",
+        "idleFieldType": "num",
+        "connectionTimeout": "10000",
+        "connectionTimeoutFieldType": "num",
+        "user": "PGUSER",
+        "userFieldType": "env",
+        "password": "PGPASSWORD",
+        "passwordFieldType": "env"
+    }
+]
