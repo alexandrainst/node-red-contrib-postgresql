@@ -1,0 +1,28 @@
+{
+	"config": {
+		"default": true,
+		"blanks-around-fences": false,
+		"blanks-around-lists": false,
+		"first-line-heading": false,
+		"line-length": false,
+		"no-hard-tabs": false,
+		"no-inline-html": {
+			"allowed_elements": ["br", "img", "kbd"]
+		},
+		"no-multiple-blanks": {
+			"maximum": 2
+		},
+		"no-trailing-spaces": true,
+		"table-column-style": false,
+		"ul-indent": false,
+		"ul-style": {
+			"style": "consistent"
+		}
+	},
+	"globs": [
+		"**/*.md"
+	],
+	"ignores": [
+		"**/node_modules/**"
+	]
+}
