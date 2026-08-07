@@ -1,0 +1,6 @@
+.*
+*.log
+*~
+eslint*
+node_modules/
+test/
