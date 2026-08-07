@@ -54,8 +54,7 @@
 		"eslint-plugin-html": "^8.1.4",
 		"globals": "^17.9.0",
 		"markdownlint-cli2": "^0.23.2",
-		"neostandard": "^0.14.0-next",
-		"mocha": "^11.8.0"
+		"neostandard": "^0.14.0-next"
 	},
 	"scripts": {
 		"eslint": "eslint .",
@@ -64,9 +63,8 @@
 		"markdownlint_fix": "markdownlint-cli2 --fix",
 		"fix": "npm run rtlcss && npm run eslint_fix && npm run markdownlint_fix",
 		"pretest": "npm run eslint && npm run markdownlint",
-		"mocha": "mocha",
-		"test:only": "npm run mocha",
-		"test": "npm run mocha",
+		"test:only": "test/node-postgres-named.test.js",
+		"test": "test/node-postgres-named.test.js",
 		"precompose:up": "mkdir -p node_modules",
 		"compose:up": "docker compose -f test/compose/compose.yaml up --detach --pull always",
 		"compose:down": "docker compose -f test/compose/compose.yaml down --volumes --remove-orphans",
