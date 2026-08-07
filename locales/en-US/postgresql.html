@@ -1,3 +1,33 @@
+<script type="text/x-red" data-help-name="postgreSQLConfig">
+	<p>Configuration for a PostgreSQL database connection pool.</p>
+
+	<h3>Security</h3>
+	<p>
+		The <strong>user</strong> and <strong>password</strong> are stored as encrypted
+		<a href="https://nodered.org/docs/creating-nodes/credentials">Node-RED credentials</a>.
+		They are saved in <code>flows_cred.json</code> and never appear in plain text in <code>flows.json</code>.
+	</p>
+	<p>
+		Alternatively, you can source either field from an <strong>OS environment variable</strong>
+		or a <strong>global context</strong> variable by changing the dropdown next to the field.
+	</p>
+
+	<h3>Credential priority</h3>
+	<p>
+		When the source is set to <strong>credential</strong>, the encrypted value always takes priority.
+		Values in <code>flows.json</code> are only used as a migration fallback when no credential exists yet.
+	</p>
+
+	<h3>Upgrading from &lt; 0.16.0</h3>
+	<p>
+		Earlier versions stored user and password as plain text in <code>flows.json</code>.
+		On first start after upgrading, the node automatically copies those values into encrypted credentials
+		and logs a warning. To finish the migration and remove the plain-text values from <code>flows.json</code>,
+		open the config node, click <strong>Done</strong>, then <strong>Deploy</strong>.
+		The warning will keep appearing on every restart until you do.
+	</p>
+</script>
+
 <script type="text/x-red" data-help-name="postgresql">
 	<p>
 		<a href="https://github.com/alexandrainst/node-red-contrib-postgresql">node-red-contrib-postgresql</a>

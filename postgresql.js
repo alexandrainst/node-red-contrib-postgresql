@@ -54,6 +54,7 @@ module.exports = function (RED) {
 	function PostgreSQLConfigNode(n) {
 		const node = this;
 		RED.nodes.createNode(node, n);
+
 		node.name = n.name;
 		node.host = n.host;
 		node.hostFieldType = n.hostFieldType;
@@ -69,16 +70,78 @@ module.exports = function (RED) {
 		node.maxFieldType = n.maxFieldType;
 		node.idle = n.idle;
 		node.idleFieldType = n.idleFieldType;
-		node.user = n.user;
-		node.userFieldType = n.userFieldType;
-		node.password = n.password;
-		node.passwordFieldType = n.passwordFieldType;
 		node.connectionTimeout = n.connectionTimeout;
 		node.connectionTimeoutFieldType = n.connectionTimeoutFieldType;
 
+		// --- Resolve user and password ---
+		// Supports three sources: credentials (default), env/global variables, and legacy flows.json values.
+		// 'str' is a legacy compatibility value produced by pre-0.16.0 versions; the editor now writes 'cred'.
+		const userFieldType = n.userFieldType || 'str';
+		const passwordFieldType = n.passwordFieldType || 'str';
+		const hasLegacyPlaintext = !!(n.user || n.password);
+
+		let user, password;
+		let migrated = false;
+
+		if (userFieldType === 'env' || userFieldType === 'global') {
+			user = getField(node, userFieldType, n.userEnv || n.user);
+		} else if (node.credentials && node.credentials.user) {
+			user = node.credentials.user;
+		} else if (n.user) {
+			// Legacy: plain-text user found in flows.json, migrate to credentials
+			user = (userFieldType === 'str' || userFieldType === 'cred') ? n.user : getField(node, userFieldType, n.user);
+			migrated = true;
+		}
+
+		if (passwordFieldType === 'env' || passwordFieldType === 'global') {
+			password = getField(node, passwordFieldType, n.passwordEnv || n.password);
+		} else if (node.credentials && node.credentials.password) {
+			password = node.credentials.password;
+		} else if (n.password) {
+			// Legacy: plain-text password found in flows.json, migrate to credentials
+			password = (passwordFieldType === 'str' || passwordFieldType === 'cred') ? n.password : getField(node, passwordFieldType, n.password);
+			migrated = true;
+		}
+
+		if (migrated) {
+			if (!node.credentials) {
+				node.credentials = {};
+			}
+			if (user) {
+				node.credentials.user = user;
+			}
+			if (password) {
+				node.credentials.password = password;
+			}
+			const nodeLabel = n.name || node.id;
+			if (typeof RED.nodes.addCredentials === 'function') {	// Not guaranteed to exist
+				try {
+					RED.nodes.addCredentials(node.id, node.credentials);
+				} catch (err) {
+					node.warn('PostgreSQL config "' + nodeLabel + '": failed to persist migrated credentials. (' +
+						(err && err.message ? err.message : err) + '). ' +
+						'Open the config node and re-deploy to store them as credentials.');
+				}
+			} else {
+				node.warn('PostgreSQL config "' + nodeLabel + '": cannot migrate user/password ' +
+					'because RED.nodes.addCredentials is unavailable in this Node-RED version. ' +
+					'Open the config node, re-enter the user/password, and deploy to store them as credentials.');
+			}
+		}
+
+		// Warn on every start while plain-text values are still present in flows.json,
+		// so the user is not silently left in an insecure state after the first migration.
+		if (hasLegacyPlaintext) {
+			node.warn('PostgreSQL config "' + (n.name || node.id) + '": plain-text user/password still present in flows.json. ' +
+				'Open the config node, click Done, then Deploy to remove them.');
+		}
+
+		// Store user on node for label display
+		node.user = user || '';
+
 		this.pgPool = new Pool({
-			user: getField(node, n.userFieldType, n.user),
-			password: getField(node, n.passwordFieldType, n.password),
+			user: user,
+			password: password,
 			host: getField(node, n.hostFieldType, n.host),
 			port: getField(node, n.portFieldType, n.port),
 			database: getField(node, n.databaseFieldType, n.database),
@@ -93,7 +156,12 @@ module.exports = function (RED) {
 		});
 	}
 
-	RED.nodes.registerType('postgreSQLConfig', PostgreSQLConfigNode);
+	RED.nodes.registerType('postgreSQLConfig', PostgreSQLConfigNode, {
+		credentials: {
+			user: { type: 'text' },
+			password: { type: 'password' },
+		},
+	});
 
 	function PostgreSQLNode(config) {
 		const node = this;
