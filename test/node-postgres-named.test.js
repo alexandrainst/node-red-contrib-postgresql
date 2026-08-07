@@ -1,10 +1,35 @@
+#!/usr/bin/env node
 /**
  * Modified subset of https://github.com/bwestergard/node-postgres-named/blob/master/test/test.js
+ * Rewritten without Mocha to avoid the dependency and requirements to newer Node.js.
  */
 
-/* globals it: false, describe: false */
+'use strict';
+
 const assert = require('assert');
 const named = require('../node-postgres-named.js');
+
+let passed = 0;
+let failed = 0;
+
+function it(description, testFn) {
+	try {
+		testFn();
+		console.log(`✓ ${description}`);
+		passed++;
+	} catch (error) {
+		console.error(`✗ ${description}`);
+		console.error(`  Error: ${error.message}`);
+		failed++;
+	}
+}
+
+function describe(description, fn) {
+	console.log(`\n${description}`);
+	fn();
+}
+
+console.log('Running node-postgres-named tests...\n');
 
 describe('node-postgres-named', function () {
 	describe('Parameter translation', function () {
@@ -61,3 +86,11 @@ describe('node-postgres-named', function () {
 		});
 	});
 });
+
+console.log(`\n${'='.repeat(50)}`);
+console.log(`Tests completed: ${passed + failed} total`);
+console.log(`Passed: ${passed}`);
+console.log(`Failed: ${failed}`);
+console.log('='.repeat(50));
+
+process.exit(failed > 0 ? 1 : 0);
