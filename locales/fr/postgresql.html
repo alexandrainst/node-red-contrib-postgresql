@@ -1,0 +1,157 @@
+<script type="text/x-red" data-help-name="postgreSQLConfig">
+	<p>Configuration pour un pool de connexions à une base de données PostgreSQL.</p>
+
+	<h3>Sécurité</h3>
+	<p>
+		L’<strong>utilisateur</strong> et le <strong>mot de passe</strong> sont stockés sous forme de
+		<a href="https://nodered.org/docs/creating-nodes/credentials">identifiants Node-RED</a> chiffrés.
+		Ils sont enregistrés dans <code>flows_cred.json</code> et n’apparaissent jamais en clair dans <code>flows.json</code>.
+	</p>
+	<p>
+		Vous pouvez également définir chaque champ à partir d’une <strong>variable d’environnement OS</strong>
+		ou d’une variable <strong>global context</strong> en modifiant la liste déroulante à côté du champ.
+	</p>
+
+	<h3>Priorité des identifiants</h3>
+	<p>
+		Lorsque la source est définie sur <strong>identifiant</strong>, la valeur chiffrée est toujours prioritaire.
+		Les valeurs dans <code>flows.json</code> sont uniquement utilisées lorsqu’aucun identifiant n’existe encore.
+	</p>
+
+	<h3>Mise à niveau depuis &lt; 0.16.0</h3>
+	<p>
+		Les versions antérieures stockaient l’utilisateur et le mot de passe en clair dans <code>flows.json</code>.
+		Au premier démarrage après la mise à niveau, le nœud copie automatiquement ces valeurs dans des identifiants chiffrés
+		et affiche un avertissement dans les journaux. Pour terminer la migration et supprimer les valeurs en clair de <code>flows.json</code>,
+		ouvrez le nœud de configuration, cliquez sur <strong>Terminé</strong>, puis <strong>Déployer</strong>.
+		L’avertissement continuera de s’afficher à chaque redémarrage jusqu’à ce que vous le fassiez.
+	</p>
+</script>
+
+<script type="text/x-red" data-help-name="postgresql">
+	<p>
+		<a href="https://github.com/alexandrainst/node-red-contrib-postgresql">node-red-contrib-postgresql</a>
+		est un nœud Node-RED pour interroger une base de données <a href="https://www.postgresql.org/">PostgreSQL</a> 🐘.
+	</p>
+
+	<h3>Sorties</h3>
+	<p>La réponse (lignes) est fournie dans <code>msg.payload</code> sous forme de tableau.</p>
+	<p>
+		Une exception est si l’option <em>Diviser les résultats</em> est activée et que le <em>Nombre de lignes par message</em> est défini à 1,
+		alors <code>msg.payload</code> n’est pas un tableau mais la réponse en une seule ligne.
+	</p>
+	<p>
+		Des informations supplémentaires sont fournies sous <code>msg.pgsql.rowCount</code> et <code>msg.pgsql.command</code>.
+		Voir la <a href="https://node-postgres.com/apis/result">documentation sous-jacente</a> pour plus de détails.
+	</p>
+	<p>Dans le cas de requêtes multiples, <code>msg.pgsql</code> est un tableau.</p>
+
+	<h3>Entrées</h3>
+	<h4>Modèle de requête SQL</h4>
+	<p>Ce nœud utilise le <a href="https://github.com/janl/mustache.js">système de modèle Mustache</a> pour générer des requêtes basées sur le message :</p>
+<pre>
+-- Colonne INTEGER id
+SELECT * FROM table WHERE id = {{{ msg.id }}}
+
+-- Colonne TEXT id
+SELECT * FROM table WHERE id = ’{{{ msg.id }}}’
+</pre>
+
+	<h4>Requêtes SQL dynamiques</h4>
+	<p>En alternative au modèle de requête ci-dessus, ce nœud accepte également une requête SQL via le paramètre <code>msg.query</code>.</p>
+
+	<h4>Requêtes paramétrées</h4>
+	<p>Les paramètres pour les requêtes paramétrées peuvent être passés sous forme de tableau <code>msg.params</code> :</p>
+<pre>
+// Dans une fonction, fournir les paramètres pour la requête paramétrée
+msg.params = [ msg.id ];
+</pre>
+
+<pre>
+-- Dans ce nœud, utiliser une requête paramétrée
+SELECT * FROM table WHERE id = $1
+</pre>
+
+<h4>Requêtes paramétrées nommées</h4>
+<p>
+	En alternative aux paramètres numériques,
+	les paramètres nommés pour les requêtes paramétrées peuvent être passés sous forme d’objet de paramètres <code>msg.queryParameters</code> :
+</p>
+<pre>
+// Dans une fonction, fournir les paramètres pour la requête paramétrée nommée
+msg.queryParameters.id = msg.id;
+</pre>
+
+<pre>
+-- Dans ce nœud, utiliser une requête paramétrée nommée
+SELECT * FROM table WHERE id = $id;
+</pre>
+
+<p>
+	<em>Remarque</em> : les paramètres nommés ne sont pas nativement pris en charge par PostgreSQL, et cette bibliothèque les émule,
+	donc c’est moins robuste que les paramètres numériques.
+</p>
+
+	<h4>Paramètres de connexion PostgreSQL dynamiques</h4>
+	<p>
+		Si les informations sur le serveur de base de données doivent être dynamiques,
+		il est possible de passer une <a href="https://node-postgres.com/apis/client">configuration de client personnalisée</a> dans le message :
+	</p>
+<pre>
+msg.pgConfig = {
+  user?: string, // par défaut process.env.PGUSER || process.env.USER
+  password?: string, // ou fonction, par défaut process.env.PGPASSWORD
+  host?: string, // par défaut process.env.PGHOST
+  database?: string, // par défaut process.env.PGDATABASE || process.env.USER
+  port?: number, // par défaut process.env.PGPORT
+  connectionString?: string, // par ex. postgres://user:password@host:5432/database
+  ssl?: any, // passé directement à node.TLSSocket, prend en charge toutes les options tls.connect
+  types?: any, // analyseurs de types personnalisés
+  statement_timeout?: number, // nombre de millisecondes avant qu’une instruction dans la requête n’expire, par défaut pas de délai d’attente
+  query_timeout?: number, // nombre de millisecondes avant qu’un appel de requête n’expire, par défaut pas de délai d’attente
+  application_name?: string, // Le nom de l’application qui a créé cette instance de Client
+  connectionTimeoutMillis?: number, // nombre de millisecondes à attendre pour la connexion, par défaut pas de délai d’attente
+  idle_in_transaction_session_timeout?: number, // nombre de millisecondes avant de terminer toute session avec une transaction ouverte en attente, par défaut pas de délai d’attente
+};
+</pre>
+	<p>
+		Cependant, cela n’utilise pas un <a href="https://node-postgres.com/features/pooling">pool de connexions</a>, et est donc moins efficace.
+		Il est donc recommandé dans la plupart des cas de ne pas utiliser <code>msg.pgConfig</code> du tout et de s’en tenir à la place au nœud de configuration intégré.
+	</p>
+
+	<h3>Contrôle de mémoire tampon</h3>
+	<p>
+		Ce nœud prend en charge la <em>contre-pression</em> (<span xml:lang="en">Backpressure</span>) / <em>contrôle de flux</em> :
+		lorsque l’option <em>Diviser les résultats</em> est activée, il attend un <em>tick</em> avant de transmettre le lot de lignes suivant,
+		pour s’assurer que le reste de votre flux Node-RED est prêt à traiter plus de données
+		(au lieu de risquer une condition de mémoire insuffisante), et transmet également cette information en amont.
+	</p><p>
+		Ainsi, lorsque l’option <em>Diviser les résultats</em> est activée, ce nœud ne produira qu’un seul message au début,
+		puis attend un message contenant un <code>msg.tick</code> vrai avant de fournir le message suivant.
+	</p><p>
+		Pour rendre ce comportement potentiellement automatique (évitant les fils manuels),
+		ce nœud déclare cette fonctionnalité en exposant un <code>node.tickConsumer</code> à vrai pour que les nœuds en aval détectent cette fonctionnalité,
+		et un <code>node.tickProvider</code> vrai pour les nœuds en amont.
+		De même, ce nœud détecte les nœuds en amont utilisant la même convention de contre-pression, et envoie automatiquement des ticks.
+	</p>
+
+	<h3>Séquences pour les résultats divisés</h3>
+	<p>
+		Lorsque l’option <em>Diviser les résultats</em> est activée (streaming), les messages contiennent certaines informations suivant les conventions
+		pour les <a href="https://nodered.org/docs/user-guide/messages#message-sequences"><em>séquences de messages</em></a>.
+	</p>
+
+<pre>
+{
+  payload: ’...’,
+    parts: {
+      id: 0.1234, // ID de séquence, généré aléatoirement (change pour chaque séquence)
+      index: 5, // incrémenté pour chaque message de la même séquence
+      count: 6, // nombre total de messages ; uniquement disponible dans le dernier message d’une séquence
+      parts: {}, // informations parts en amont optionnelles
+    },
+    complete: true, // Vrai uniquement pour le dernier message d’une séquence
+}
+</pre>
+
+</script>

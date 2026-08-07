@@ -1,0 +1,47 @@
+{
+	"postgresql": {
+		"label": {
+			"name": "Nom",
+			"host": "Hôte",
+			"port": "Port",
+			"database": "Base de données",
+			"ssl": "SSL",
+			"user": "Utilisateur",
+			"password": "Mot de passe",
+			"applicationName": "Nom de l’application",
+			"max": "Taille maximale",
+			"idle": "Délai d’inactivité",
+			"connectionTimeout": "Délai de connexion",
+			"server": "Serveur",
+			"query": "Requête",
+			"split": "Diviser les résultats en plusieurs messages",
+			"rowsPerMsg": "Nombre de lignes par message"
+		},
+		"placeholder": {
+			"name": "dbConnection",
+			"host": "127.0.0.1",
+			"port": "5432",
+			"database": "dbExemple",
+			"user": "dbUtilisateur",
+			"password": "dbMotDePasse",
+			"applicationName": "",
+			"max": "10",
+			"idle": "1000 (Millisecondes)",
+			"connectionTimeout": "10000 (Millisecondes)"
+		},
+		"tab": {
+			"connection": "Connexion",
+			"security": "Sécurité",
+			"pool": "Pool"
+		},
+		"source": {
+			"cred": "identifiant",
+			"env": "variable d’env",
+			"global": "global"
+		},
+		"title": {
+			"applicationName": "Le nom de l’application qui a créé cette instance de Client.",
+			"max": "Nombre maximum de connexions physiques à la base de données que ce pool de connexions peut contenir."
+		}
+	}
+}
