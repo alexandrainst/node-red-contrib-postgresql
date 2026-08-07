@@ -36,8 +36,10 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x, 22.x]
+        node-version: [8.x, 22.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        # Update package.json accordingly and with https://nodered.org/docs/faq/node-versions
+        # When moving to 16+, remove .npmrc
 
     steps:
     - uses: actions/checkout@v7

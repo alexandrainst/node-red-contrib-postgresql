@@ -35,10 +35,10 @@
 		"timescale"
 	],
 	"engines": {
-		"node": ">=16"
+		"node": ">=8"
 	},
 	"node-red": {
-		"version": ">=3",
+		"version": ">=0.20.0",
 		"nodes": {
 			"postgresql": "postgresql.js"
 		}
