@@ -200,7 +200,7 @@ module.exports = function (RED) {
 			hasError |= isError;
 			if (!statusTimer) {
 				statusTimer = setTimeout(() => {
-					let fill = 'grey';
+					let fill;
 					if (hasError) {
 						fill = 'red';
 					} else if (nbQueue <= 0) {
