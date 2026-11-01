@@ -87,10 +87,76 @@ describe('node-postgres-named', function () {
 	});
 });
 
-console.log(`\n${'='.repeat(50)}`);
-console.log(`Tests completed: ${passed + failed} total`);
-console.log(`Passed: ${passed}`);
-console.log(`Failed: ${failed}`);
-console.log('='.repeat(50));
+// Loads the node with a minimal fake Node-RED runtime and a fake pg client, then sends one message through it.
+async function runNode(nodeQuery, inMsg) {
+	let NodeCtor;
+	const fakeClient = {
+		executed: [],
+		query: async function (text) {
+			this.executed.push(text);
+			return { rows: [], command: 'SELECT', rowCount: 0 };
+		},
+		release: function () {},
+	};
+	const RED = {
+		nodes: {
+			registerType: (name, ctor) => { if (name === 'postgresql') { NodeCtor = ctor; } },
+			createNode: function (node) {
+				const handlers = {};
+				node.on = (evt, fn) => { handlers[evt] = fn; };
+				node.status = () => {};
+				node.error = () => {};
+				node.handlers = handlers;
+			},
+			getNode: () => ({ pgPool: { totalCount: 1, connect: async () => fakeClient } }),
+		},
+	};
+	require('../postgresql.js')(RED);
+	const node = new NodeCtor({ query: nodeQuery, postgreSQLConfig: 'cfg' });
+	const sent = [];
+	await node.handlers.input(inMsg, (m) => sent.push(m), () => {});
+	return { sent: sent, executed: fakeClient.executed };
+}
 
-process.exit(failed > 0 ? 1 : 0);
+async function itAsync(description, testFn) {
+	try {
+		await testFn();
+		console.log(`✓ ${description}`);
+		passed++;
+	} catch (error) {
+		console.error(`✗ ${description}`);
+		console.error(`  Error: ${error.message}`);
+		failed++;
+	}
+}
+
+async function runAsyncTests() {
+	console.log('\nOutgoing msg.query');
+	await itAsync('Node SQL replaces msg.query with the raw node SQL, while the rendered SQL is executed', async function () {
+		const { sent, executed } = await runNode('SELECT {{{ msg.id }}}', { id: 5, query: 'SELECT old' });
+		assert.deepEqual(executed, ['SELECT 5']);
+		assert.equal(sent[0].query, 'SELECT {{{ msg.id }}}');
+	});
+
+	await itAsync('Empty node SQL leaves msg.query unaltered', async function () {
+		const { sent, executed } = await runNode('', { query: 'SELECT 1' });
+		assert.deepEqual(executed, ['SELECT 1']);
+		assert.equal(sent[0].query, 'SELECT 1');
+	});
+
+	await itAsync('Empty node SQL leaves msg.query unaltered even with msg.queryParameters', async function () {
+		const { sent, executed } = await runNode('', { query: 'SELECT $id', queryParameters: { id: 7 } });
+		assert.deepEqual(executed, ['SELECT $1']);
+		assert.equal(sent[0].query, 'SELECT $id');
+	});
+}
+
+runAsyncTests().then(() => {
+	console.log(`\n${'='.repeat(50)}`);
+	console.log(`Tests completed: ${passed + failed} total`);
+	console.log(`Passed: ${passed}`);
+	console.log(`Failed: ${failed}`);
+	console.log('='.repeat(50));
+
+	process.exit(failed > 0 ? 1 : 0);
+});

@@ -59,6 +59,7 @@ SELECT * FROM table WHERE id = ’{{{ msg.id }}}’
 
 	<h4>Requêtes SQL dynamiques</h4>
 	<p>En alternative au modèle de requête ci-dessus, ce nœud accepte également une requête SQL via le paramètre <code>msg.query</code>.</p>
+	<p>Mais notez que la requête configurée dans le nœud est prioritaire sur <code>msg.query</code>. Ce nœud n’utilise la requête SQL passée via le paramètre <code>msg.query</code> que si la requête configurée dans le nœud est vide.</p>
 
 	<h4>Requêtes paramétrées</h4>
 	<p>Les paramètres pour les requêtes paramétrées peuvent être passés sous forme de tableau <code>msg.params</code> :</p>

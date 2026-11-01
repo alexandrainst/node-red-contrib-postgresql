@@ -239,7 +239,12 @@ module.exports = function (RED) {
 				}
 			} else {
 				const partsId = Math.random();
-				let query = msg.query ? msg.query : Mustache.render(node.query, { msg });
+				// node.query takes precedence; msg.query is only used when node.query is empty
+				let query = node.query && node.query.trim() ? Mustache.render(node.query, { msg }) : msg.query;
+				if (node.query && node.query.trim()) {
+					// Node SQL replaces msg.query (raw, not rendered); otherwise msg.query is left unaltered
+					msg.query = node.query;
+				}
 
 				let client = null;
 
